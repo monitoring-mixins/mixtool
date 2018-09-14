@@ -105,7 +105,7 @@ func buildAction(c *cli.Context) error {
 		return err
 	}
 
-	fmt.Fprint(out, b)
+	fmt.Fprint(out, string(b))
 
 	return nil
 }
