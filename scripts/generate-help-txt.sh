@@ -3,7 +3,7 @@
 BINARY_NAME=mixtool
 GOOS=$(uname -s | tr A-Z a-z)
 
-HELP_FILE=$PWD/_output/help.txt
-echo "$ $BINARY_NAME -h" > $HELP_FILE
-PATH=$PATH:$PWD/_output/$GOOS/amd64 $BINARY_NAME -h &> $HELP_FILE
-exit 0
+$PWD/_output/$GOOS/amd64/$BINARY_NAME -h > $PWD/_output/help.txt
+$PWD/_output/$GOOS/amd64/$BINARY_NAME build -h > $PWD/_output/help-build.txt
+$PWD/_output/$GOOS/amd64/$BINARY_NAME generate -h > $PWD/_output/help-generate.txt
+$PWD/_output/$GOOS/amd64/$BINARY_NAME lint -h > $PWD/_output/help-lint.txt
