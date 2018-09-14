@@ -57,6 +57,15 @@ func buildAction(c *cli.Context) error {
 		return fmt.Errorf("no jsonnet file given")
 	}
 
+	// If no jPath is given we check if ./vendor exists in the current directory
+	// and use it, if it's there.
+	if jPathFlag == "" {
+		_, err := os.Stat("./vendor")
+		if err == nil {
+			jPathFlag = "./vendor"
+		}
+	}
+
 	var out io.Writer
 	out = os.Stdout
 
