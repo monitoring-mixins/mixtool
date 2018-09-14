@@ -1,0 +1,31 @@
+[prune]
+  go-tests = true
+  unused-packages = true
+
+[[constraint]]
+  name = "github.com/urfave/cli"
+  version = "1.20.0"
+
+[[constraint]]
+  name = "github.com/google/go-jsonnet"
+  version = "0.11.2"
+
+[[constraint]]
+  name = "github.com/prometheus/prometheus"
+  version = "2.3.2"
+
+[[constraint]]
+  name = "github.com/fatih/color"
+  version = "1.7.0"
+
+[[constraint]]
+  name = "github.com/grafana/grafana"
+  version = "5.2.4"
+
+[[constraint]]
+  name = "github.com/ghodss/yaml"
+  version = "1.0.0"
+
+[[override]]
+  branch = "master"
+  name = "github.com/Unknwon/com"
