@@ -50,25 +50,28 @@ func lintCommand() cli.Command {
 				Destination: &config.Prometheus,
 			},
 			cli.StringSliceFlag{
-				Name:  "vendor",
+				Name:  "jpath, J",
 				Usage: "Add folders to be used as vendor folders",
 			},
 		},
-		Action: lintAction(config),
+		Action: lintAction,
 	}
 }
-func lintAction(config lintConfig) cli.ActionFunc {
-	return func(c *cli.Context) error {
-		files := c.Args()
 
-		vendors := c.StringSlice("vendor")
+func lintAction(c *cli.Context) error {
+	files := c.Args()
 
-		for _, filename := range files {
-			if err := mixer.Lint(os.Stdout, vendors, filename); err != nil {
-				return fmt.Errorf("failed to lint the file %s: %v", filename, err)
-			}
-		}
-
-		return nil
+	options := mixer.LintOptions{
+		JPaths:     c.StringSlice("jpath"),
+		Grafana:    c.BoolT("grafana"),
+		Prometheus: c.BoolT("prometheus"),
 	}
+
+	for _, filename := range files {
+		if err := mixer.Lint(os.Stdout, filename, options); err != nil {
+			return fmt.Errorf("failed to lint the file %s: %v", filename, err)
+		}
+	}
+
+	return nil
 }

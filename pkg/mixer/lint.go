@@ -26,22 +26,32 @@ import (
 	"github.com/prometheus/prometheus/pkg/rulefmt"
 )
 
-func Lint(w io.Writer, vendors []string, filename string) error {
+type LintOptions struct {
+	JPaths     []string
+	Grafana    bool
+	Prometheus bool
+}
+
+func Lint(w io.Writer, filename string, options LintOptions) error {
 	vm := jsonnet.MakeVM()
 
 	vm.Importer(&jsonnet.FileImporter{
-		JPaths: vendors,
+		JPaths: options.JPaths,
 	})
 
-	if err := lintPrometheusAlerts(w, filename, vm); err != nil {
-		return err
-	}
-	if err := lintPrometheusRules(w, filename, vm); err != nil {
-		return err
+	if options.Prometheus {
+		if err := lintPrometheusAlerts(w, filename, vm); err != nil {
+			return err
+		}
+		if err := lintPrometheusRules(w, filename, vm); err != nil {
+			return err
+		}
 	}
 
-	if err := lintGrafanaDashboards(w, filename, vm); err != nil {
-		return err
+	if options.Grafana {
+		if err := lintGrafanaDashboards(w, filename, vm); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -115,9 +115,9 @@ DESCRIPTION:
    Lint jsonnet files for correct structure of JSON objects
 
 OPTIONS:
-   --grafana       Lint Grafana dashboards against Grafana's schema
-   --prometheus    Lint Prometheus alerts and rules and their given expressions
-   --vendor value  Add folders to be used as vendor folders
+   --grafana                Lint Grafana dashboards against Grafana's schema
+   --prometheus             Lint Prometheus alerts and rules and their given expressions
+   --jpath value, -J value  Add folders to be used as vendor folders
    
 ```
 
@@ -130,4 +130,6 @@ $ mixtool lint prometheus.jsonnet
 $ mixtool lint --grafana=false prometheus.jsonnet
 # Don't lint Prometheus alerts & rules.
 $ mixtool lint --prometheus=false prometheus.jsonnet
+# Lint multiple files sequentially.
+$ mixtool lint prometheus.jsonnet grafana.jsonnet
 ```
