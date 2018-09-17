@@ -42,3 +42,14 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
+// If no jPath is given, we check if ./vendor exists in the current directory and use it.
+func availableVendor(jPathsFlag []string) []string {
+	if len(jPathsFlag) == 0 {
+		_, err := os.Stat("./vendor")
+		if err == nil {
+			return []string{"./vendor"}
+		}
+	}
+	return jPathsFlag
+}

@@ -29,7 +29,7 @@ func buildCommand() cli.Command {
 		Name:  "build",
 		Usage: "Build manifests from jsonnet input",
 		Flags: []cli.Flag{
-			cli.StringFlag{
+			cli.StringSliceFlag{
 				Name: "jpath, J",
 			},
 			cli.StringFlag{
@@ -48,7 +48,7 @@ func buildCommand() cli.Command {
 
 func buildAction(c *cli.Context) error {
 	outputFileFlag := c.String("output-file")
-	jPathFlag := c.String("jpath")
+	jPathFlag := c.StringSlice("jpath")
 	multiFlag := c.String("multi")
 	yamlFlag := c.BoolT("yaml")
 
@@ -57,14 +57,7 @@ func buildAction(c *cli.Context) error {
 		return fmt.Errorf("no jsonnet file given")
 	}
 
-	// If no jPath is given we check if ./vendor exists in the current directory
-	// and use it, if it's there.
-	if jPathFlag == "" {
-		_, err := os.Stat("./vendor")
-		if err == nil {
-			jPathFlag = "./vendor"
-		}
-	}
+	jPathFlag = availableVendor(jPathFlag)
 
 	var out io.Writer
 	out = os.Stdout
@@ -79,9 +72,9 @@ func buildAction(c *cli.Context) error {
 		out = f
 	}
 
-	buildCfg := mixer.BuildConfig{
-		JPath: jPathFlag,
-		YAML:  yamlFlag,
+	buildCfg := mixer.BuildOptions{
+		JPaths: jPathFlag,
+		YAML:   yamlFlag,
 	}
 
 	if multiFlag != "" {

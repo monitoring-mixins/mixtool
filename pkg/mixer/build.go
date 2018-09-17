@@ -21,12 +21,12 @@ import (
 	"github.com/google/go-jsonnet"
 )
 
-type BuildConfig struct {
-	JPath string
-	YAML  bool
+type BuildOptions struct {
+	JPaths []string
+	YAML   bool
 }
 
-func Build(filename string, config BuildConfig) ([]byte, error) {
+func Build(filename string, config BuildOptions) ([]byte, error) {
 	vm := jsonnet.MakeVM()
 
 	contents, err := ioutil.ReadFile(filename)
@@ -35,7 +35,7 @@ func Build(filename string, config BuildConfig) ([]byte, error) {
 	}
 
 	vm.Importer(&jsonnet.FileImporter{
-		JPaths: []string{config.JPath},
+		JPaths: config.JPaths,
 	})
 
 	j, err := vm.EvaluateSnippet(filename, string(contents))
@@ -54,7 +54,7 @@ func Build(filename string, config BuildConfig) ([]byte, error) {
 	return output, nil
 }
 
-func BuildMulti(filename string, config BuildConfig) (map[string]string, error) {
+func BuildMulti(filename string, config BuildOptions) (map[string]string, error) {
 	vm := jsonnet.MakeVM()
 
 	contents, err := ioutil.ReadFile(filename)
@@ -63,7 +63,7 @@ func BuildMulti(filename string, config BuildConfig) (map[string]string, error) 
 	}
 
 	vm.Importer(&jsonnet.FileImporter{
-		JPaths: []string{config.JPath},
+		JPaths: config.JPaths,
 	})
 
 	files, err := vm.EvaluateSnippetMulti(filename, string(contents))
