@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/metalmatze/mixtool/pkg/mixer"
@@ -40,7 +41,7 @@ func runbookCommand() cli.Command {
 }
 
 func runbookAction(c *cli.Context) error {
-	//outputFileFlag := c.String("output-file")
+	outputFileFlag := c.String("output-file")
 	jPathFlag := c.StringSlice("jpath")
 
 	filename := c.Args().First()
@@ -50,7 +51,20 @@ func runbookAction(c *cli.Context) error {
 
 	jPathFlag = availableVendor(jPathFlag)
 
-	err := mixer.Runbook(os.Stdout, filename, mixer.RunbookOptions{
+	var out io.Writer
+	out = os.Stdout
+
+	if outputFileFlag != "" {
+		f, err := os.Create(outputFileFlag)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		out = f
+	}
+
+	err := mixer.Runbook(out, filename, mixer.RunbookOptions{
 		JPaths: jPathFlag,
 	})
 	if err != nil {
