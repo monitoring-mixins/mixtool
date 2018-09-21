@@ -36,13 +36,17 @@ func runbookCommand() cli.Command {
 			cli.StringFlag{
 				Name: "output-file, o",
 			},
+			cli.StringFlag{
+				Name: "template-file",
+			},
 		},
 	}
 }
 
 func runbookAction(c *cli.Context) error {
-	outputFileFlag := c.String("output-file")
 	jPathFlag := c.StringSlice("jpath")
+	outputFileFlag := c.String("output-file")
+	templateFileFlag := c.String("template-file")
 
 	filename := c.Args().First()
 	if filename == "" {
@@ -65,7 +69,8 @@ func runbookAction(c *cli.Context) error {
 	}
 
 	err := mixer.Runbook(out, filename, mixer.RunbookOptions{
-		JPaths: jPathFlag,
+		JPaths:       jPathFlag,
+		TemplateFile: templateFileFlag,
 	})
 	if err != nil {
 		return err

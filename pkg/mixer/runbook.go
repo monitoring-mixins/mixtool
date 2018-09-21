@@ -52,7 +52,8 @@ type runbookJSON struct {
 }
 
 type RunbookOptions struct {
-	JPaths []string
+	JPaths       []string
+	TemplateFile string
 }
 
 func Runbook(w io.Writer, filename string, opts RunbookOptions) error {
@@ -96,9 +97,17 @@ func Runbook(w io.Writer, filename string, opts RunbookOptions) error {
 		return fmt.Errorf("failed to unmarshal json: %v", err)
 	}
 
-	tmpl, err := template.New("test").Parse(markdownTemplate)
-	if err != nil {
-		return fmt.Errorf("failed to parse template: %v", err)
+	var tmpl *template.Template
+	if opts.TemplateFile != "" {
+		tmpl, err = template.ParseFiles(opts.TemplateFile)
+		if err != nil {
+			return fmt.Errorf("failed to parse template from file: %v", err)
+		}
+	} else {
+		tmpl, err = template.New("test").Parse(markdownTemplate)
+		if err != nil {
+			return fmt.Errorf("failed to parse template: %v", err)
+		}
 	}
 
 	if err := tmpl.Execute(w, rj); err != nil {
