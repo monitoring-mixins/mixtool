@@ -32,6 +32,7 @@ COMMANDS:
      build    Build manifests from jsonnet input
      lint     Lint jsonnet files
      new      Create new jsonnet mixin files
+     runbook  Generate a runbook markdown file
      help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -61,16 +62,20 @@ OPTIONS:
 
 ```bash
 # The simplest example. It will use ./vendor if available and print YAML.
-$ mixtool build prometheus.jsonnet
+mixtool build prometheus.jsonnet
+
 # These next lines are equivalent and both write to file.
-$ mixtool build prometheus.jsonnet > prometheus.yaml
-$ mixtool build --output-file prometheus.yaml prometheus.jsonnet
+mixtool build prometheus.jsonnet > prometheus.yaml
+mixtool build --output-file prometheus.yaml prometheus.jsonnet
+
 # Change the folder for imports.
-$ mixtoo build --jpath /some/path/vendor prometheus.jsonnet
+mixtool build --jpath /some/path/vendor prometheus.jsonnet
+
 # Instead of writing YAML this will simply output JSON.
-$ mixtool build --yaml=false prometheus.jsonnet > prometheus.json
+mixtool build --yaml=false prometheus.jsonnet > prometheus.json
+
 # Write the output to multiple files in a give directory.
-$ mixtool build --multi prometheus/ prometheus.jsonnet
+mixtool build --multi prometheus/ prometheus.jsonnet
 ```
 
 ### New
@@ -96,9 +101,9 @@ OPTIONS:
 #### New Examples
 
 ```bash
-$ mixtool new grafana-dashboard > my-dashboard.jsonnet
-$ mixtool new prometheus-alerts > my-alerts.jsonnet
-$ mixtool new prometheus-rules > my-rules.jsonnet
+mixtool new grafana-dashboard > my-dashboard.jsonnet
+mixtool new prometheus-alerts > my-alerts.jsonnet
+mixtool new prometheus-rules > my-rules.jsonnet
 ```
 
 ### Lint
@@ -125,11 +130,47 @@ OPTIONS:
 
 ```bash
 # This will lint the file for Prometheus alerts & rules and Grafana dashboards.
-$ mixtool lint prometheus.jsonnet
+mixtool lint prometheus.jsonnet
+
 # Don't lint Grafana dashboards.
-$ mixtool lint --grafana=false prometheus.jsonnet
+mixtool lint --grafana=false prometheus.jsonnet
+
 # Don't lint Prometheus alerts & rules.
-$ mixtool lint --prometheus=false prometheus.jsonnet
+mixtool lint --prometheus=false prometheus.jsonnet
+
 # Lint multiple files sequentially.
-$ mixtool lint prometheus.jsonnet grafana.jsonnet
+mixtool lint prometheus.jsonnet grafana.jsonnet
+```
+
+### Runbook
+
+[embedmd]:# (_output/help-runbook.txt)
+```txt
+NAME:
+   mixtool runbook - Generate a runbook markdown file
+
+USAGE:
+   mixtool runbook [command options] [arguments...]
+
+DESCRIPTION:
+   Generate a runbook markdown file from the jsonnet mixins
+
+OPTIONS:
+   --jpath value, -J value        
+   --output-file value, -o value  
+   
+```
+
+#### Runbook Examples
+
+```bash
+# The simplest example. It will use ./vendor if available and write the runbook as markdown to stdout.
+mixtool runbook alerts.libsonnet
+
+# These next lines are equivalent and both write to file.
+mixtool runbook alerts.libsonnet > runbook.md
+mixtool runbook -o runbook.md alerts.libsonnet
+
+# Change the folder for imports.
+mixtool runbook --jpath /some/path/vendor alerts.libsonnet
 ```
