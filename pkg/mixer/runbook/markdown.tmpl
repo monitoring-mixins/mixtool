@@ -1,0 +1,10 @@
+# Alert Runbook
+{{range .Groups}}
+### {{.Name}}
+{{range .Rules}}
+##### {{.Alert}}
++ *Severity*: {{.Labels.Severity}}
++ *Message*: `{{.Annotations.Message}}`
+
+{{.RunbookOutput}}
+{{end}}{{end}}

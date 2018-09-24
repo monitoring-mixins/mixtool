@@ -20,20 +20,16 @@ import (
 	"io"
 	"text/template"
 
+	"github.com/gobuffalo/packr"
 	"github.com/google/go-jsonnet"
 )
 
-const markdownTemplate = `# Alert Runbook
-{{range .Groups}}
-### {{.Name}}
-{{range .Rules}}
-##### {{.Alert}}
-+ *Severity*: {{.Labels.Severity}}
-+ *Message*: ` + "`" + `{{.Annotations.Message}}` + "`" + `
+var (
+	runbookBox = packr.NewBox("./runbook")
 
-{{.RunbookOutput}}
-{{end}}{{end}}
-`
+	markdownTemplate = runbookBox.String("markdown.tmpl")
+	snippetTemplate  = runbookBox.String("snippet.libsonnet.tmpl")
+)
 
 type runbookJSON struct {
 	Groups []struct {
@@ -63,28 +59,6 @@ func Runbook(w io.Writer, filename string, opts RunbookOptions) error {
 		JPaths: opts.JPaths,
 	})
 
-	snippetTemplate := `
-(import '%s') {
-  prometheusAlerts+::
-    local mapRuleGroups(f) = {
-      groups: [
-        group {
-          rules: [
-            f(rule)
-            for rule in super.rules
-          ],
-        }
-        for group in super.groups
-      ],
-    };
-    local removeRunbookURL(rule) = rule {
-      [if 'alert' in rule then 'runbookOutput']+:
-        if 'runbook' in rule then super.runbook,
-    };
-
-    mapRuleGroups(removeRunbookURL),
-}.prometheusAlerts
-`
 	snippet := fmt.Sprintf(snippetTemplate, filename)
 
 	j, err := vm.EvaluateSnippet("", snippet)
