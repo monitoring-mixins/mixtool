@@ -22,53 +22,53 @@ import (
 	"github.com/urfave/cli"
 )
 
-func generateCommand() cli.Command {
+func newCommand() cli.Command {
 	return cli.Command{
-		Name:        "generate",
-		Usage:       "Generate jsonnet mixin files",
-		Description: "Generate files for Prometheus alerts & rules and Grafana dashboards as jsonnet mixin",
+		Name:        "new",
+		Usage:       "Create new jsonnet mixin files",
+		Description: "Create new files for Prometheus alerts & rules and Grafana dashboards as jsonnet mixin",
 		Subcommands: cli.Commands{
 			cli.Command{
 				Name:   "grafana-dashboard",
-				Usage:  "Generate a new file for a Grafana dashboard",
-				Action: generateGrafanaDashboard,
+				Usage:  "Create a new file with a Grafana dashboard mixin inside",
+				Action: newGrafanaDashboard,
 			},
 			cli.Command{
 				Name:   "prometheus-alerts",
-				Usage:  "Generate a new file for Prometheus alerts",
-				Action: generatePrometheusAlerts,
+				Usage:  "Create a new file with Prometheus alert mixins inside",
+				Action: newPrometheusAlerts,
 			},
 			cli.Command{
 				Name:   "prometheus-rules",
-				Usage:  "Generate a new file for Prometheus rules",
-				Action: generatePrometheusRules,
+				Usage:  "Create a new file with Prometheus rule mixins inside",
+				Action: newPrometheusRules,
 			},
 		},
 	}
 }
 
-func generateGrafanaDashboard(c *cli.Context) error {
+func newGrafanaDashboard(c *cli.Context) error {
 	if fileExists(c.Args().First()) {
 		return fmt.Errorf("file already exists. not overwriting.")
 	}
 
-	return writeFileToDisk(c, mixer.GenerateGrafanaDashboard)
+	return writeFileToDisk(c, mixer.NewGrafanaDashboard)
 }
 
-func generatePrometheusAlerts(c *cli.Context) error {
+func newPrometheusAlerts(c *cli.Context) error {
 	if fileExists(c.Args().First()) {
 		return fmt.Errorf("file already exists. not overwriting.")
 	}
 
-	return writeFileToDisk(c, mixer.GeneratePrometheusAlerts)
+	return writeFileToDisk(c, mixer.NewPrometheusAlerts)
 }
 
-func generatePrometheusRules(c *cli.Context) error {
+func newPrometheusRules(c *cli.Context) error {
 	if fileExists(c.Args().First()) {
 		return fmt.Errorf("file already exists. not overwriting.")
 	}
 
-	return writeFileToDisk(c, mixer.GeneratePrometheusRules)
+	return writeFileToDisk(c, mixer.NewPrometheusRules)
 }
 
 func fileExists(filename string) bool {
@@ -94,7 +94,7 @@ func writeFileToDisk(c *cli.Context, creator func() ([]byte, error)) error {
 
 	out, err := creator()
 	if err != nil {
-		return fmt.Errorf("failed to generate rules: %v", err)
+		return fmt.Errorf("failed to create new rules: %v", err)
 	}
 
 	f.Write(out)
