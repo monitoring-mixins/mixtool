@@ -48,15 +48,39 @@ func generateCommand() cli.Command {
 }
 
 func generateGrafanaDashboard(c *cli.Context) error {
+	if fileExists(c.Args().First()) {
+		return fmt.Errorf("file already exists. not overwriting.")
+	}
+
 	return writeFileToDisk(c, mixer.GenerateGrafanaDashboard)
 }
 
 func generatePrometheusAlerts(c *cli.Context) error {
+	if fileExists(c.Args().First()) {
+		return fmt.Errorf("file already exists. not overwriting.")
+	}
+
 	return writeFileToDisk(c, mixer.GeneratePrometheusAlerts)
 }
 
 func generatePrometheusRules(c *cli.Context) error {
+	if fileExists(c.Args().First()) {
+		return fmt.Errorf("file already exists. not overwriting.")
+	}
+
 	return writeFileToDisk(c, mixer.GeneratePrometheusRules)
+}
+
+func fileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	if err != nil {
+		return false
+	}
+
+	return true
 }
 
 func writeFileToDisk(c *cli.Context, creator func() ([]byte, error)) error {
