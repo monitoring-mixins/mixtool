@@ -18,30 +18,30 @@ import (
 	"testing"
 )
 
-func TestGenerateGrafanaDashboard(t *testing.T) {
-	d, err := GenerateGrafanaDashboard()
+func TestNewGrafanaDashboard(t *testing.T) {
+	d, err := NewGrafanaDashboard()
 	if err != nil {
-		t.Errorf("failed to generate Grafana dashboard: %v", err)
+		t.Errorf("failed to create new Grafana dashboard: %v", err)
 	}
 	if string(d) != dashboard {
 		t.Error("returned dashboard is not correct")
 	}
 }
 
-func TestGeneratePrometheusAlerts(t *testing.T) {
-	a, err := GeneratePrometheusAlerts()
+func TestNewPrometheusAlerts(t *testing.T) {
+	a, err := NewPrometheusAlerts()
 	if err != nil {
-		t.Errorf("failed to generate Prometheus alerts: %v", err)
+		t.Errorf("failed to create new Prometheus alerts: %v", err)
 	}
 	if string(a) != alerts {
 		t.Error("returned Prometheus alerts is not correct")
 	}
 }
 
-func TestGeneratePrometheusRules(t *testing.T) {
-	r, err := GeneratePrometheusRules()
+func TestNewPrometheusRules(t *testing.T) {
+	r, err := NewPrometheusRules()
 	if err != nil {
-		t.Errorf("failed to generate Prometheus rules: %v", err)
+		t.Errorf("failed to create new Prometheus rules: %v", err)
 	}
 	if string(r) != rules {
 		t.Error("returned Prometheus rules is not correct")

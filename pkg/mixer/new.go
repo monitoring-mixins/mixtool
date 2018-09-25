@@ -61,7 +61,7 @@ local graphPanel = grafana.graphPanel;
 }
 `
 
-func GenerateGrafanaDashboard() ([]byte, error) {
+func NewGrafanaDashboard() ([]byte, error) {
 	return []byte(dashboard), nil
 }
 
@@ -91,7 +91,7 @@ const alerts = `{
 }
 `
 
-func GeneratePrometheusAlerts() ([]byte, error) {
+func NewPrometheusAlerts() ([]byte, error) {
 	return []byte(alerts), nil
 }
 
@@ -116,6 +116,6 @@ const rules = `{
 }
 `
 
-func GeneratePrometheusRules() ([]byte, error) {
+func NewPrometheusRules() ([]byte, error) {
 	return []byte(rules), nil
 }

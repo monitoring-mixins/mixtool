@@ -29,10 +29,10 @@ DESCRIPTION:
    mixtool helps with generating, building and linting jsonnet mixins
 
 COMMANDS:
-     build     Build manifests from jsonnet input
-     generate  Generate jsonnet mixin files
-     lint      Lint jsonnet files
-     help, h   Shows a list of commands or help for one command
+     build    Build manifests from jsonnet input
+     lint     Lint jsonnet files
+     new      Create new jsonnet mixin files
+     help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
@@ -73,32 +73,32 @@ $ mixtool build --yaml=false prometheus.jsonnet > prometheus.json
 $ mixtool build --multi prometheus/ prometheus.jsonnet
 ```
 
-### Generate
+### New
 
-[embedmd]:# (_output/help-generate.txt)
+[embedmd]:# (_output/help-new.txt)
 ```txt
 NAME:
-   mixtool generate - Generate files for Prometheus alerts & rules and Grafana dashboards as jsonnet mixin
+   mixtool new - Create new files for Prometheus alerts & rules and Grafana dashboards as jsonnet mixin
 
 USAGE:
-   mixtool generate command [command options] [arguments...]
+   mixtool new command [command options] [arguments...]
 
 COMMANDS:
-     grafana-dashboard  Generate a new file for a Grafana dashboard
-     prometheus-alerts  Generate a new file for Prometheus alerts
-     prometheus-rules   Generate a new file for Prometheus rules
+     grafana-dashboard  Create a new file with a Grafana dashboard mixin inside
+     prometheus-alerts  Create a new file with Prometheus alert mixins inside
+     prometheus-rules   Create a new file with Prometheus rule mixins inside
 
 OPTIONS:
    --help, -h  show help
    
 ```
 
-#### Generate Examples
+#### New Examples
 
 ```bash
-$ mixtool generate grafana-dashboard > my-dashboard.jsonnet
-$ mixtool generate prometheus-alerts > my-alerts.jsonnet
-$ mixtool generate prometheus-rules > my-rules.jsonnet
+$ mixtool new grafana-dashboard > my-dashboard.jsonnet
+$ mixtool new prometheus-alerts > my-alerts.jsonnet
+$ mixtool new prometheus-rules > my-rules.jsonnet
 ```
 
 ### Lint

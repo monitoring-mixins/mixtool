@@ -34,8 +34,8 @@ func main() {
 
 	app.Commands = cli.Commands{
 		buildCommand(),
-		generateCommand(),
 		lintCommand(),
+		newCommand(),
 	}
 
 	if err := app.Run(os.Args); err != nil {
