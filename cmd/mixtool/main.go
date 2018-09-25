@@ -36,6 +36,7 @@ func main() {
 		buildCommand(),
 		lintCommand(),
 		newCommand(),
+		runbookCommand(),
 	}
 
 	if err := app.Run(os.Args); err != nil {

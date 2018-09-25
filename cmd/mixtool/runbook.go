@@ -15,33 +15,66 @@
 package main
 
 import (
+	"fmt"
+	"io"
+	"os"
+
+	"github.com/metalmatze/mixtool/pkg/mixer"
 	"github.com/urfave/cli"
 )
 
-type runbookConfig struct {
-	Format string
-}
-
 func runbookCommand() cli.Command {
-	var config runbookConfig
-
 	return cli.Command{
 		Name:        "runbook",
 		Usage:       "Generate a runbook markdown file",
 		Description: "Generate a runbook markdown file from the jsonnet mixins",
+		Action:      runbookAction,
 		Flags: []cli.Flag{
+			cli.StringSliceFlag{
+				Name: "jpath, J",
+			},
 			cli.StringFlag{
-				Name:        "format",
-				Value:       "markdown",
-				Destination: &config.Format,
+				Name: "output-file, o",
+			},
+			cli.StringFlag{
+				Name: "template-file",
 			},
 		},
-		Action: runbookAction(config),
 	}
 }
 
-func runbookAction(config runbookConfig) cli.ActionFunc {
-	return func(c *cli.Context) error {
-		return nil
+func runbookAction(c *cli.Context) error {
+	jPathFlag := c.StringSlice("jpath")
+	outputFileFlag := c.String("output-file")
+	templateFileFlag := c.String("template-file")
+
+	filename := c.Args().First()
+	if filename == "" {
+		return fmt.Errorf("no jsonnet file given")
 	}
+
+	jPathFlag = availableVendor(jPathFlag)
+
+	var out io.Writer
+	out = os.Stdout
+
+	if outputFileFlag != "" {
+		f, err := os.Create(outputFileFlag)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		out = f
+	}
+
+	err := mixer.Runbook(out, filename, mixer.RunbookOptions{
+		JPaths:       jPathFlag,
+		TemplateFile: templateFileFlag,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

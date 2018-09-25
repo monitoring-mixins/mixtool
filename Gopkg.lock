@@ -105,6 +105,14 @@
   version = "v1.8.0"
 
 [[projects]]
+  digest = "1:38cc212d9056e1e15604c1be32ee422526e5cbf52469bf49b33a00a362e1b26e"
+  name = "github.com/gobuffalo/packr"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "5a2cbb54c4e7d482e3f518c56f1f86f133d5204f"
+  version = "v1.13.7"
+
+[[projects]]
   digest = "1:97df918963298c287643883209a2c3f642e6593379f97ab400c2a2e219ab647d"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
@@ -414,6 +422,7 @@
   input-imports = [
     "github.com/fatih/color",
     "github.com/ghodss/yaml",
+    "github.com/gobuffalo/packr",
     "github.com/google/go-jsonnet",
     "github.com/grafana/grafana/pkg/components/simplejson",
     "github.com/grafana/grafana/pkg/models",
