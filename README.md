@@ -158,6 +158,7 @@ DESCRIPTION:
 OPTIONS:
    --jpath value, -J value        
    --output-file value, -o value  
+   --template-file value          
    
 ```
 
