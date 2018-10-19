@@ -160,7 +160,7 @@ func (t *Test) parseEval(lines []string, i int) (int, *evalCmd, error) {
 	}
 	ts := testStartTime.Add(time.Duration(offset))
 
-	cmd := newEvalCmd(expr, ts)
+	cmd := newEvalCmd(expr, ts, i+1)
 	switch mod {
 	case "ordered":
 		cmd.ordered = true
@@ -303,6 +303,7 @@ func (cmd *loadCmd) append(a storage.Appender) error {
 type evalCmd struct {
 	expr  string
 	start time.Time
+	line  int
 
 	fail, ordered bool
 
@@ -319,10 +320,11 @@ func (e entry) String() string {
 	return fmt.Sprintf("%d: %s", e.pos, e.vals)
 }
 
-func newEvalCmd(expr string, start time.Time) *evalCmd {
+func newEvalCmd(expr string, start time.Time, line int) *evalCmd {
 	return &evalCmd{
 		expr:  expr,
 		start: start,
+		line:  line,
 
 		metrics:  map[uint64]labels.Labels{},
 		expected: map[uint64]entry{},
@@ -431,30 +433,36 @@ func (t *Test) exec(tc testCommand) error {
 		}
 
 	case *evalCmd:
-		q, _ := t.queryEngine.NewInstantQuery(t.storage, cmd.expr, cmd.start)
+		q, err := t.queryEngine.NewInstantQuery(t.storage, cmd.expr, cmd.start)
+		if err != nil {
+			return err
+		}
 		res := q.Exec(t.context)
 		if res.Err != nil {
 			if cmd.fail {
 				return nil
 			}
-			return fmt.Errorf("error evaluating query %q: %s", cmd.expr, res.Err)
+			return fmt.Errorf("error evaluating query %q (line %d): %s", cmd.expr, cmd.line, res.Err)
 		}
 		defer q.Close()
 		if res.Err == nil && cmd.fail {
-			return fmt.Errorf("expected error evaluating query but got none")
+			return fmt.Errorf("expected error evaluating query %q (line %d) but got none", cmd.expr, cmd.line)
 		}
 
-		err := cmd.compareResult(res.Value)
+		err = cmd.compareResult(res.Value)
 		if err != nil {
 			return fmt.Errorf("error in %s %s: %s", cmd, cmd.expr, err)
 		}
 
 		// Check query returns same result in range mode,
 		/// by checking against the middle step.
-		q, _ = t.queryEngine.NewRangeQuery(t.storage, cmd.expr, cmd.start.Add(-time.Minute), cmd.start.Add(time.Minute), time.Minute)
+		q, err = t.queryEngine.NewRangeQuery(t.storage, cmd.expr, cmd.start.Add(-time.Minute), cmd.start.Add(time.Minute), time.Minute)
+		if err != nil {
+			return err
+		}
 		rangeRes := q.Exec(t.context)
 		if rangeRes.Err != nil {
-			return fmt.Errorf("error evaluating query %q in range mode: %s", cmd.expr, rangeRes.Err)
+			return fmt.Errorf("error evaluating query %q (line %d) in range mode: %s", cmd.expr, cmd.line, rangeRes.Err)
 		}
 		defer q.Close()
 		if cmd.ordered {
@@ -477,7 +485,7 @@ func (t *Test) exec(tc testCommand) error {
 			err = cmd.compareResult(vec)
 		}
 		if err != nil {
-			return fmt.Errorf("error in %s %s rande mode: %s", cmd, cmd.expr, err)
+			return fmt.Errorf("error in %s %s (line %d) rande mode: %s", cmd, cmd.expr, cmd.line, err)
 		}
 
 	default:
@@ -498,7 +506,15 @@ func (t *Test) clear() {
 	}
 	t.storage = testutil.NewStorage(t)
 
-	t.queryEngine = NewEngine(nil, nil, 20, 10*time.Second)
+	opts := EngineOpts{
+		Logger:        nil,
+		Reg:           nil,
+		MaxConcurrent: 20,
+		MaxSamples:    1000,
+		Timeout:       100 * time.Second,
+	}
+
+	t.queryEngine = NewEngine(opts)
 	t.context, t.cancelCtx = context.WithCancel(context.Background())
 }
 

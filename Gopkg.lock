@@ -277,24 +277,27 @@
   revision = "05ee40e3a273f7245e8777337fc7b46e533a9a92"
 
 [[projects]]
-  digest = "1:8f6412eab9a36bcb7dacca8908243a16c3852b450a98795123d408ebb292072e"
+  branch = "master"
+  digest = "1:a0413f323f3130fea45e55580f22552f449f8d2c54f96d8a72e8e45b31f285a0"
   name = "github.com/prometheus/prometheus"
   packages = [
+    "pkg/gate",
     "pkg/labels",
     "pkg/rulefmt",
     "pkg/textparse",
     "pkg/timestamp",
     "pkg/value",
     "promql",
+    "rules",
     "storage",
     "storage/tsdb",
+    "template",
     "util/stats",
     "util/strutil",
     "util/testutil",
   ]
   pruneopts = "NUT"
-  revision = "71af5e29e815795e9dd14742ee7725682fa14b7b"
-  version = "v2.3.2"
+  revision = "3241c527d05dc2a370dbe3a903f8ef8de1d62a04"
 
 [[projects]]
   branch = "master"
@@ -426,8 +429,13 @@
     "github.com/google/go-jsonnet",
     "github.com/grafana/grafana/pkg/components/simplejson",
     "github.com/grafana/grafana/pkg/models",
+    "github.com/prometheus/prometheus/pkg/labels",
     "github.com/prometheus/prometheus/pkg/rulefmt",
+    "github.com/prometheus/prometheus/promql",
+    "github.com/prometheus/prometheus/rules",
+    "github.com/prometheus/prometheus/storage",
     "github.com/urfave/cli",
+    "gopkg.in/yaml.v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
