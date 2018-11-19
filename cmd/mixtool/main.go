@@ -33,10 +33,10 @@ func main() {
 	app.Version = version
 
 	app.Commands = cli.Commands{
-		buildCommand(),
+		// buildCommand(),
 		lintCommand(),
 		newCommand(),
-		runbookCommand(),
+		// runbookCommand(),
 	}
 
 	if err := app.Run(os.Args); err != nil {
