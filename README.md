@@ -29,53 +29,13 @@ DESCRIPTION:
    mixtool helps with generating, building and linting jsonnet mixins
 
 COMMANDS:
-     build    Build manifests from jsonnet input
      lint     Lint jsonnet files
      new      Create new jsonnet mixin files
-     runbook  Generate a runbook markdown file
      help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
    --version, -v  print the version
-```
-
-### Build
-
-[embedmd]:# (_output/help-build.txt)
-```txt
-NAME:
-   mixtool build - Build manifests from jsonnet input
-
-USAGE:
-   mixtool build [command options] [arguments...]
-
-OPTIONS:
-   --jpath value, -J value        
-   --multi value, -m value        
-   --output-file value, -o value  
-   --yaml, -y                     
-   
-```
-
-#### Build Examples
-
-```bash
-# The simplest example. It will use ./vendor if available and print YAML.
-mixtool build prometheus.jsonnet
-
-# These next lines are equivalent and both write to file.
-mixtool build prometheus.jsonnet > prometheus.yaml
-mixtool build --output-file prometheus.yaml prometheus.jsonnet
-
-# Change the folder for imports.
-mixtool build --jpath /some/path/vendor prometheus.jsonnet
-
-# Instead of writing YAML this will simply output JSON.
-mixtool build --yaml=false prometheus.jsonnet > prometheus.json
-
-# Write the output to multiple files in a give directory.
-mixtool build --multi prometheus/ prometheus.jsonnet
 ```
 
 ### New
@@ -140,38 +100,4 @@ mixtool lint --prometheus=false prometheus.jsonnet
 
 # Lint multiple files sequentially.
 mixtool lint prometheus.jsonnet grafana.jsonnet
-```
-
-### Runbook
-
-[embedmd]:# (_output/help-runbook.txt)
-```txt
-NAME:
-   mixtool runbook - Generate a runbook markdown file
-
-USAGE:
-   mixtool runbook [command options] [arguments...]
-
-DESCRIPTION:
-   Generate a runbook markdown file from the jsonnet mixins
-
-OPTIONS:
-   --jpath value, -J value        
-   --output-file value, -o value  
-   --template-file value          
-   
-```
-
-#### Runbook Examples
-
-```bash
-# The simplest example. It will use ./vendor if available and write the runbook as markdown to stdout.
-mixtool runbook alerts.libsonnet
-
-# These next lines are equivalent and both write to file.
-mixtool runbook alerts.libsonnet > runbook.md
-mixtool runbook -o runbook.md alerts.libsonnet
-
-# Change the folder for imports.
-mixtool runbook --jpath /some/path/vendor alerts.libsonnet
 ```
