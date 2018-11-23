@@ -19,7 +19,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/metalmatze/mixtool/pkg/mixer"
+	"github.com/monitoring-mixins/mixtool/pkg/mixer"
 	"github.com/urfave/cli"
 )
 

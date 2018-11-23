@@ -7,7 +7,7 @@ The mixtool is a helper for easily working with [jsonnet](http://jsonnet.org/) m
 ## Install
 
 ```
-go get -u github.com/metalmatze/mixtool/cmd/mixtool
+go get -u github.com/monitoring-mixins/mixtool/cmd/mixtool
 ```
 
 ## Usage
