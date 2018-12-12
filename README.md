@@ -29,13 +29,33 @@ DESCRIPTION:
    mixtool helps with generating, building and linting jsonnet mixins
 
 COMMANDS:
-     lint     Lint jsonnet files
-     new      Create new jsonnet mixin files
-     help, h  Shows a list of commands or help for one command
+     generate  Generate manifests from jsonnet input
+     lint      Lint jsonnet files
+     new       Create new jsonnet mixin files
+     help, h   Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
    --version, -v  print the version
+```
+
+### Generate
+[embedmd]:# (_output/help-generate.txt)
+```txt
+NAME:
+   mixtool generate - Generate manifests from jsonnet input
+
+USAGE:
+   mixtool generate command [command options] [arguments...]
+
+COMMANDS:
+     alerts      Generate Prometheus alerts based on the mixins
+     rules       Generate Prometheus rules based on the mixins
+     dashboards  Generate Grafana dashboards based on the mixins
+
+OPTIONS:
+   --help, -h  show help
+   
 ```
 
 ### New
