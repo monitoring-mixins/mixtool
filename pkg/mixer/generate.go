@@ -51,6 +51,29 @@ func GenerateAlerts(filename string, opts GenerateOptions) ([]byte, error) {
 	return output, nil
 }
 
+func GenerateRules(filename string, opts GenerateOptions) ([]byte, error) {
+	vm := jsonnet.MakeVM()
+	vm.Importer(&jsonnet.FileImporter{
+		JPaths: opts.JPaths,
+	})
+
+	j, err := evaluatePrometheusRules(vm, filename)
+	if err != nil {
+		return nil, err
+	}
+
+	output := []byte(j)
+
+	if opts.YAML {
+		output, err = yaml.JSONToYAML(output)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return output, nil
+}
+
 func GenerateDashboards(filename string, opts GenerateOptions) (map[string]json.RawMessage, error) {
 	vm := jsonnet.MakeVM()
 	vm.Importer(&jsonnet.FileImporter{

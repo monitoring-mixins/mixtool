@@ -100,13 +100,12 @@ func generateAlerts(w io.Writer, filename string, options mixer.GenerateOptions)
 }
 
 func generateRules(w io.Writer, filename string, options mixer.GenerateOptions) error {
-	//out, err := mixer.GenerateRules(filename, options)
-	//if err != nil {
-	//	return err
-	//}
-	//_, err = w.Write(out)
-	//return err
-	return nil
+	out, err := mixer.GenerateRules(filename, options)
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(out)
+	return err
 }
 
 func generateDashboards(w io.Writer, filename string, opts mixer.GenerateOptions) error {
