@@ -58,9 +58,7 @@ func Lint(w io.Writer, filename string, options LintOptions) error {
 }
 
 func lintPrometheusAlerts(w io.Writer, filename string, vm *jsonnet.VM) error {
-	snippet := fmt.Sprintf("(import \"%s\").prometheusAlerts", filename)
-
-	j, err := vm.EvaluateSnippet("", snippet)
+	j, err := evaluatePrometheusAlerts(vm, filename)
 	if err != nil {
 		return err
 	}
@@ -81,9 +79,7 @@ func lintPrometheusAlerts(w io.Writer, filename string, vm *jsonnet.VM) error {
 }
 
 func lintPrometheusRules(w io.Writer, filename string, vm *jsonnet.VM) error {
-	snippet := fmt.Sprintf("(import '%s').prometheusRules", filename)
-
-	j, err := vm.EvaluateSnippet("", snippet)
+	j, err := evaluatePrometheusRules(vm, filename)
 	if err != nil {
 		return err
 	}
@@ -104,9 +100,7 @@ func lintPrometheusRules(w io.Writer, filename string, vm *jsonnet.VM) error {
 }
 
 func lintGrafanaDashboards(w io.Writer, filename string, vm *jsonnet.VM) error {
-	snippet := fmt.Sprintf("(import '%s').grafanaDashboards", filename)
-
-	j, err := vm.EvaluateSnippet("", snippet)
+	j, err := evaluateGrafanaDashboards(vm, filename)
 	if err != nil {
 		return err
 	}
