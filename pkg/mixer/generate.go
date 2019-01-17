@@ -15,36 +15,33 @@
 package mixer
 
 import (
-	"io/ioutil"
+	"encoding/json"
 
 	"github.com/ghodss/yaml"
 	"github.com/google/go-jsonnet"
+	"github.com/pkg/errors"
 )
 
-type BuildOptions struct {
-	JPaths []string
-	YAML   bool
+type GenerateOptions struct {
+	Directory string
+	JPaths    []string
+	YAML      bool
 }
 
-func Build(filename string, config BuildOptions) ([]byte, error) {
+func GenerateAlerts(filename string, opts GenerateOptions) ([]byte, error) {
 	vm := jsonnet.MakeVM()
-
-	contents, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
 	vm.Importer(&jsonnet.FileImporter{
-		JPaths: config.JPaths,
+		JPaths: opts.JPaths,
 	})
 
-	j, err := vm.EvaluateSnippet(filename, string(contents))
+	j, err := evaluatePrometheusAlerts(vm, filename)
 	if err != nil {
 		return nil, err
 	}
+
 	output := []byte(j)
 
-	if config.YAML {
+	if opts.YAML {
 		output, err = yaml.JSONToYAML(output)
 		if err != nil {
 			return nil, err
@@ -54,32 +51,44 @@ func Build(filename string, config BuildOptions) ([]byte, error) {
 	return output, nil
 }
 
-func BuildMulti(filename string, config BuildOptions) (map[string]string, error) {
+func GenerateRules(filename string, opts GenerateOptions) ([]byte, error) {
 	vm := jsonnet.MakeVM()
-
-	contents, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
 	vm.Importer(&jsonnet.FileImporter{
-		JPaths: config.JPaths,
+		JPaths: opts.JPaths,
 	})
 
-	files, err := vm.EvaluateSnippetMulti(filename, string(contents))
+	j, err := evaluatePrometheusRules(vm, filename)
 	if err != nil {
 		return nil, err
 	}
 
-	if config.YAML {
-		for filename, content := range files {
-			y, err := yaml.JSONToYAML([]byte(content))
-			if err != nil {
-				return nil, err
-			}
-			files[filename] = string(y)
+	output := []byte(j)
+
+	if opts.YAML {
+		output, err = yaml.JSONToYAML(output)
+		if err != nil {
+			return nil, err
 		}
 	}
 
-	return files, nil
+	return output, nil
+}
+
+func GenerateDashboards(filename string, opts GenerateOptions) (map[string]json.RawMessage, error) {
+	vm := jsonnet.MakeVM()
+	vm.Importer(&jsonnet.FileImporter{
+		JPaths: opts.JPaths,
+	})
+
+	j, err := evaluateGrafanaDashboards(vm, filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var dashboards map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(j), &dashboards); err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal dashboards")
+	}
+
+	return dashboards, nil
 }

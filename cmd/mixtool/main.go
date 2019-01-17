@@ -33,7 +33,7 @@ func main() {
 	app.Version = version
 
 	app.Commands = cli.Commands{
-		// buildCommand(),
+		generateCommand(),
 		lintCommand(),
 		newCommand(),
 		// runbookCommand(),
