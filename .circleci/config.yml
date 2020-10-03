@@ -1,0 +1,64 @@
+---
+version: 2.1
+
+executors:
+  # Whenever the Go version is updated here, .promu.yml and .promu-cgo.yml
+  # should also be updated.
+  golang:
+    docker:
+    - image: circleci/golang:1.14
+
+jobs:
+  build:
+    executor: golang
+    steps:
+    - run: make build
+
+  build:
+    executor: golang
+    steps:
+    - run: make test
+  lint:
+    executor: golang
+    steps:
+    - run: make check-license
+
+
+workflows:
+  version: 2
+  node_exporter:
+    jobs:
+    - test:
+        filters:
+          tags:
+            only: /.*/
+    - build:
+        filters:
+          tags:
+            only: /.*/
+    - codespell:
+        filters:
+          tags:
+            only: /.*/
+    - test_mixins:
+        filters:
+          tags:
+            only: /.*/
+    - prometheus/publish_master:
+        context: org-context
+        requires:
+        - test
+        - build
+        filters:
+          branches:
+            only: master
+    - prometheus/publish_release:
+        context: org-context
+        requires:
+        - test
+        - build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
