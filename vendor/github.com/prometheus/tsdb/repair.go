@@ -1,3 +1,16 @@
+// Copyright 2018 The Prometheus Authors
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package tsdb
 
 import (
@@ -10,7 +23,6 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/pkg/errors"
-	"github.com/prometheus/tsdb/fileutil"
 )
 
 // repairBadIndexVersion repairs an issue in index and meta.json persistence introduced in
@@ -51,18 +63,18 @@ func repairBadIndexVersion(logger log.Logger, dir string) error {
 		if err != nil {
 			return wrapErr(err, d)
 		}
-		broken, err := os.Open(filepath.Join(d, "index"))
+		broken, err := os.Open(filepath.Join(d, indexFilename))
 		if err != nil {
 			return wrapErr(err, d)
 		}
 		if _, err := io.Copy(repl, broken); err != nil {
 			return wrapErr(err, d)
 		}
-		// Set the 5th byte to 2 to indiciate the correct file format version.
+		// Set the 5th byte to 2 to indicate the correct file format version.
 		if _, err := repl.WriteAt([]byte{2}, 4); err != nil {
 			return wrapErr(err, d)
 		}
-		if err := fileutil.Fsync(repl); err != nil {
+		if err := repl.Sync(); err != nil {
 			return wrapErr(err, d)
 		}
 		if err := repl.Close(); err != nil {
