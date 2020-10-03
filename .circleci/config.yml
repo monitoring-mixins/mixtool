@@ -12,22 +12,25 @@ jobs:
   build:
     executor: golang
     steps:
+    - checkout
     - run: make build
 
   test:
     executor: golang
     steps:
+    - checkout
     - run: make test
 
   lint:
     executor: golang
     steps:
+    - checkout
     - run: make check-license
 
 
 workflows:
   version: 2
-  node_exporter:
+  mixtool:
     jobs:
     - lint:
         filters:
