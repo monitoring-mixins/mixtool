@@ -88,7 +88,7 @@ func TestRunbook(t *testing.T) {
 		t.Errorf("failed to close temp file: %v", err)
 	}
 
-	err = Runbook(w, "/tmp/runbook_example.libsonnet", RunbookOptions{})
+	err = Runbook(w, f.Name(), RunbookOptions{})
 	if err != nil {
 		t.Errorf("failed to generate runbook: %v", err)
 	}
