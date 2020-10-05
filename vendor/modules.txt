@@ -15,6 +15,10 @@ github.com/cespare/xxhash/v2
 # github.com/cpuguy83/go-md2man/v2 v2.0.0
 ## explicit
 github.com/cpuguy83/go-md2man/v2/md2man
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
+# github.com/edsrzf/mmap-go v1.0.0
+github.com/edsrzf/mmap-go
 # github.com/fatih/color v1.9.0
 ## explicit
 github.com/fatih/color
@@ -36,7 +40,6 @@ github.com/go-macaron/session/memcache
 github.com/go-macaron/session/postgres
 github.com/go-macaron/session/redis
 # github.com/go-sql-driver/mysql v1.5.0
-## explicit
 github.com/go-sql-driver/mysql
 # github.com/go-stack/stack v1.8.0
 github.com/go-stack/stack
@@ -55,8 +58,8 @@ github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
-# github.com/google/go-cmp v0.5.0
-## explicit
+# github.com/golang/snappy v0.0.1
+github.com/golang/snappy
 # github.com/google/go-jsonnet v0.15.1-0.20200331184325-4f4aa80dd785
 ## explicit
 github.com/google/go-jsonnet
@@ -83,14 +86,10 @@ github.com/grafana/grafana/pkg/util
 github.com/inconshreveable/log15
 # github.com/joho/godotenv v1.3.0
 github.com/joho/godotenv
-# github.com/kr/pretty v0.2.0
-## explicit
 # github.com/lib/pq v1.0.0
-## explicit
 github.com/lib/pq
 github.com/lib/pq/oid
 # github.com/mattn/go-colorable v0.1.6
-## explicit
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty
@@ -99,20 +98,20 @@ github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/oklog/ulid v1.3.1
 github.com/oklog/ulid
 # github.com/opentracing/opentracing-go v1.2.0
-## explicit
 github.com/opentracing/opentracing-go
+github.com/opentracing/opentracing-go/ext
 github.com/opentracing/opentracing-go/log
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
 # github.com/prometheus/client_golang v1.7.1
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
-github.com/prometheus/client_golang/prometheus/promauto
 # github.com/prometheus/client_model v0.2.0
 github.com/prometheus/client_model/go
 # github.com/prometheus/common v0.14.0
-## explicit
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
 github.com/prometheus/common/model
@@ -120,31 +119,34 @@ github.com/prometheus/common/model
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
-# github.com/prometheus/prometheus v2.3.2+incompatible
+# github.com/prometheus/prometheus v1.8.2-0.20200923143134-7e2db3d092f3
 ## explicit
+github.com/prometheus/prometheus/pkg/exemplar
 github.com/prometheus/prometheus/pkg/labels
 github.com/prometheus/prometheus/pkg/rulefmt
 github.com/prometheus/prometheus/pkg/textparse
 github.com/prometheus/prometheus/pkg/timestamp
 github.com/prometheus/prometheus/pkg/value
 github.com/prometheus/prometheus/promql
+github.com/prometheus/prometheus/promql/parser
 github.com/prometheus/prometheus/storage
-github.com/prometheus/prometheus/storage/tsdb
+github.com/prometheus/prometheus/template
+github.com/prometheus/prometheus/tsdb
+github.com/prometheus/prometheus/tsdb/chunkenc
+github.com/prometheus/prometheus/tsdb/chunks
+github.com/prometheus/prometheus/tsdb/encoding
+github.com/prometheus/prometheus/tsdb/errors
+github.com/prometheus/prometheus/tsdb/fileutil
+github.com/prometheus/prometheus/tsdb/goversion
+github.com/prometheus/prometheus/tsdb/index
+github.com/prometheus/prometheus/tsdb/record
+github.com/prometheus/prometheus/tsdb/tombstones
+github.com/prometheus/prometheus/tsdb/tsdbutil
+github.com/prometheus/prometheus/tsdb/wal
 github.com/prometheus/prometheus/util/stats
 github.com/prometheus/prometheus/util/strutil
+github.com/prometheus/prometheus/util/teststorage
 github.com/prometheus/prometheus/util/testutil
-# github.com/prometheus/tsdb v0.7.1
-## explicit
-github.com/prometheus/tsdb
-github.com/prometheus/tsdb/chunkenc
-github.com/prometheus/tsdb/chunks
-github.com/prometheus/tsdb/encoding
-github.com/prometheus/tsdb/errors
-github.com/prometheus/tsdb/fileutil
-github.com/prometheus/tsdb/goversion
-github.com/prometheus/tsdb/index
-github.com/prometheus/tsdb/labels
-github.com/prometheus/tsdb/wal
 # github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be
 ## explicit
 github.com/rainycape/unidecode
@@ -157,26 +159,48 @@ github.com/rogpeppe/go-internal/semver
 github.com/russross/blackfriday/v2
 # github.com/shurcooL/sanitized_anchor_name v1.0.0
 github.com/shurcooL/sanitized_anchor_name
-# github.com/stretchr/testify v1.5.1
-## explicit
 # github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 ## explicit
 github.com/teris-io/shortid
+# github.com/uber/jaeger-client-go v2.25.0+incompatible
+github.com/uber/jaeger-client-go
+github.com/uber/jaeger-client-go/internal/baggage
+github.com/uber/jaeger-client-go/internal/reporterstats
+github.com/uber/jaeger-client-go/internal/spanlog
+github.com/uber/jaeger-client-go/internal/throttler
+github.com/uber/jaeger-client-go/log
+github.com/uber/jaeger-client-go/thrift
+github.com/uber/jaeger-client-go/thrift-gen/agent
+github.com/uber/jaeger-client-go/thrift-gen/jaeger
+github.com/uber/jaeger-client-go/thrift-gen/sampling
+github.com/uber/jaeger-client-go/thrift-gen/zipkincore
+github.com/uber/jaeger-client-go/utils
+# github.com/uber/jaeger-lib v2.2.0+incompatible
+github.com/uber/jaeger-lib/metrics
 # github.com/urfave/cli v1.22.1
 ## explicit
 github.com/urfave/cli
+# go.uber.org/atomic v1.6.0
+go.uber.org/atomic
+# go.uber.org/goleak v1.1.10
+go.uber.org/goleak
+go.uber.org/goleak/internal/stack
 # golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 golang.org/x/crypto/pbkdf2
+# golang.org/x/lint v0.0.0-20200302205851-738671d3881b
+golang.org/x/lint
+golang.org/x/lint/golint
 # golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-## explicit
 golang.org/x/sync/errgroup
 # golang.org/x/sys v0.0.0-20200918174421-af09f7315aff
-## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
+# golang.org/x/tools v0.0.0-20200822203824-307de81be3f4
+golang.org/x/tools/go/ast/astutil
+golang.org/x/tools/go/gcexportdata
+golang.org/x/tools/go/internal/gcimporter
 # google.golang.org/protobuf v1.24.0
-## explicit
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
 google.golang.org/protobuf/internal/descfmt
@@ -221,3 +245,5 @@ gopkg.in/macaron.v1
 gopkg.in/redis.v2
 # gopkg.in/yaml.v2 v2.3.0
 gopkg.in/yaml.v2
+# gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
+gopkg.in/yaml.v3
