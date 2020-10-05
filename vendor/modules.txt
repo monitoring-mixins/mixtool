@@ -1,0 +1,170 @@
+# github.com/Unknwon/com v0.0.0-20180617003950-da59b551951d
+## explicit
+github.com/Unknwon/com
+# github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973
+## explicit
+github.com/beorn7/perks/quantile
+# github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737
+## explicit
+github.com/bradfitz/gomemcache/memcache
+# github.com/cespare/xxhash v1.0.0
+## explicit
+github.com/cespare/xxhash
+# github.com/fatih/color v1.7.0
+## explicit
+github.com/fatih/color
+# github.com/ghodss/yaml v1.0.0
+## explicit
+github.com/ghodss/yaml
+# github.com/go-kit/kit v0.7.0
+## explicit
+github.com/go-kit/kit/log
+github.com/go-kit/kit/log/level
+# github.com/go-logfmt/logfmt v0.3.0
+## explicit
+github.com/go-logfmt/logfmt
+# github.com/go-macaron/inject v0.0.0-20160627170012-d8a0b8677191
+## explicit
+github.com/go-macaron/inject
+# github.com/go-macaron/session v0.0.0-20170320172209-b8e286a0dba8
+## explicit
+github.com/go-macaron/session
+github.com/go-macaron/session/memcache
+github.com/go-macaron/session/postgres
+github.com/go-macaron/session/redis
+# github.com/go-sql-driver/mysql v1.3.1-0.20180113200744-2cc627ac8def
+## explicit
+github.com/go-sql-driver/mysql
+# github.com/go-stack/stack v1.8.0
+## explicit
+github.com/go-stack/stack
+# github.com/gobuffalo/packr v1.13.7
+## explicit
+github.com/gobuffalo/packr
+# github.com/golang/protobuf v1.2.0
+## explicit
+github.com/golang/protobuf/proto
+# github.com/google/go-jsonnet v0.11.2
+## explicit
+github.com/google/go-jsonnet
+github.com/google/go-jsonnet/ast
+github.com/google/go-jsonnet/parser
+# github.com/gosimple/slug v1.2.0
+## explicit
+github.com/gosimple/slug
+# github.com/grafana/grafana v5.2.4+incompatible
+## explicit
+github.com/grafana/grafana/pkg/components/null
+github.com/grafana/grafana/pkg/components/securejsondata
+github.com/grafana/grafana/pkg/components/simplejson
+github.com/grafana/grafana/pkg/log
+github.com/grafana/grafana/pkg/models
+github.com/grafana/grafana/pkg/services/session
+github.com/grafana/grafana/pkg/setting
+github.com/grafana/grafana/pkg/util
+# github.com/inconshreveable/log15 v0.0.0-20180818164646-67afb5ed74ec
+## explicit
+github.com/inconshreveable/log15
+# github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515
+## explicit
+github.com/kr/logfmt
+# github.com/lib/pq v1.0.0
+## explicit
+github.com/lib/pq
+github.com/lib/pq/oid
+# github.com/mattn/go-colorable v0.0.9
+## explicit
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.4
+## explicit
+github.com/mattn/go-isatty
+# github.com/matttproud/golang_protobuf_extensions v1.0.1
+## explicit
+github.com/matttproud/golang_protobuf_extensions/pbutil
+# github.com/oklog/ulid v1.0.0
+## explicit
+github.com/oklog/ulid
+# github.com/opentracing/opentracing-go v1.0.2
+## explicit
+github.com/opentracing/opentracing-go
+github.com/opentracing/opentracing-go/log
+# github.com/pkg/errors v0.8.0
+## explicit
+github.com/pkg/errors
+# github.com/prometheus/client_golang v0.9.0-pre1
+## explicit
+github.com/prometheus/client_golang/prometheus
+# github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910
+## explicit
+github.com/prometheus/client_model/go
+# github.com/prometheus/common v0.0.0-20180801064454-c7de2306084e
+## explicit
+github.com/prometheus/common/expfmt
+github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
+github.com/prometheus/common/model
+# github.com/prometheus/procfs v0.0.0-20180725123919-05ee40e3a273
+## explicit
+github.com/prometheus/procfs
+github.com/prometheus/procfs/internal/util
+github.com/prometheus/procfs/nfs
+github.com/prometheus/procfs/xfs
+# github.com/prometheus/prometheus v2.3.2+incompatible
+## explicit
+github.com/prometheus/prometheus/pkg/labels
+github.com/prometheus/prometheus/pkg/rulefmt
+github.com/prometheus/prometheus/pkg/textparse
+github.com/prometheus/prometheus/pkg/timestamp
+github.com/prometheus/prometheus/pkg/value
+github.com/prometheus/prometheus/promql
+github.com/prometheus/prometheus/storage
+github.com/prometheus/prometheus/storage/tsdb
+github.com/prometheus/prometheus/util/stats
+github.com/prometheus/prometheus/util/strutil
+github.com/prometheus/prometheus/util/testutil
+# github.com/prometheus/tsdb v0.0.0-20180807144027-eeb3a7435a75
+## explicit
+github.com/prometheus/tsdb
+github.com/prometheus/tsdb/chunkenc
+github.com/prometheus/tsdb/chunks
+github.com/prometheus/tsdb/fileutil
+github.com/prometheus/tsdb/index
+github.com/prometheus/tsdb/labels
+github.com/prometheus/tsdb/wal
+# github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be
+## explicit
+github.com/rainycape/unidecode
+# github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
+## explicit
+github.com/teris-io/shortid
+# github.com/urfave/cli v1.20.0
+## explicit
+github.com/urfave/cli
+# golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
+## explicit
+golang.org/x/crypto/pbkdf2
+# golang.org/x/net v0.0.0-20180921000356-2f5d2388922f
+golang.org/x/net/context
+# golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
+## explicit
+golang.org/x/sync/errgroup
+# golang.org/x/sys v0.0.0-20180906133057-8cf3aee42992
+## explicit
+golang.org/x/sys/unix
+# google.golang.org/appengine v1.1.0
+## explicit
+google.golang.org/appengine/cloudsql
+# gopkg.in/bufio.v1 v1.0.0-20140618132640-567b2bfa514e
+## explicit
+gopkg.in/bufio.v1
+# gopkg.in/ini.v1 v1.38.2
+## explicit
+gopkg.in/ini.v1
+# gopkg.in/macaron.v1 v1.3.1
+## explicit
+gopkg.in/macaron.v1
+# gopkg.in/redis.v2 v2.3.2
+## explicit
+gopkg.in/redis.v2
+# gopkg.in/yaml.v2 v2.2.1
+## explicit
+gopkg.in/yaml.v2
