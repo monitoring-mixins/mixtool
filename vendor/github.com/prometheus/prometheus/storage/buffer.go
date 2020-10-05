@@ -15,35 +15,53 @@ package storage
 
 import (
 	"math"
+
+	"github.com/prometheus/prometheus/tsdb/chunkenc"
 )
 
 // BufferedSeriesIterator wraps an iterator with a look-back buffer.
 type BufferedSeriesIterator struct {
-	it  SeriesIterator
-	buf *sampleRing
+	it    chunkenc.Iterator
+	buf   *sampleRing
+	delta int64
 
 	lastTime int64
 	ok       bool
 }
 
 // NewBuffer returns a new iterator that buffers the values within the time range
-// of the current element and the duration of delta before.
-func NewBuffer(it SeriesIterator, delta int64) *BufferedSeriesIterator {
+// of the current element and the duration of delta before, initialized with an
+// empty iterator. Use Reset() to set an actual iterator to be buffered.
+func NewBuffer(delta int64) *BufferedSeriesIterator {
+	return NewBufferIterator(chunkenc.NewNopIterator(), delta)
+}
+
+// NewBufferIterator returns a new iterator that buffers the values within the
+// time range of the current element and the duration of delta before.
+func NewBufferIterator(it chunkenc.Iterator, delta int64) *BufferedSeriesIterator {
 	bit := &BufferedSeriesIterator{
-		buf: newSampleRing(delta, 16),
+		buf:   newSampleRing(delta, 16),
+		delta: delta,
 	}
 	bit.Reset(it)
 
 	return bit
 }
 
-// Reset re-uses the buffer with a new iterator.
-func (b *BufferedSeriesIterator) Reset(it SeriesIterator) {
+// Reset re-uses the buffer with a new iterator, resetting the buffered time
+// delta to its original value.
+func (b *BufferedSeriesIterator) Reset(it chunkenc.Iterator) {
 	b.it = it
 	b.lastTime = math.MinInt64
 	b.ok = true
 	b.buf.reset()
+	b.buf.delta = b.delta
 	it.Next()
+}
+
+// ReduceDelta lowers the buffered time delta, for the current SeriesIterator only.
+func (b *BufferedSeriesIterator) ReduceDelta(delta int64) bool {
+	return b.buf.reduceDelta(delta)
 }
 
 // PeekBack returns the nth previous element of the iterator. If there is none buffered,
@@ -54,7 +72,7 @@ func (b *BufferedSeriesIterator) PeekBack(n int) (t int64, v float64, ok bool) {
 
 // Buffer returns an iterator over the buffered data. Invalidates previously
 // returned iterators.
-func (b *BufferedSeriesIterator) Buffer() SeriesIterator {
+func (b *BufferedSeriesIterator) Buffer() chunkenc.Iterator {
 	return b.buf.iterator()
 }
 
@@ -63,7 +81,7 @@ func (b *BufferedSeriesIterator) Seek(t int64) bool {
 	t0 := t - b.buf.delta
 
 	// If the delta would cause us to seek backwards, preserve the buffer
-	// and just continue regular advancment while filling the buffer on the way.
+	// and just continue regular advancement while filling the buffer on the way.
 	if t0 > b.lastTime {
 		b.buf.reset()
 
@@ -118,6 +136,14 @@ type sample struct {
 	v float64
 }
 
+func (s sample) T() int64 {
+	return s.t
+}
+
+func (s sample) V() float64 {
+	return s.v
+}
+
 type sampleRing struct {
 	delta int64
 
@@ -142,8 +168,8 @@ func (r *sampleRing) reset() {
 	r.f = 0
 }
 
-// Returns the current iterator. Invalidates previously retuned iterators.
-func (r *sampleRing) iterator() SeriesIterator {
+// Returns the current iterator. Invalidates previously returned iterators.
+func (r *sampleRing) iterator() chunkenc.Iterator {
 	r.it.r = r
 	r.it.i = -1
 	return &r.it
@@ -202,13 +228,39 @@ func (r *sampleRing) add(t int64, v float64) {
 	r.l++
 
 	// Free head of the buffer of samples that just fell out of the range.
-	for r.buf[r.f].t < t-r.delta {
+	tmin := t - r.delta
+	for r.buf[r.f].t < tmin {
 		r.f++
 		if r.f >= l {
 			r.f -= l
 		}
 		r.l--
 	}
+}
+
+// reduceDelta lowers the buffered time delta, dropping any samples that are
+// out of the new delta range.
+func (r *sampleRing) reduceDelta(delta int64) bool {
+	if delta > r.delta {
+		return false
+	}
+	r.delta = delta
+
+	if r.l == 0 {
+		return true
+	}
+
+	// Free head of the buffer of samples that just fell out of the range.
+	l := len(r.buf)
+	tmin := r.buf[r.i].t - delta
+	for r.buf[r.f].t < tmin {
+		r.f++
+		if r.f >= l {
+			r.f -= l
+		}
+		r.l--
+	}
+	return true
 }
 
 // nthLast returns the nth most recent element added to the ring.

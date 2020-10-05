@@ -23,7 +23,7 @@ import (
 
 // Source represents a source file.
 type Source struct {
-	lines []string
+	Lines []string
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -45,7 +45,10 @@ func (l *Location) String() string {
 	return fmt.Sprintf("%v:%v", l.Line, l.Column)
 }
 
-func locationBefore(a Location, b Location) bool {
+// LocationBefore returns whether one code location
+// refers to the location closer to the beginning
+// of the file than the other one.
+func LocationBefore(a Location, b Location) bool {
 	if a.Line != b.Line {
 		return a.Line < b.Line
 	}
@@ -60,15 +63,15 @@ type LocationRange struct {
 	FileName string
 	Begin    Location
 	End      Location // TODO(sbarzowski) inclusive? exclusive? a gap?
-	file     *Source
+	File     *Source
 }
 
 // LocationRangeBetween returns a LocationRange containing both a and b.
 func LocationRangeBetween(a, b *LocationRange) LocationRange {
-	if a.file != b.file {
+	if a.File != b.File {
 		panic("Cannot create a LocationRange between different files")
 	}
-	return MakeLocationRange(a.FileName, a.file, a.Begin, b.End)
+	return MakeLocationRange(a.FileName, a.File, a.Begin, b.End)
 }
 
 // IsSet returns if this LocationRange has been set.
@@ -110,7 +113,7 @@ func MakeLocationRangeMessage(msg string) LocationRange {
 
 // MakeLocationRange creates a LocationRange.
 func MakeLocationRange(fn string, fc *Source, begin Location, end Location) LocationRange {
-	return LocationRange{FileName: fn, file: fc, Begin: begin, End: end}
+	return LocationRange{FileName: fn, File: fc, Begin: begin, End: end}
 }
 
 // SourceProvider represents a source provider.
@@ -127,7 +130,7 @@ func (sp *SourceProvider) GetSnippet(loc LocationRange) string {
 	for i := loc.Begin.Line; i <= loc.End.Line; i++ {
 		inLineRange := trimToLine(loc, i)
 		for j := inLineRange.Begin.Column; j < inLineRange.End.Column; j++ {
-			result.WriteByte(loc.file.lines[i-1][j-1])
+			result.WriteByte(loc.File.Lines[i-1][j-1])
 		}
 		if i != loc.End.Line {
 			result.WriteByte('\n')
@@ -166,7 +169,7 @@ func trimToLine(loc LocationRange, line int) LocationRange {
 		panic("invalid")
 	}
 	if loc.End.Line != line {
-		loc.End.Column = len(loc.file.lines[line-1])
+		loc.End.Column = len(loc.File.Lines[line-1])
 	}
 	loc.End.Line = line
 	return loc
@@ -184,7 +187,7 @@ func LineBeginning(loc *LocationRange) LocationRange {
 		Begin:    Location{Line: loc.Begin.Line, Column: 1},
 		End:      loc.Begin,
 		FileName: loc.FileName,
-		file:     loc.file,
+		File:     loc.File,
 	}
 }
 
@@ -198,8 +201,8 @@ func LineBeginning(loc *LocationRange) LocationRange {
 func LineEnding(loc *LocationRange) LocationRange {
 	return LocationRange{
 		Begin:    loc.End,
-		End:      Location{Line: loc.End.Line, Column: len(loc.file.lines[loc.End.Line-1])},
+		End:      Location{Line: loc.End.Line, Column: len(loc.File.Lines[loc.End.Line-1])},
 		FileName: loc.FileName,
-		file:     loc.file,
+		File:     loc.File,
 	}
 }
