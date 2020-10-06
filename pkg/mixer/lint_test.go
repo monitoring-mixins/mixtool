@@ -15,8 +15,6 @@
 package mixer
 
 import (
-	"bufio"
-	"bytes"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -25,15 +23,12 @@ import (
 )
 
 func TestLintPrometheusAlerts(t *testing.T) {
-	const testAlerts = alerts + `+ 
+	const testAlerts = alerts + `+
 {
   _config+:: {
      kubeStateMetricsSelector: 'job="ksm"',
   }
 }`
-
-	b := &bytes.Buffer{}
-	w := bufio.NewWriter(b)
 
 	vm := jsonnet.MakeVM()
 
@@ -51,20 +46,14 @@ func TestLintPrometheusAlerts(t *testing.T) {
 		t.Errorf("failed to close temp file: %v", err)
 	}
 
-	if err := lintPrometheusAlerts(w, f.Name(), vm); err != nil {
-		t.Errorf("failed to lint alerts: %v", err)
-	}
-
-	w.Flush()
-	if b.String() != "" {
-		t.Errorf("linting wrote unexpected output: %s", b.String())
+	errs := make(chan error)
+	go lintPrometheus(f.Name(), vm, errs)
+	for err := range errs {
+		t.Errorf("linting wrote unexpected output: %v", err)
 	}
 }
 
 func TestLintPrometheusRules(t *testing.T) {
-	b := &bytes.Buffer{}
-	w := bufio.NewWriter(b)
-
 	vm := jsonnet.MakeVM()
 
 	f, err := ioutil.TempFile("", "rules.jsonnet")
@@ -81,12 +70,9 @@ func TestLintPrometheusRules(t *testing.T) {
 		t.Errorf("failed to close temp file: %v", err)
 	}
 
-	if err := lintPrometheusRules(w, f.Name(), vm); err != nil {
-		t.Errorf("failed to lint rules: %v", err)
-	}
-
-	w.Flush()
-	if b.String() != "" {
-		t.Errorf("linting wrote unexpected output: %s", b.String())
+	errs := make(chan error)
+	go lintPrometheus(f.Name(), vm, errs)
+	for err := range errs {
+		t.Errorf("linting wrote unexpected output: %v", err)
 	}
 }
