@@ -59,8 +59,11 @@ func lintCommand() cli.Command {
 }
 
 func lintAction(c *cli.Context) error {
+	jPath := c.StringSlice("jpath")
+	jPath = availableVendor(jPath)
+
 	options := mixer.LintOptions{
-		JPaths:     c.StringSlice("jpath"),
+		JPaths:     jPath,
 		Grafana:    c.BoolT("grafana"),
 		Prometheus: c.BoolT("prometheus"),
 	}
