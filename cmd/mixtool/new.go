@@ -48,27 +48,42 @@ func newCommand() cli.Command {
 }
 
 func newGrafanaDashboard(c *cli.Context) error {
-	if fileExists(c.Args().First()) {
-		return fmt.Errorf("file already exists. not overwriting.")
+	if len(c.Args()) != 1 {
+		return fmt.Errorf("expected filename as only argument")
 	}
 
-	return writeFileToDisk(c, mixer.NewGrafanaDashboard)
+	filename := c.Args().First()
+	if fileExists(filename) {
+		return fmt.Errorf("file already exists. not overwriting")
+	}
+
+	return writeFileToDisk(filename, mixer.NewGrafanaDashboard)
 }
 
 func newPrometheusAlerts(c *cli.Context) error {
-	if fileExists(c.Args().First()) {
-		return fmt.Errorf("file already exists. not overwriting.")
+	if len(c.Args()) != 1 {
+		return fmt.Errorf("expected filename as only argument")
 	}
 
-	return writeFileToDisk(c, mixer.NewPrometheusAlerts)
+	filename := c.Args().First()
+	if fileExists(filename) {
+		return fmt.Errorf("file already exists. not overwriting")
+	}
+
+	return writeFileToDisk(filename, mixer.NewPrometheusAlerts)
 }
 
 func newPrometheusRules(c *cli.Context) error {
-	if fileExists(c.Args().First()) {
-		return fmt.Errorf("file already exists. not overwriting.")
+	if len(c.Args()) != 1 {
+		return fmt.Errorf("expected filename as only argument")
 	}
 
-	return writeFileToDisk(c, mixer.NewPrometheusRules)
+	filename := c.Args().First()
+	if fileExists(filename) {
+		return fmt.Errorf("file already exists. not overwriting")
+	}
+
+	return writeFileToDisk(filename, mixer.NewPrometheusRules)
 }
 
 func fileExists(filename string) bool {
@@ -83,9 +98,7 @@ func fileExists(filename string) bool {
 	return true
 }
 
-func writeFileToDisk(c *cli.Context, creator func() ([]byte, error)) error {
-	filename := c.Args().First()
-
+func writeFileToDisk(filename string, creator func() ([]byte, error)) error {
 	f, err := os.Create(filename)
 	if err != nil {
 		return fmt.Errorf("failed to create file %s: %v", filename, err)
