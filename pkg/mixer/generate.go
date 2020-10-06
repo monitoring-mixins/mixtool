@@ -24,9 +24,11 @@ import (
 )
 
 type GenerateOptions struct {
-	Directory string
-	JPaths    []string
-	YAML      bool
+	AlertsFilename string
+	RulesFilename  string
+	Directory      string
+	JPaths         []string
+	YAML           bool
 }
 
 func NewVM(jpath []string) *jsonnet.VM {

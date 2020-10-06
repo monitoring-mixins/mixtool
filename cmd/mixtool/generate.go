@@ -17,7 +17,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -42,15 +42,25 @@ func generateCommand() cli.Command {
 		Usage: "Generate manifests from jsonnet input",
 		Subcommands: cli.Commands{
 			cli.Command{
-				Name:   "alerts",
-				Usage:  "Generate Prometheus alerts based on the mixins",
-				Flags:  flags,
+				Name:  "alerts",
+				Usage: "Generate Prometheus alerts based on the mixins",
+				Flags: append(flags,
+					cli.StringFlag{
+						Name:  "output-alerts, a",
+						Usage: "The file where Prometheus alerts are written",
+					},
+				),
 				Action: generateAction(generateAlerts),
 			},
 			cli.Command{
-				Name:   "rules",
-				Usage:  "Generate Prometheus rules based on the mixins",
-				Flags:  flags,
+				Name:  "rules",
+				Usage: "Generate Prometheus rules based on the mixins",
+				Flags: append(flags,
+					cli.StringFlag{
+						Name:  "output-rules, r",
+						Usage: "The file where Prometheus rules are written",
+					},
+				),
 				Action: generateAction(generateRules),
 			},
 			cli.Command{
@@ -64,11 +74,33 @@ func generateCommand() cli.Command {
 				),
 				Action: generateAction(generateDashboards),
 			},
+			cli.Command{
+				Name:  "all",
+				Usage: "Generate all resources - Prometheus alerts, Prometheus rules and Grafana dashboards",
+				Flags: append(flags,
+					cli.StringFlag{
+						Name:  "output-alerts, a",
+						Usage: "The file where Prometheus alerts are written",
+						Value: "alerts.yaml",
+					},
+					cli.StringFlag{
+						Name:  "output-rules, r",
+						Usage: "The file where Prometheus rules are written",
+						Value: "rules.yaml",
+					},
+					cli.StringFlag{
+						Name:  "directory, d",
+						Usage: "The directory where Grafana dashboards are written to",
+						Value: "dashboards_out",
+					},
+				),
+				Action: generateAction(generateAll),
+			},
 		},
 	}
 }
 
-type generatorFunc func(io.Writer, string, mixer.GenerateOptions) error
+type generatorFunc func(string, mixer.GenerateOptions) error
 
 func generateAction(generator generatorFunc) cli.ActionFunc {
 	return func(c *cli.Context) error {
@@ -80,35 +112,47 @@ func generateAction(generator generatorFunc) cli.ActionFunc {
 
 		jPathFlag = availableVendor(jPathFlag)
 
-		generateCfg := mixer.GenerateOptions{
-			Directory: c.String("directory"),
-			JPaths:    jPathFlag,
-			YAML:      c.BoolT("yaml"),
+		alertsFilename := c.String("output-alerts")
+		if alertsFilename == "" || alertsFilename == "-" {
+			alertsFilename = "/dev/stdout"
 		}
 
-		return generator(os.Stdout, filename, generateCfg)
+		rulesFilename := c.String("output-rules")
+		if rulesFilename == "" || rulesFilename == "-" {
+			rulesFilename = "/dev/stdout"
+		}
+
+		generateCfg := mixer.GenerateOptions{
+			AlertsFilename: alertsFilename,
+			RulesFilename:  rulesFilename,
+			Directory:      c.String("directory"),
+			JPaths:         jPathFlag,
+			YAML:           c.BoolT("yaml"),
+		}
+
+		return generator(filename, generateCfg)
 	}
 }
 
-func generateAlerts(w io.Writer, filename string, options mixer.GenerateOptions) error {
+func generateAlerts(filename string, options mixer.GenerateOptions) error {
 	out, err := mixer.GenerateAlerts(filename, options)
 	if err != nil {
 		return err
 	}
-	_, err = w.Write(out)
-	return err
+
+	return ioutil.WriteFile(options.AlertsFilename, out, 0644)
 }
 
-func generateRules(w io.Writer, filename string, options mixer.GenerateOptions) error {
+func generateRules(filename string, options mixer.GenerateOptions) error {
 	out, err := mixer.GenerateRules(filename, options)
 	if err != nil {
 		return err
 	}
-	_, err = w.Write(out)
-	return err
+
+	return ioutil.WriteFile(options.RulesFilename, out, 0644)
 }
 
-func generateDashboards(w io.Writer, filename string, opts mixer.GenerateOptions) error {
+func generateDashboards(filename string, opts mixer.GenerateOptions) error {
 	if opts.Directory == "" {
 		return errors.New("missing directory flag to tell where to write to")
 	}
@@ -139,6 +183,22 @@ func generateDashboards(w io.Writer, filename string, opts mixer.GenerateOptions
 		if err := writeDashboard(name, dashboard); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func generateAll(filename string, opts mixer.GenerateOptions) error {
+	if err := generateAlerts(filename, opts); err != nil {
+		return err
+	}
+
+	if err := generateRules(filename, opts); err != nil {
+		return err
+	}
+
+	if err := generateDashboards(filename, opts); err != nil {
+		return err
 	}
 
 	return nil
