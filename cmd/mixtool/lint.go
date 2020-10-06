@@ -59,12 +59,15 @@ func lintCommand() cli.Command {
 }
 
 func lintAction(c *cli.Context) error {
-	files := c.Args()
-
 	options := mixer.LintOptions{
 		JPaths:     c.StringSlice("jpath"),
 		Grafana:    c.BoolT("grafana"),
 		Prometheus: c.BoolT("prometheus"),
+	}
+
+	files := c.Args()
+	if len(files) == 0 {
+		return fmt.Errorf("expected more than one argument")
 	}
 
 	for _, filename := range files {
