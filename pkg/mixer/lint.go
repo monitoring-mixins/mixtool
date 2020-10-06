@@ -33,88 +33,89 @@ type LintOptions struct {
 }
 
 func Lint(w io.Writer, filename string, options LintOptions) error {
-	vm := NewVM(options.JPaths)
+	errCount := 0
 
 	if options.Prometheus {
-		if err := lintPrometheusAlerts(w, filename, vm); err != nil {
-			return err
-		}
-		if err := lintPrometheusRules(w, filename, vm); err != nil {
-			return err
-		}
+		vm := NewVM(options.JPaths)
+		errs := make(chan error)
+		go lintPrometheus(filename, vm, errs)
+		errCount += printErrs(w, errs)
 	}
 
 	if options.Grafana {
-		if err := lintGrafanaDashboards(w, filename, vm); err != nil {
-			return err
-		}
+		vm := NewVM(options.JPaths)
+		errs := make(chan error)
+		go lintGrafanaDashboards(filename, vm, errs)
+		errCount += printErrs(w, errs)
 	}
 
+	if errCount > 0 {
+		return fmt.Errorf("%d lint errors found", errCount)
+	}
 	return nil
 }
 
-func lintPrometheusAlerts(w io.Writer, filename string, vm *jsonnet.VM) error {
+func printErrs(w io.Writer, errs <-chan error) int {
+	errCount := 0
+	for err := range errs {
+		fmt.Fprintln(w, color.RedString(err.Error()))
+		errCount++
+	}
+	return errCount
+}
+
+func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
+	defer close(errsOut)
+
 	j, err := evaluatePrometheusAlerts(vm, filename)
 	if err != nil {
-		return err
+		errsOut <- err
+		return
 	}
 
 	_, errs := rulefmt.Parse([]byte(j))
-	if errs != nil {
-		for _, err := range errs {
-			fmt.Fprintln(w, color.RedString(err.Error()))
-		}
+	for _, err := range errs {
+		errsOut <- err
 	}
 
-	// TODO: Make some more verbose printing?
-	//for _, g := range rg.Groups {
-	//	fmt.Fprintf(w, "Group %s has %d alerts\n", g.Name, len(g.Rules))
-	//}
-
-	return err
-}
-
-func lintPrometheusRules(w io.Writer, filename string, vm *jsonnet.VM) error {
-	j, err := evaluatePrometheusRules(vm, filename)
+	j, err = evaluatePrometheusRules(vm, filename)
 	if err != nil {
-		return err
+		errsOut <- err
+		return
 	}
 
-	_, errs := rulefmt.Parse([]byte(j))
-	if errs != nil {
-		for _, err := range errs {
-			fmt.Fprintln(w, color.RedString(err.Error()))
-		}
+	_, errs = rulefmt.Parse([]byte(j))
+	for _, err := range errs {
+		errsOut <- err
 	}
 
-	// TODO: Make some more verbose printing?
-	//for _, g := range rg.Groups {
-	//	fmt.Fprintf(w, "Group %s has %d rules\n", g.Name, len(g.Rules))
-	//}
-
-	return err
+	return
 }
 
-func lintGrafanaDashboards(w io.Writer, filename string, vm *jsonnet.VM) error {
+func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error) {
+	defer close(errsOut)
+
 	j, err := evaluateGrafanaDashboards(vm, filename)
 	if err != nil {
-		return err
+		errsOut <- err
+		return
 	}
 
 	var dashboards map[string]interface{}
 	if err := json.Unmarshal([]byte(j), &dashboards); err != nil {
-		return err
+		errsOut <- err
+		return
 	}
 
 	for filename, dashboard := range dashboards {
 		d := models.NewDashboardFromJson(simplejson.NewFromAny(dashboard))
 		if d.Title == "" {
-			fmt.Fprintln(w, color.RedString("Dashboard has no title: %s", filename))
+			errsOut <- fmt.Errorf("dashboard has no title: %s", filename)
 		}
 		if d.Uid == "" {
-			fmt.Fprintln(w, color.YellowString("Dashboard has no UID, please set one for links to work"))
+			errsOut <- fmt.Errorf("dashboard has no UID, please set one for links to work: %s", filename)
 		}
 	}
 
-	return nil
+	return
 }
