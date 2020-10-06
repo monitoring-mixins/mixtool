@@ -19,6 +19,7 @@ import (
 
 	"github.com/ghodss/yaml"
 	"github.com/google/go-jsonnet"
+	"github.com/grafana/tanka/pkg/jsonnet/native"
 	"github.com/pkg/errors"
 )
 
@@ -28,11 +29,19 @@ type GenerateOptions struct {
 	YAML      bool
 }
 
-func GenerateAlerts(filename string, opts GenerateOptions) ([]byte, error) {
+func NewVM(jpath []string) *jsonnet.VM {
 	vm := jsonnet.MakeVM()
 	vm.Importer(&jsonnet.FileImporter{
-		JPaths: opts.JPaths,
+		JPaths: jpath,
 	})
+	for _, nf := range native.Funcs() {
+		vm.NativeFunction(nf)
+	}
+	return vm
+}
+
+func GenerateAlerts(filename string, opts GenerateOptions) ([]byte, error) {
+	vm := NewVM(opts.JPaths)
 
 	j, err := evaluatePrometheusAlerts(vm, filename)
 	if err != nil {
@@ -52,10 +61,7 @@ func GenerateAlerts(filename string, opts GenerateOptions) ([]byte, error) {
 }
 
 func GenerateRules(filename string, opts GenerateOptions) ([]byte, error) {
-	vm := jsonnet.MakeVM()
-	vm.Importer(&jsonnet.FileImporter{
-		JPaths: opts.JPaths,
-	})
+	vm := NewVM(opts.JPaths)
 
 	j, err := evaluatePrometheusRules(vm, filename)
 	if err != nil {
@@ -75,10 +81,7 @@ func GenerateRules(filename string, opts GenerateOptions) ([]byte, error) {
 }
 
 func GenerateDashboards(filename string, opts GenerateOptions) (map[string]json.RawMessage, error) {
-	vm := jsonnet.MakeVM()
-	vm.Importer(&jsonnet.FileImporter{
-		JPaths: opts.JPaths,
-	})
+	vm := NewVM(opts.JPaths)
 
 	j, err := evaluateGrafanaDashboards(vm, filename)
 	if err != nil {

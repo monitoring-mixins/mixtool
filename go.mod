@@ -17,6 +17,7 @@ require (
 	github.com/google/go-jsonnet v0.15.1-0.20200331184325-4f4aa80dd785
 	github.com/gosimple/slug v1.2.0 // indirect
 	github.com/grafana/grafana v5.2.4+incompatible
+	github.com/grafana/tanka v0.11.1
 	github.com/inconshreveable/log15 v0.0.0-20180818164646-67afb5ed74ec // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/prometheus v1.8.2-0.20200923143134-7e2db3d092f3

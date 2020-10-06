@@ -33,11 +33,7 @@ type LintOptions struct {
 }
 
 func Lint(w io.Writer, filename string, options LintOptions) error {
-	vm := jsonnet.MakeVM()
-
-	vm.Importer(&jsonnet.FileImporter{
-		JPaths: options.JPaths,
-	})
+	vm := NewVM(options.JPaths)
 
 	if options.Prometheus {
 		if err := lintPrometheusAlerts(w, filename, vm); err != nil {

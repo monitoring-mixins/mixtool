@@ -83,6 +83,9 @@ github.com/grafana/grafana/pkg/models
 github.com/grafana/grafana/pkg/services/session
 github.com/grafana/grafana/pkg/setting
 github.com/grafana/grafana/pkg/util
+# github.com/grafana/tanka v0.11.1
+## explicit
+github.com/grafana/tanka/pkg/jsonnet/native
 # github.com/inconshreveable/log15 v0.0.0-20180818164646-67afb5ed74ec
 ## explicit
 github.com/inconshreveable/log15

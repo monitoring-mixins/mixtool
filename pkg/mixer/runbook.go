@@ -21,7 +21,6 @@ import (
 	"text/template"
 
 	"github.com/gobuffalo/packr"
-	"github.com/google/go-jsonnet"
 )
 
 var (
@@ -53,11 +52,7 @@ type RunbookOptions struct {
 }
 
 func Runbook(w io.Writer, filename string, opts RunbookOptions) error {
-	vm := jsonnet.MakeVM()
-
-	vm.Importer(&jsonnet.FileImporter{
-		JPaths: opts.JPaths,
-	})
+	vm := NewVM(opts.JPaths)
 
 	snippet := fmt.Sprintf(snippetTemplate, filename)
 
