@@ -17,6 +17,7 @@ package main
 import (
 	"log"
 	"os"
+	"path"
 
 	"github.com/urfave/cli"
 )
@@ -46,11 +47,15 @@ func main() {
 }
 
 // If no jPath is given, we check if ./vendor exists in the current directory and use it.
-func availableVendor(jPathsFlag []string) []string {
+// filename should be the path to the mixin root file (ie 'mixin.libsonnet').
+func availableVendor(filename string, jPathsFlag []string) []string {
 	if len(jPathsFlag) == 0 {
-		_, err := os.Stat("./vendor")
+		// Look for a vendor dir along side the root mixin file.
+		basedir := path.Dir(filename)
+		vendor := path.Join(basedir, "vendor")
+		_, err := os.Stat(vendor)
 		if err == nil {
-			return []string{"./vendor"}
+			return []string{vendor}
 		}
 	}
 	return jPathsFlag

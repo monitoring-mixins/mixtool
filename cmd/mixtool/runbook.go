@@ -53,7 +53,7 @@ func runbookAction(c *cli.Context) error {
 		return fmt.Errorf("no jsonnet file given")
 	}
 
-	jPathFlag = availableVendor(jPathFlag)
+	jPathFlag = availableVendor(filename, jPathFlag)
 
 	var out io.Writer
 	out = os.Stdout
