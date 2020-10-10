@@ -13,7 +13,12 @@ require (
 	github.com/go-macaron/session v0.0.0-20170320172209-b8e286a0dba8 // indirect
 	github.com/gobuffalo/packd v1.0.0 // indirect
 	github.com/gobuffalo/packr v1.30.1
+<<<<<<< HEAD
 	github.com/google/go-jsonnet v0.15.1-0.20200331184325-4f4aa80dd785
+=======
+	github.com/gobuffalo/packr/v2 v2.8.0 // indirect
+	github.com/google/go-jsonnet v0.16.0
+>>>>>>> 79efabe... Update jsonnet to 0.16
 	github.com/gosimple/slug v1.2.0 // indirect
 	github.com/grafana/grafana v5.2.4+incompatible
 	github.com/grafana/tanka v0.11.1
