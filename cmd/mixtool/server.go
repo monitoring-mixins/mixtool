@@ -18,13 +18,13 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 
-	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
 
@@ -104,29 +104,29 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 
 	f, err := os.Open(p.ruleFile)
 	if err != nil && !os.IsNotExist(err) {
-		return false, err
+		return false, fmt.Errorf("open rule file: %w", err)
 	}
 	if os.IsNotExist(err) {
 		f, err = os.Create(p.ruleFile)
 		if err != nil {
-			return false, err
+			return false, fmt.Errorf("create rule file: %w", err)
 		}
 	}
 
 	equal, err := readersEqual(tr, f)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("compare existing rules with provisioned intention: %w", err)
 	}
 	if equal {
 		return false, nil
 	}
 
 	if err := f.Truncate(0); err != nil {
-		return false, err
+		return false, fmt.Errorf("truncate file: %w", err)
 	}
 
 	if _, err := io.Copy(f, b); err != nil {
-		return false, err
+		return false, fmt.Errorf("provision rule to file: %w", err)
 	}
 
 	return true, nil
@@ -138,13 +138,13 @@ func readersEqual(r1, r2 io.Reader) (bool, error) {
 	for {
 		b1, err1 := buf1.ReadByte()
 		b2, err2 := buf2.ReadByte()
-		if err1 != nil && err1 != io.EOF {
+		if err1 != nil && !errors.Is(err1, io.EOF) {
 			return false, err1
 		}
-		if err2 != nil && err2 != io.EOF {
+		if err2 != nil && !errors.Is(err2, io.EOF) {
 			return false, err2
 		}
-		if err1 == io.EOF || err2 == io.EOF {
+		if errors.Is(err1, io.EOF) || errors.Is(err2, io.EOF) {
 			return err1 == err2, nil
 		}
 		if b1 != b2 {
@@ -160,21 +160,21 @@ type prometheusReloader struct {
 func (r *prometheusReloader) trigger(ctx context.Context) error {
 	req, err := http.NewRequest("POST", r.prometheusReloadURL, nil)
 	if err != nil {
-		return errors.Wrap(err, "create request")
+		return fmt.Errorf("create request: %w", err)
 	}
 	req = req.WithContext(ctx)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return errors.Wrap(err, "reload request failed")
+		return fmt.Errorf("reload request: %w", err)
 	}
 
 	if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
-		return errors.Wrap(err, "exhausting request body failed")
+		return fmt.Errorf("exhausting request body: %w", err)
 	}
 
 	if resp.StatusCode != 200 {
-		return errors.Errorf("received non-200 response: %s; have you set `--web.enable-lifecycle` Prometheus flag?", resp.Status)
+		return fmt.Errorf("received non-200 response: %s; have you set `--web.enable-lifecycle` Prometheus flag?", resp.Status)
 	}
 	return nil
 }
