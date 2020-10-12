@@ -84,7 +84,7 @@ func (h *ruleProvisioningHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 
 	if reloadNecessary {
-		if err := h.prometheusReloader.trigger(ctx); err != nil {
+		if err := h.prometheusReloader.triggerReload(ctx); err != nil {
 			http.Error(w, fmt.Sprintf("Internal Server Error: %v", err), http.StatusInternalServerError)
 			return
 		}
@@ -157,7 +157,7 @@ type prometheusReloader struct {
 	prometheusReloadURL string
 }
 
-func (r *prometheusReloader) trigger(ctx context.Context) error {
+func (r *prometheusReloader) triggerReload(ctx context.Context) error {
 	req, err := http.NewRequest("POST", r.prometheusReloadURL, nil)
 	if err != nil {
 		return fmt.Errorf("create request: %w", err)
