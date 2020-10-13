@@ -36,6 +36,7 @@ func main() {
 		generateCommand(),
 		lintCommand(),
 		newCommand(),
+		serverCommand(),
 		// runbookCommand(),
 	}
 
