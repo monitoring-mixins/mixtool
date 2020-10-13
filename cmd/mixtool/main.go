@@ -17,7 +17,6 @@ package main
 import (
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/grafana/tanka/pkg/jsonnet/jpath"
