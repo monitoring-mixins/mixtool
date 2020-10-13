@@ -65,7 +65,10 @@ func lintAction(c *cli.Context) error {
 	}
 
 	jPath := c.StringSlice("jpath")
-	jPath = availableVendor(filename, jPath)
+	jPath, err := availableVendor(filename, jPath)
+	if err != nil {
+		return err
+	}
 
 	options := mixer.LintOptions{
 		JPaths:     jPath,
