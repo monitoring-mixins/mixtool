@@ -66,7 +66,7 @@ func availableVendor(filename string, jPathsFlag []string) ([]string, error) {
 			return nil, err
 		}
 
-		vendor := path.Join(root, "vendor")
+		vendor := filepath.Join(root, "vendor")
 		_, err = os.Stat(vendor)
 		if err == nil {
 			return []string{vendor}, nil
