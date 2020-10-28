@@ -17,7 +17,9 @@ package main
 import (
 	"log"
 	"os"
+	"path/filepath"
 
+	"github.com/grafana/tanka/pkg/jsonnet/jpath"
 	"github.com/urfave/cli"
 )
 
@@ -46,12 +48,29 @@ func main() {
 }
 
 // If no jPath is given, we check if ./vendor exists in the current directory and use it.
-func availableVendor(jPathsFlag []string) []string {
+// filename should be the path to the mixin root file (ie 'mixin.libsonnet').
+func availableVendor(filename string, jPathsFlag []string) ([]string, error) {
 	if len(jPathsFlag) == 0 {
-		_, err := os.Stat("./vendor")
+		workdir, err := filepath.Abs(filename)
+		if err != nil {
+			return nil, err
+		}
+
+		workdir = filepath.Dir(workdir)
+		root, err := jpath.FindParentFile("jsonnetfile.json", workdir, "/")
+		if err != nil {
+			if _, ok := err.(jpath.ErrorFileNotFound); ok {
+				return jPathsFlag, nil
+			}
+			return nil, err
+		}
+
+		vendor := filepath.Join(root, "vendor")
+		_, err = os.Stat(vendor)
 		if err == nil {
-			return []string{"./vendor"}
+			return []string{vendor}, nil
 		}
 	}
-	return jPathsFlag
+
+	return jPathsFlag, nil
 }

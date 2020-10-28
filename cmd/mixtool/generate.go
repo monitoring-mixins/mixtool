@@ -110,7 +110,10 @@ func generateAction(generator generatorFunc) cli.ActionFunc {
 			return fmt.Errorf("no jsonnet file given")
 		}
 
-		jPathFlag = availableVendor(jPathFlag)
+		jPathFlag, err := availableVendor(filename, jPathFlag)
+		if err != nil {
+			return err
+		}
 
 		alertsFilename := c.String("output-alerts")
 		if alertsFilename == "" || alertsFilename == "-" {

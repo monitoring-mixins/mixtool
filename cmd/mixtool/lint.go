@@ -59,8 +59,16 @@ func lintCommand() cli.Command {
 }
 
 func lintAction(c *cli.Context) error {
+	filename := c.Args().First()
+	if filename == "" {
+		return fmt.Errorf("expected one argument, the mixin filename")
+	}
+
 	jPath := c.StringSlice("jpath")
-	jPath = availableVendor(jPath)
+	jPath, err := availableVendor(filename, jPath)
+	if err != nil {
+		return err
+	}
 
 	options := mixer.LintOptions{
 		JPaths:     jPath,
@@ -68,15 +76,8 @@ func lintAction(c *cli.Context) error {
 		Prometheus: c.BoolT("prometheus"),
 	}
 
-	files := c.Args()
-	if len(files) == 0 {
-		return fmt.Errorf("expected more than one argument")
-	}
-
-	for _, filename := range files {
-		if err := mixer.Lint(os.Stdout, filename, options); err != nil {
-			return fmt.Errorf("failed to lint the file %s: %v", filename, err)
-		}
+	if err := mixer.Lint(os.Stdout, filename, options); err != nil {
+		return fmt.Errorf("failed to lint the file %s: %v", filename, err)
 	}
 
 	return nil

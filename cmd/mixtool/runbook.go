@@ -53,7 +53,10 @@ func runbookAction(c *cli.Context) error {
 		return fmt.Errorf("no jsonnet file given")
 	}
 
-	jPathFlag = availableVendor(jPathFlag)
+	jPathFlag, err := availableVendor(filename, jPathFlag)
+	if err != nil {
+		return err
+	}
 
 	var out io.Writer
 	out = os.Stdout
@@ -68,7 +71,7 @@ func runbookAction(c *cli.Context) error {
 		out = f
 	}
 
-	err := mixer.Runbook(out, filename, mixer.RunbookOptions{
+	err = mixer.Runbook(out, filename, mixer.RunbookOptions{
 		JPaths:       jPathFlag,
 		TemplateFile: templateFileFlag,
 	})
