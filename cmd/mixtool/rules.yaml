@@ -1,0 +1,5 @@
+groups:
+- name: general
+  rules:
+  - alert: Watchdog
+    expr: vector(1)
