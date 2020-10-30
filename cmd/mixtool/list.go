@@ -21,13 +21,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 	"text/tabwriter"
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/pkg/errors"
-
 	"github.com/urfave/cli"
 )
 
@@ -38,9 +35,7 @@ type mixin struct {
 	Subdir      string `json:"subdir"`
 }
 
-type mixins struct {
-	d map[string][]mixin
-}
+const defaultWebsite = "https://monitoring.mixins.dev/mixins.json"
 
 func listCommand() cli.Command {
 	return cli.Command{
@@ -58,9 +53,8 @@ func listCommand() cli.Command {
 }
 
 func queryWebsite(mixinsWebsite string) ([]byte, error) {
-
 	client := http.Client{
-		Timeout: time.Second * 3,
+		Timeout: time.Second * 10,
 	}
 
 	req, err := http.NewRequest(http.MethodGet, mixinsWebsite, nil)
@@ -73,11 +67,7 @@ func queryWebsite(mixinsWebsite string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	if res.Body != nil {
-		defer res.Body.Close()
-	}
-
+	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
@@ -86,14 +76,10 @@ func queryWebsite(mixinsWebsite string) ([]byte, error) {
 	return body, nil
 }
 
+// if path is not specified, default to the mixins website
+// otherwise, try parse as url
+// otherwise, try look for a local json file
 func listAction(c *cli.Context) error {
-
-	// if path is not specified, default to the mixins website
-	// otherwise, try parse as url
-	// otherwise, try look for a local json file
-
-	defaultWebsite := "https://monitoring.mixins.dev/mixins.json"
-
 	path := c.String("path")
 	var body []byte
 	var err error
@@ -124,25 +110,23 @@ func listAction(c *cli.Context) error {
 	}
 
 	var mixins map[string][]mixin
-	jsonErr := json.Unmarshal(body, &mixins)
-
-	if jsonErr != nil {
-		return errors.New("failed to unmarshal json. Maybe your json schema is incorrect?")
+	if err := json.Unmarshal(body, &mixins); err != nil {
+		return fmt.Errorf("failed to unmarshal json: %w", err)
 	}
 
 	mixinsList := mixins["mixins"]
 
 	writer := tabwriter.NewWriter(os.Stdout, 4, 8, 0, '\t', tabwriter.TabIndent)
-	fmt.Fprintln(writer, "name\tdescription")
-	fmt.Fprintln(writer, "----\t----------")
-	// print all the mixins out
+	fmt.Fprintln(writer, "name")
+	fmt.Fprintln(writer, "----")
 	for _, m := range mixinsList {
-		// chop off the description if it's too long
-		m.Description = strings.Replace(m.Description, "\n", "", -1)
-		if len(m.Description) <= 0 {
-			m.Description = "N/A"
-		}
-		fmt.Fprintf(writer, "%s\t%s\n", color.GreenString(m.Name), m.Description)
+		// for now, do not print out any of the descriptions
+		// m.Description = strings.Replace(m.Description, "\n", "", -1)
+		// // maybe truncate the description if it's too long
+		// if len(m.Description) <= 0 {
+		// 	m.Description = "N/A"
+		// }
+		fmt.Fprintf(writer, "%s\n", color.GreenString(m.Name))
 	}
 
 	return writer.Flush()
