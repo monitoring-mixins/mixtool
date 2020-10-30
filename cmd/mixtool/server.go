@@ -84,6 +84,7 @@ func (h *ruleProvisioningHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 
 	if reloadNecessary {
+		fmt.Println("reloading prometheus")
 		if err := h.prometheusReloader.triggerReload(ctx); err != nil {
 			http.Error(w, fmt.Sprintf("Internal Server Error: %v", err), http.StatusInternalServerError)
 			return
@@ -99,11 +100,13 @@ type ruleProvisioner struct {
 // to existing, does not provision them. It returns whether Prometheus should
 // be reloaded and if an error has occurred.
 func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
+	fmt.Println("trying to provision 1")
 	b := bytes.NewBuffer(nil)
 	tr := io.TeeReader(r, b)
 
 	f, err := os.Open(p.ruleFile)
 	if err != nil && !os.IsNotExist(err) {
+		fmt.Println(err, p.ruleFile)
 		return false, fmt.Errorf("open rule file: %w", err)
 	}
 	if os.IsNotExist(err) {
@@ -121,7 +124,10 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 		return false, nil
 	}
 
+	fmt.Println("trying to provision 2")
+
 	if err := f.Truncate(0); err != nil {
+		fmt.Println("err is", err)
 		return false, fmt.Errorf("truncate file: %w", err)
 	}
 
@@ -133,6 +139,7 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 }
 
 func readersEqual(r1, r2 io.Reader) (bool, error) {
+	fmt.Println("comparing rn")
 	buf1 := bufio.NewReader(r1)
 	buf2 := bufio.NewReader(r2)
 	for {
@@ -158,6 +165,7 @@ type prometheusReloader struct {
 }
 
 func (r *prometheusReloader) triggerReload(ctx context.Context) error {
+	fmt.Println("triggering reload")
 	req, err := http.NewRequest("POST", r.prometheusReloadURL, nil)
 	if err != nil {
 		return fmt.Errorf("create request: %w", err)
