@@ -182,6 +182,8 @@ func generateDashboards(filename string, opts mixer.GenerateOptions) error {
 		return nil
 	}
 
+	fmt.Println(dashboards)
+
 	for name, dashboard := range dashboards {
 		if err := writeDashboard(name, dashboard); err != nil {
 			return err
