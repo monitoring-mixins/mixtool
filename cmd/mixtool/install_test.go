@@ -60,23 +60,23 @@ func TestInstallMixin(t *testing.T) {
 			t.Errorf("failed to generate mixin yaml for %v. %v", mixinURL, err)
 		}
 
-		// // verify that the contents are correct
-		// err = os.Chdir(dldir)
-		// if err != nil {
-		// 	t.Errorf("could not cd into %s", dldir)
-		// }
+		// verify that the contents are correct
+		err = os.Chdir(dldir)
+		if err != nil {
+			t.Errorf("could not cd into %s", dldir)
+		}
 
-		// if _, err := os.Stat("alerts.yaml"); os.IsNotExist(err) {
-		// 	t.Errorf("expected alerts.yaml in %s", dldir)
-		// }
+		if _, err := os.Stat("alerts.yaml"); os.IsNotExist(err) {
+			t.Errorf("expected alerts.yaml in %s", dldir)
+		}
 
-		// if _, err := os.Stat("rules.yaml"); os.IsNotExist(err) {
-		// 	t.Errorf("expected rules.yaml in %s", dldir)
-		// }
+		if _, err := os.Stat("rules.yaml"); os.IsNotExist(err) {
+			t.Errorf("expected rules.yaml in %s", dldir)
+		}
 
-		// if _, err := os.Stat("dashboards_out"); os.IsNotExist(err) {
-		// 	t.Errorf("expected dashboards_out in %s", dldir)
-		// }
+		if _, err := os.Stat("dashboards_out"); os.IsNotExist(err) {
+			t.Errorf("expected dashboards_out in %s", dldir)
+		}
 
 	}
 

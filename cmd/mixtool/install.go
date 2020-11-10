@@ -209,6 +209,7 @@ func installAction(c *cli.Context) error {
 	// read files and run mixtool server
 	// also need to reload alerts, as well as grafana dashboards
 	if c.Bool("run-server") {
+		// should be running outside!
 		bindAddress := c.String("bind-address")
 		promURL := c.String("prometheus-reload-url")
 		ruleFile := c.String("rule-file")

@@ -144,6 +144,11 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 		return false, fmt.Errorf("truncate file: %w", err)
 	}
 
+	_, err = f.Seek(0, 0)
+	if err != nil {
+		return false, fmt.Errorf("seek file %w", err)
+	}
+
 	if _, err := io.Copy(f, b); err != nil {
 		return false, fmt.Errorf("provision rule to file: %w", err)
 	}
