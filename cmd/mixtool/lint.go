@@ -79,6 +79,5 @@ func lintAction(c *cli.Context) error {
 	if err := mixer.Lint(os.Stdout, filename, options); err != nil {
 		return fmt.Errorf("failed to lint the file %s: %v", filename, err)
 	}
-
 	return nil
 }
