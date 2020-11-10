@@ -65,6 +65,19 @@ func serverAction(c *cli.Context) error {
 	return http.ListenAndServe(bindAddress, nil)
 }
 
+func runServer(bindAddress string, promURL string, ruleFile string) error {
+	fmt.Println("running mixtool server")
+	http.Handle("/api/v1/rules", &ruleProvisioningHandler{
+		ruleProvisioner: &ruleProvisioner{
+			ruleFile: ruleFile,
+		},
+		prometheusReloader: &prometheusReloader{
+			prometheusReloadURL: promURL,
+		},
+	})
+	return http.ListenAndServe(bindAddress, nil)
+}
+
 type ruleProvisioningHandler struct {
 	ruleProvisioner    *ruleProvisioner
 	prometheusReloader *prometheusReloader
@@ -104,7 +117,7 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 	b := bytes.NewBuffer(nil)
 	tr := io.TeeReader(r, b)
 
-	f, err := os.Open(p.ruleFile)
+	f, err := os.OpenFile(p.ruleFile, os.O_RDWR, 0644)
 	if err != nil && !os.IsNotExist(err) {
 		fmt.Println(err, p.ruleFile)
 		return false, fmt.Errorf("open rule file: %w", err)

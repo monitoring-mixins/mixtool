@@ -76,7 +76,7 @@ func queryWebsite(mixinsWebsite string) ([]byte, error) {
 	return body, nil
 }
 
-func printMixins(mixins []mixin) error {
+func printMixins(mixinsList []mixin) error {
 	writer := tabwriter.NewWriter(os.Stdout, 4, 8, 0, '\t', tabwriter.TabIndent)
 	fmt.Fprintln(writer, "name")
 	fmt.Fprintln(writer, "----")
@@ -122,7 +122,7 @@ func listAction(c *cli.Context) error {
 		return printMixins(mixins)
 	}
 
-	_, err := url.ParseRequestURI(path)
+	_, err = url.ParseRequestURI(path)
 	if err != nil {
 		// check if it's a local json file
 		_, err = os.Stat(path)
@@ -152,45 +152,3 @@ func listAction(c *cli.Context) error {
 	return printMixins(mixins)
 
 }
-
-// func listAction(c *cli.Context) error {
-// 	path := c.String("path")
-// 	var body []byte
-// 	var err error
-// 	if path == "" {
-// 		body, err = queryWebsite(defaultWebsite)
-// 		if err != nil {
-// 			return err
-// 		}
-// 	} else {
-// 		// check if it's a url
-// 		_, err := url.ParseRequestURI(path)
-// 		if err != nil {
-// 			// check if it's a local json file
-// 			_, err = os.Stat(path)
-// 			if err != nil {
-// 				return err
-// 			}
-// 			body, err = ioutil.ReadFile(path)
-// 			if err != nil {
-// 				return err
-// 			}
-// 		} else {
-// 			body, err = queryWebsite(path)
-// 			if err != nil {
-// 				return err
-// 			}
-// 		}
-// 	}
-
-// 	var mixins map[string][]mixin
-// 	if err := json.Unmarshal(body, &mixins); err != nil {
-// 		return fmt.Errorf("failed to unmarshal json: %w", err)
-// 	}
-
-// 	mixinsList := mixins["mixins"]
-
-// 	err = printMixins(mixinsList)
-
-// 	return err
-// }

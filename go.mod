@@ -17,11 +17,13 @@ require (
 	github.com/grafana/grafana v5.2.4+incompatible
 	github.com/grafana/tanka v0.12.0
 	github.com/inconshreveable/log15 v0.0.0-20180818164646-67afb5ed74ec // indirect
+	github.com/jsonnet-bundler/jsonnet-bundler v0.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/prometheus v1.8.2-0.20200923143134-7e2db3d092f3
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf // indirect
 	github.com/urfave/cli v1.22.1
+	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/bufio.v1 v1.0.0-20140618132640-567b2bfa514e // indirect
 	gopkg.in/ini.v1 v1.38.2 // indirect
 	gopkg.in/macaron.v1 v1.3.1 // indirect
