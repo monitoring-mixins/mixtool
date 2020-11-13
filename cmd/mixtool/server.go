@@ -65,19 +65,6 @@ func serverAction(c *cli.Context) error {
 	return http.ListenAndServe(bindAddress, nil)
 }
 
-func runServer(bindAddress string, promURL string, ruleFile string) error {
-	fmt.Println("running mixtool server")
-	http.Handle("/api/v1/rules", &ruleProvisioningHandler{
-		ruleProvisioner: &ruleProvisioner{
-			ruleFile: ruleFile,
-		},
-		prometheusReloader: &prometheusReloader{
-			prometheusReloadURL: promURL,
-		},
-	})
-	return http.ListenAndServe(bindAddress, nil)
-}
-
 type ruleProvisioningHandler struct {
 	ruleProvisioner    *ruleProvisioner
 	prometheusReloader *prometheusReloader

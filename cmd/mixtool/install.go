@@ -17,6 +17,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"net/url"
 	"os"
 	"path"
@@ -52,17 +53,8 @@ func installCommand() cli.Command {
 				Usage: "File to provision rules into.",
 			},
 			cli.StringFlag{
-				Name:  "prometheus-reload-url",
-				Value: "http://127.0.0.1:9090/-/reload",
-				Usage: "Prometheus address to reload after provisioning the rule file(s).",
-			},
-			cli.StringFlag{
 				Name:  "directory, d",
 				Usage: "Path where the downloaded mixin is saved. If it doesn't exist already it will be created",
-			},
-			cli.BoolFlag{
-				Name:  "run-server, s",
-				Usage: "Set this flag to run server to reload Prometheus once mixin files are generated. If this flag is set, you also need to specify server's bind-address, and a prometheus reload URL",
 			},
 		},
 	}
@@ -116,6 +108,7 @@ func generateMixin(directory string, mixinURL string, options mixer.GenerateOpti
 	// imports mixin.libsonnet as the "main" file in the mixin configfuration
 	// then run generate all passing in the vendor folder to find dependencies
 	// the name of the mixin folder inside vendor seems to be the last fragment of mixin's url + subdir
+	// TODO: need to get absolute path of the mixin
 	fragment := filepath.Base(mixinURL)
 	tempContent := fmt.Sprintf("import \"%s\"", filepath.Join(fragment, "mixin.libsonnet"))
 	err = ioutil.WriteFile("temp.jsonnet", []byte(tempContent), 0644)
@@ -132,6 +125,59 @@ func generateMixin(directory string, mixinURL string, options mixer.GenerateOpti
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func putMixin(directory string, mixinURL string, bindAddress string, options mixer.GenerateOptions) error {
+	fmt.Println("running put Mixin")
+
+	wd, err := os.Getwd()
+	fmt.Println("path is", wd)
+	if err != nil {
+		return err
+	}
+
+	// err := os.Chdir(filepath.Join()
+	if err != nil {
+		return fmt.Errorf("Cannot cd into directory %s", err)
+	}
+
+	// // alerts.yaml
+	// alertsFilename := options.AlertsFilename
+	// alertsReader, err := os.Open(alertsFilename)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// rules.yaml
+	rulesFilename := options.RulesFilename
+	rulesReader, err := os.Open(rulesFilename)
+	if err != nil {
+		return err
+	}
+
+	u, err := url.Parse(bindAddress)
+	if err != nil {
+		return err
+	}
+	u.Path = path.Join(u.Path, "/api/v1/rules")
+
+	req, err := http.NewRequest("PUT", u.String(), rulesReader)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode == 200 {
+		fmt.Println("OK")
+	} else {
+		fmt.Printf("resp is %v\n", resp.Body)
+	}
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -206,19 +252,12 @@ func installAction(c *cli.Context) error {
 		return err
 	}
 
-	// read files and run mixtool server
-	// also need to reload alerts, as well as grafana dashboards
-	if c.Bool("run-server") {
-		// should be running outside!
-		bindAddress := c.String("bind-address")
-		promURL := c.String("prometheus-reload-url")
-		ruleFile := c.String("rule-file")
-		err = runServer(bindAddress, promURL, ruleFile)
-		if err != nil {
-			return err
-		}
-
-		// call PUT requests to the server
+	bindAddress := c.String("bind-address")
+	// run put requests onto the server
+	err = putMixin(directory, mixinURL, bindAddress, generateCfg)
+	if err != nil {
+		return err
 	}
+
 	return nil
 }
