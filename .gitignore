@@ -1,3 +1,7 @@
 /_output/
+<<<<<<< HEAD
 /mixtool
 .vscode
+=======
+/mixtool
+>>>>>>> bd0efc3... add mixtool list functionality (#28)
