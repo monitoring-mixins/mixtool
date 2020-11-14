@@ -46,7 +46,7 @@ func installCommand() cli.Command {
 			cli.StringFlag{
 				Name:  "bind-address",
 				Usage: "Address to bind HTTP server to.",
-				Value: "https://127.0.0.1:8080",
+				Value: "http://127.0.0.1:8080",
 			},
 			cli.StringFlag{
 				Name:  "rule-file",
@@ -165,7 +165,7 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 	req, err := http.NewRequest("PUT", u.String(), rulesReader)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("response from server %v", err)
 	}
 
 	if resp.StatusCode == 200 {
