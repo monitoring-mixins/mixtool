@@ -151,7 +151,7 @@ func generateRules(filename string, options mixer.GenerateOptions) error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("inside generate rules", options.RulesFilename)
 	return ioutil.WriteFile(options.RulesFilename, out, 0644)
 }
 

@@ -62,16 +62,15 @@ func installCommand() cli.Command {
 
 // Downloads a mixin from a given repository given by url and places into directory
 // by running jb init and jb install
-func downloadMixin(url string, directory string) error {
+func downloadMixin(url string, jsonnetHome string, directory string) error {
 	// intialize the jsonnet bundler library
 	err := jsonnetbundler.InitCommand(directory)
 	if err != nil {
 		return err
 	}
 
-	// use vendor directory by default
-	// by default, set the single flag on
-	err = jsonnetbundler.InstallCommand(directory, "vendor", []string{url}, false)
+	// by default, set the single flag to false
+	err = jsonnetbundler.InstallCommand(directory, jsonnetHome, []string{url}, false)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -93,10 +92,12 @@ func getMixins() ([]mixin, error) {
 	return mixins, nil
 }
 
-func generateMixin(directory string, mixinURL string, options mixer.GenerateOptions) error {
+func generateMixin(directory string, jsonnetHome string, mixinURL string, options mixer.GenerateOptions) error {
 	fmt.Println("running generate all")
 
-	err := os.Chdir(directory)
+	mixinBaseDirectory := filepath.Join(directory)
+
+	err := os.Chdir(mixinBaseDirectory)
 	if err != nil {
 		return fmt.Errorf("Cannot cd into directory %s", err)
 	}
@@ -104,13 +105,28 @@ func generateMixin(directory string, mixinURL string, options mixer.GenerateOpti
 	files, err := filepath.Glob("*")
 	fmt.Println("in generatemixin, directory is ", directory, files)
 
+	// generate alerts, rules, grafana dashboards
+	// empty files if not present
+
+	u, err := url.Parse(mixinURL)
+	if err != nil {
+		return err
+	}
+
+	// absolute directory is the same as the download url stripped of the scheme
+	absDirectory := path.Join(u.Host, u.Path)
+
+	fmt.Println("absDirectory is", absDirectory)
+
 	// create a temporary jsonnet file that
 	// imports mixin.libsonnet as the "main" file in the mixin configfuration
 	// then run generate all passing in the vendor folder to find dependencies
 	// the name of the mixin folder inside vendor seems to be the last fragment of mixin's url + subdir
 	// TODO: need to get absolute path of the mixin
-	fragment := filepath.Base(mixinURL)
-	tempContent := fmt.Sprintf("import \"%s\"", filepath.Join(fragment, "mixin.libsonnet"))
+	tempContent := fmt.Sprintf("import \"%s\"", filepath.Join(absDirectory, "mixin.libsonnet"))
+
+	// evaluate prometheus rules and alerts
+	// since generateall expects a filename but here we do not need to provide a filename
 	err = ioutil.WriteFile("temp.jsonnet", []byte(tempContent), 0644)
 	if err != nil {
 		return err
@@ -126,6 +142,7 @@ func generateMixin(directory string, mixinURL string, options mixer.GenerateOpti
 		return err
 	}
 	return nil
+
 }
 
 func putMixin(directory string, mixinURL string, bindAddress string, options mixer.GenerateOptions) error {
@@ -233,7 +250,10 @@ func installAction(c *cli.Context) error {
 		return fmt.Errorf("Empty mixinURL")
 	}
 
-	err = downloadMixin(mixinURL, directory)
+	// by default jsonnet packages are downloaded under vendor
+	jsonnetHome := "vendor"
+
+	err = downloadMixin(mixinURL, jsonnetHome, directory)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -247,17 +267,17 @@ func installAction(c *cli.Context) error {
 		YAML:           true,
 	}
 
-	err = generateMixin(directory, mixinURL, generateCfg)
+	err = generateMixin(directory, jsonnetHome, mixinURL, generateCfg)
 	if err != nil {
 		return err
 	}
 
-	bindAddress := c.String("bind-address")
-	// run put requests onto the server
-	err = putMixin(directory, mixinURL, bindAddress, generateCfg)
-	if err != nil {
-		return err
-	}
+	// bindAddress := c.String("bind-address")
+	// // run put requests onto the server
+	// err = putMixin(directory, mixinURL, bindAddress, generateCfg)
+	// if err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
