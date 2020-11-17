@@ -15,6 +15,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -25,6 +26,7 @@ import (
 
 	"github.com/monitoring-mixins/mixtool/pkg/jsonnetbundler"
 	"github.com/monitoring-mixins/mixtool/pkg/mixer"
+	"github.com/pkg/errors"
 
 	"github.com/urfave/cli"
 )
@@ -123,24 +125,105 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 	// then run generate all passing in the vendor folder to find dependencies
 	// the name of the mixin folder inside vendor seems to be the last fragment of mixin's url + subdir
 	// TODO: need to get absolute path of the mixin
-	tempContent := fmt.Sprintf("import \"%s\"", filepath.Join(absDirectory, "mixin.libsonnet"))
+
+	// note - need to somehow explicitly pick up +:: hidden fields in thanos
+	tempContent := fmt.Sprintf(
+		`import "%s"`, filepath.Join(absDirectory, "mixin.libsonnet"))
+
+	// generate rules, dashboards, alerts
+	err = evaluateMixin(tempContent, options)
+	if err != nil {
+		return err
+	}
+
+	// 	tempContent := fmt.Sprintf(
+	// 		`local mixin = (import "%s");
+	// mixin.grafanaDashboards`, filepath.Join(absDirectory, "mixin.libsonnet"))
 
 	// evaluate prometheus rules and alerts
 	// since generateall expects a filename but here we do not need to provide a filename
-	err = ioutil.WriteFile("temp.jsonnet", []byte(tempContent), 0644)
+	// err = ioutil.WriteFile("temp.jsonnet", []byte(tempContent), 0644)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// err = generateAll("temp.jsonnet", options)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// err = os.Remove("temp.jsonnet")
+	// if err != nil {
+	// 	return err
+	// }
+	// return nil
+	return nil
+
+}
+
+// generateMixin generates the mixin given an jsonnet importString and writes
+// to files specified in options
+func evaluateMixin(importStr string, options mixer.GenerateOptions) error {
+	fmt.Println("inside evaluateMixin")
+
+	// rules
+
+	out, err := evaluateInstallRules(importStr, options)
 	if err != nil {
 		return err
 	}
 
-	err = generateAll("temp.jsonnet", options)
+	err = ioutil.WriteFile(options.RulesFilename, out, 0644)
 	if err != nil {
 		return err
 	}
 
-	err = os.Remove("temp.jsonnet")
+	// alerts
+
+	out, err = evaluateInstallAlerts(importStr, options)
 	if err != nil {
 		return err
 	}
+
+	err = ioutil.WriteFile(options.AlertsFilename, out, 0644)
+	if err != nil {
+		return err
+	}
+
+	// dashboards
+
+	dashboards, err := evaluateInstallDashboards(importStr, options)
+	if err != nil {
+		return err
+	}
+
+	if options.Directory == "" {
+		return errors.New("missing directory flag to tell where to write to")
+	}
+
+	if err := os.MkdirAll(options.Directory, 0755); err != nil {
+		return err
+	}
+
+	// Creating this func so that we can make proper use of defer
+	writeDashboard := func(name string, dashboard json.RawMessage) error {
+		file, err := os.Create(filepath.Join(options.Directory, name))
+		if err != nil {
+			return errors.Wrap(err, "failed to create dashboard file")
+		}
+		defer file.Close()
+
+		file.Write(dashboard)
+
+		return nil
+	}
+
+	for name, dashboard := range dashboards {
+		if err := writeDashboard(name, dashboard); err != nil {
+			return err
+		}
+	}
+
 	return nil
 
 }
@@ -155,16 +238,16 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 	}
 
 	// err := os.Chdir(filepath.Join()
-	if err != nil {
-		return fmt.Errorf("Cannot cd into directory %s", err)
-	}
-
-	// // alerts.yaml
-	// alertsFilename := options.AlertsFilename
-	// alertsReader, err := os.Open(alertsFilename)
 	// if err != nil {
-	// 	return err
+	// 	return fmt.Errorf("Cannot cd into directory %s", err)
 	// }
+
+	// alerts.yaml
+	alertsFilename := options.AlertsFilename
+	alertsReader, err := os.Open(alertsFilename)
+	if err != nil {
+		return err
+	}
 
 	// rules.yaml
 	rulesFilename := options.RulesFilename
@@ -179,6 +262,7 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 	}
 	u.Path = path.Join(u.Path, "/api/v1/rules")
 
+	// request for rules
 	req, err := http.NewRequest("PUT", u.String(), rulesReader)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -191,8 +275,17 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 		fmt.Printf("resp is %v\n", resp.Body)
 	}
 
+	// same request but for alerts
+	req, err = http.NewRequest("PUT", u.String(), alertsReader)
+	resp, err = http.DefaultClient.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("response from server %v", err)
+	}
+
+	if resp.StatusCode == 200 {
+		fmt.Println("OK")
+	} else {
+		fmt.Printf("resp is %v\n", resp.Body)
 	}
 
 	return nil
