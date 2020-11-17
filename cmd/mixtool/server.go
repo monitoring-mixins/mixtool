@@ -102,7 +102,7 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 	b := bytes.NewBuffer(nil)
 	tr := io.TeeReader(r, b)
 
-	f, err := os.Open(p.ruleFile)
+	f, err := os.OpenFile(p.ruleFile, os.O_RDWR, 0644)
 	if err != nil && !os.IsNotExist(err) {
 		return false, fmt.Errorf("open rule file: %w", err)
 	}
@@ -123,6 +123,11 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 
 	if err := f.Truncate(0); err != nil {
 		return false, fmt.Errorf("truncate file: %w", err)
+	}
+
+	_, err = f.Seek(0, 0)
+	if err != nil {
+		return false, fmt.Errorf("seek file %w", err)
 	}
 
 	if _, err := io.Copy(f, b); err != nil {
