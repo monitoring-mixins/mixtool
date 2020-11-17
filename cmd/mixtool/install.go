@@ -15,9 +15,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -26,7 +24,6 @@ import (
 
 	"github.com/monitoring-mixins/mixtool/pkg/jsonnetbundler"
 	"github.com/monitoring-mixins/mixtool/pkg/mixer"
-	"github.com/pkg/errors"
 
 	"github.com/urfave/cli"
 )
@@ -51,12 +48,12 @@ func installCommand() cli.Command {
 				Value: "http://127.0.0.1:8080",
 			},
 			cli.StringFlag{
-				Name:  "rule-file",
-				Usage: "File to provision rules into.",
-			},
-			cli.StringFlag{
 				Name:  "directory, d",
 				Usage: "Path where the downloaded mixin is saved. If it doesn't exist already it will be created",
+			},
+			cli.BoolFlag{
+				Name:  "put, p",
+				Usage: "Specify this flag when you want to send PUT request to mixtool server once the mixins are generated",
 			},
 		},
 	}
@@ -68,14 +65,13 @@ func downloadMixin(url string, jsonnetHome string, directory string) error {
 	// intialize the jsonnet bundler library
 	err := jsonnetbundler.InitCommand(directory)
 	if err != nil {
-		return err
+		return fmt.Errorf("jsonnet bundler init failed %v", err)
 	}
 
 	// by default, set the single flag to false
 	err = jsonnetbundler.InstallCommand(directory, jsonnetHome, []string{url}, false)
 	if err != nil {
-		fmt.Println(err)
-		return err
+		return fmt.Errorf("jsonnet bundler install failed %v", err)
 	}
 
 	return nil
@@ -112,7 +108,7 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 
 	u, err := url.Parse(mixinURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("url parse %v", err)
 	}
 
 	// absolute directory is the same as the download url stripped of the scheme
@@ -120,108 +116,13 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 
 	fmt.Println("absDirectory is", absDirectory)
 
-	// create a temporary jsonnet file that
-	// imports mixin.libsonnet as the "main" file in the mixin configfuration
-	// then run generate all passing in the vendor folder to find dependencies
-	// the name of the mixin folder inside vendor seems to be the last fragment of mixin's url + subdir
-	// TODO: need to get absolute path of the mixin
-
-	// note - need to somehow explicitly pick up +:: hidden fields in thanos
 	tempContent := fmt.Sprintf(
 		`import "%s"`, filepath.Join(absDirectory, "mixin.libsonnet"))
 
 	// generate rules, dashboards, alerts
-	err = evaluateMixin(tempContent, options)
+	err = generateAllMixin(tempContent, options)
 	if err != nil {
-		return err
-	}
-
-	// 	tempContent := fmt.Sprintf(
-	// 		`local mixin = (import "%s");
-	// mixin.grafanaDashboards`, filepath.Join(absDirectory, "mixin.libsonnet"))
-
-	// evaluate prometheus rules and alerts
-	// since generateall expects a filename but here we do not need to provide a filename
-	// err = ioutil.WriteFile("temp.jsonnet", []byte(tempContent), 0644)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// err = generateAll("temp.jsonnet", options)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// err = os.Remove("temp.jsonnet")
-	// if err != nil {
-	// 	return err
-	// }
-	// return nil
-	return nil
-
-}
-
-// generateMixin generates the mixin given an jsonnet importString and writes
-// to files specified in options
-func evaluateMixin(importStr string, options mixer.GenerateOptions) error {
-	fmt.Println("inside evaluateMixin")
-
-	// rules
-
-	out, err := evaluateInstallRules(importStr, options)
-	if err != nil {
-		return err
-	}
-
-	err = ioutil.WriteFile(options.RulesFilename, out, 0644)
-	if err != nil {
-		return err
-	}
-
-	// alerts
-
-	out, err = evaluateInstallAlerts(importStr, options)
-	if err != nil {
-		return err
-	}
-
-	err = ioutil.WriteFile(options.AlertsFilename, out, 0644)
-	if err != nil {
-		return err
-	}
-
-	// dashboards
-
-	dashboards, err := evaluateInstallDashboards(importStr, options)
-	if err != nil {
-		return err
-	}
-
-	if options.Directory == "" {
-		return errors.New("missing directory flag to tell where to write to")
-	}
-
-	if err := os.MkdirAll(options.Directory, 0755); err != nil {
-		return err
-	}
-
-	// Creating this func so that we can make proper use of defer
-	writeDashboard := func(name string, dashboard json.RawMessage) error {
-		file, err := os.Create(filepath.Join(options.Directory, name))
-		if err != nil {
-			return errors.Wrap(err, "failed to create dashboard file")
-		}
-		defer file.Close()
-
-		file.Write(dashboard)
-
-		return nil
-	}
-
-	for name, dashboard := range dashboards {
-		if err := writeDashboard(name, dashboard); err != nil {
-			return err
-		}
+		return fmt.Errorf("generateAllMixins %v", err)
 	}
 
 	return nil
@@ -229,18 +130,6 @@ func evaluateMixin(importStr string, options mixer.GenerateOptions) error {
 }
 
 func putMixin(directory string, mixinURL string, bindAddress string, options mixer.GenerateOptions) error {
-	fmt.Println("running put Mixin")
-
-	wd, err := os.Getwd()
-	fmt.Println("path is", wd)
-	if err != nil {
-		return err
-	}
-
-	// err := os.Chdir(filepath.Join()
-	// if err != nil {
-	// 	return fmt.Errorf("Cannot cd into directory %s", err)
-	// }
 
 	// alerts.yaml
 	alertsFilename := options.AlertsFilename
@@ -270,7 +159,7 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 	}
 
 	if resp.StatusCode == 200 {
-		fmt.Println("OK")
+		fmt.Println("PUT rules OK")
 	} else {
 		fmt.Printf("resp is %v\n", resp.Body)
 	}
@@ -283,7 +172,7 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 	}
 
 	if resp.StatusCode == 200 {
-		fmt.Println("OK")
+		fmt.Println("PUT alerts OK")
 	} else {
 		fmt.Printf("resp is %v\n", resp.Body)
 	}
@@ -301,7 +190,7 @@ func installAction(c *cli.Context) error {
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(directory, 0755)
 		if err != nil {
-			return err
+			return fmt.Errorf("could not create directory %v", err)
 		}
 	}
 
@@ -312,7 +201,7 @@ func installAction(c *cli.Context) error {
 
 	mixinsList, err := getMixins()
 	if err != nil {
-		return err
+		return fmt.Errorf("getMixins failed %v", err)
 	}
 
 	var mixinURL string
@@ -324,7 +213,7 @@ func installAction(c *cli.Context) error {
 				// join paths together
 				u, err := url.Parse(m.URL)
 				if err != nil {
-					return err
+					return fmt.Errorf("url parse failed %v", err)
 				}
 				u.Path = path.Join(u.Path, m.Subdir)
 				mixinURL = u.String()
@@ -348,7 +237,6 @@ func installAction(c *cli.Context) error {
 
 	err = downloadMixin(mixinURL, jsonnetHome, directory)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -365,12 +253,16 @@ func installAction(c *cli.Context) error {
 		return err
 	}
 
-	// bindAddress := c.String("bind-address")
-	// // run put requests onto the server
-	// err = putMixin(directory, mixinURL, bindAddress, generateCfg)
-	// if err != nil {
-	// 	return err
-	// }
+	// check if put address flag was set
+
+	if c.Bool("put") {
+		bindAddress := c.String("bind-address")
+		// run put requests onto the server
+		err = putMixin(directory, mixinURL, bindAddress, generateCfg)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
