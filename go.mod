@@ -11,7 +11,7 @@ require (
 	github.com/go-macaron/inject v0.0.0-20160627170012-d8a0b8677191 // indirect
 	github.com/go-macaron/session v0.0.0-20170320172209-b8e286a0dba8 // indirect
 	github.com/gobuffalo/packr v1.30.1
-	github.com/gobuffalo/packr/v2 v2.8.0
+	github.com/gobuffalo/packr/v2 v2.8.1
 	github.com/google/go-jsonnet v0.16.1-0.20200908152747-b70cbd441a39
 	github.com/gosimple/slug v1.2.0 // indirect
 	github.com/grafana/grafana v5.2.4+incompatible

@@ -15,8 +15,9 @@
 package main
 
 import (
-	"bytes"
+	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -98,51 +99,75 @@ type ruleProvisioner struct {
 // to existing, does not provision them. It returns whether Prometheus should
 // be reloaded and if an error has occurred.
 func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
-	fileData, err := ioutil.ReadFile(p.ruleFile)
-	if err != nil {
-		return false, fmt.Errorf("unable to read %w", err)
-	}
-
 	newData, err := ioutil.ReadAll(r)
 	if err != nil {
-		return false, fmt.Errorf("unable to read %w", err)
+		return false, fmt.Errorf("unable to read new rules: %w", err)
 	}
 
-	res := bytes.Compare(fileData, newData)
-	if res == 0 {
-		return false, nil
-	}
-
-	// create a temp file
 	tempfile, err := ioutil.TempFile(filepath.Dir(p.ruleFile), "temp-mixtool")
 	if err != nil {
-		return false, fmt.Errorf("unable to create temp file %w", err)
+		return false, fmt.Errorf("unable to create temp file: %w", err)
 	}
 
 	n, err := tempfile.Write(newData)
 	if err != nil {
-		return false, fmt.Errorf("error when writing %w", err)
+		return false, fmt.Errorf("error when writing new rules: %w", err)
 	}
 
 	if n != len(newData) {
-		return false, fmt.Errorf("writing error, wrote %v bytes, expected %v", n, len(newData))
+		return false, fmt.Errorf("writing error, wrote %d bytes, expected %d", n, len(newData))
 	}
 
 	tempfile.Sync()
 
-	// delete the original file and rename tempfile to the original file
-	if err = os.Remove(p.ruleFile); err != nil {
-		return false, fmt.Errorf("failed to remove old rule file %w", err)
+	ruleFileReader, err := os.OpenFile(p.ruleFile, os.O_RDWR, 0644)
+	if err != nil {
+		return false, fmt.Errorf("unable to read existing rules: %w", err)
+	}
+
+	newFileReader, err := os.OpenFile(tempfile.Name(), os.O_RDWR, 0644)
+	if err != nil {
+		return false, fmt.Errorf("unable to open new rules file: %w", err)
+	}
+
+	reload, err := readersEqual(newFileReader, ruleFileReader)
+	if err != nil {
+		return false, fmt.Errorf("error from readersEqual: %w", err)
+	}
+
+	if !reload {
+		return false, nil
 	}
 
 	if err = os.Rename(tempfile.Name(), p.ruleFile); err != nil {
-		return false, fmt.Errorf("cannot rename %w", err)
+		return false, fmt.Errorf("cannot rename rules file: %w", err)
 	}
 	return true, nil
 }
 
 type prometheusReloader struct {
 	prometheusReloadURL string
+}
+
+func readersEqual(r1, r2 io.Reader) (bool, error) {
+	buf1 := bufio.NewReader(r1)
+	buf2 := bufio.NewReader(r2)
+	for {
+		b1, err1 := buf1.ReadByte()
+		b2, err2 := buf2.ReadByte()
+		if err1 != nil && !errors.Is(err1, io.EOF) {
+			return false, err1
+		}
+		if err2 != nil && !errors.Is(err2, io.EOF) {
+			return false, err2
+		}
+		if errors.Is(err1, io.EOF) || errors.Is(err2, io.EOF) {
+			return err1 == err2, nil
+		}
+		if b1 != b2 {
+			return false, nil
+		}
+	}
 }
 
 func (r *prometheusReloader) triggerReload(ctx context.Context) error {
