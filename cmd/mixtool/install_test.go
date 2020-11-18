@@ -18,7 +18,7 @@ func TestInstallMixin(t *testing.T) {
 		t.Errorf("failed to make directory %v", err)
 	}
 
-	// defer os.RemoveAll(tmpdir)
+	defer os.RemoveAll(tmpdir)
 
 	body, err := queryWebsite(defaultWebsite)
 	if err != nil {
@@ -43,24 +43,26 @@ func TestInstallMixin(t *testing.T) {
 		mixinURL := path.Join(m.URL, m.Subdir)
 
 		fmt.Printf("installing %v\n", mixinURL)
-		dldir := path.Join(tmpdir, m.Name)
+		dldir := path.Join(tmpdir, m.Name+"mixin-test")
 
 		err = os.Mkdir(dldir, 0755)
 		if err != nil {
-			t.Errorf("failed to create directory %v", dldir)
+			t.Errorf("failed to create directory %s", dldir)
 		}
 
-		err = downloadMixin(mixinURL, dldir)
+		jsonnetHome := "vendor"
+
+		err = downloadMixin(mixinURL, jsonnetHome, dldir)
 		if err != nil {
-			t.Errorf("failed to download mixin at %v. %v", mixinURL, err)
+			t.Errorf("failed to download mixin at %s: %w", mixinURL, err)
 		}
 
-		err = generateMixin(dldir, mixinURL, generateCfg)
+		err = generateMixin(dldir, jsonnetHome, mixinURL, generateCfg)
 		if err != nil {
-			t.Errorf("failed to generate mixin yaml for %v. %v", mixinURL, err)
+			t.Errorf("failed to generate mixin yaml for %s: %w", mixinURL, err)
 		}
 
-		// verify that the contents are correct
+		// verify that alerts, rules, dashboards exist
 		err = os.Chdir(dldir)
 		if err != nil {
 			t.Errorf("could not cd into %s", dldir)
@@ -78,6 +80,7 @@ func TestInstallMixin(t *testing.T) {
 			t.Errorf("expected dashboards_out in %s", dldir)
 		}
 
+		// verify that the output of alerts and rules matches using jsonnet
 	}
 
 }

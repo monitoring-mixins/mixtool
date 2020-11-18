@@ -21,6 +21,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/monitoring-mixins/mixtool/pkg/jsonnetbundler"
 	"github.com/monitoring-mixins/mixtool/pkg/mixer"
@@ -114,13 +115,15 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 	// absolute directory is the same as the download url stripped of the scheme
 	absDirectory := path.Join(u.Host, u.Path)
 
+	// strip leading slashes and colons
+	absDirectory = strings.TrimLeft(absDirectory, "/:")
+
 	fmt.Println("absDirectory is", absDirectory)
 
-	tempContent := fmt.Sprintf(
-		`import "%s"`, filepath.Join(absDirectory, "mixin.libsonnet"))
+	importFile := filepath.Join(absDirectory, "mixin.libsonnet")
 
 	// generate rules, dashboards, alerts
-	err = generateAllMixin(tempContent, options)
+	err = generateAll(importFile, options)
 	if err != nil {
 		return fmt.Errorf("generateAllMixins %v", err)
 	}
