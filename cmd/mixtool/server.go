@@ -15,15 +15,14 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/urfave/cli"
 )
@@ -99,63 +98,47 @@ type ruleProvisioner struct {
 // to existing, does not provision them. It returns whether Prometheus should
 // be reloaded and if an error has occurred.
 func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
-	b := bytes.NewBuffer(nil)
-	tr := io.TeeReader(r, b)
-
-	f, err := os.OpenFile(p.ruleFile, os.O_RDWR, 0644)
-	if err != nil && !os.IsNotExist(err) {
-		return false, fmt.Errorf("open rule file: %w", err)
-	}
-	if os.IsNotExist(err) {
-		f, err = os.Create(p.ruleFile)
-		if err != nil {
-			return false, fmt.Errorf("create rule file: %w", err)
-		}
-	}
-
-	equal, err := readersEqual(tr, f)
+	fileData, err := ioutil.ReadFile(p.ruleFile)
 	if err != nil {
-		return false, fmt.Errorf("compare existing rules with provisioned intention: %w", err)
+		return false, fmt.Errorf("unable to read %w", err)
 	}
-	if equal {
+
+	newData, err := ioutil.ReadAll(r)
+	if err != nil {
+		return false, fmt.Errorf("unable to read %w", err)
+	}
+
+	res := bytes.Compare(fileData, newData)
+	if res == 0 {
 		return false, nil
 	}
 
-	if err := f.Truncate(0); err != nil {
-		return false, fmt.Errorf("truncate file: %w", err)
-	}
-
-	_, err = f.Seek(0, 0)
+	// create a temp file
+	tempfile, err := ioutil.TempFile(filepath.Dir(p.ruleFile), "temp-mixtool")
 	if err != nil {
-		return false, fmt.Errorf("seek file %w", err)
+		return false, fmt.Errorf("unable to create temp file %w", err)
 	}
 
-	if _, err := io.Copy(f, b); err != nil {
-		return false, fmt.Errorf("provision rule to file: %w", err)
+	n, err := tempfile.Write(newData)
+	if err != nil {
+		return false, fmt.Errorf("error when writing %w", err)
 	}
 
+	if n != len(newData) {
+		return false, fmt.Errorf("writing error, wrote %v bytes, expected %v", n, len(newData))
+	}
+
+	tempfile.Sync()
+
+	// delete the original file and rename tempfile to the original file
+	if err = os.Remove(p.ruleFile); err != nil {
+		return false, fmt.Errorf("failed to remove old rule file %w", err)
+	}
+
+	if err = os.Rename(tempfile.Name(), p.ruleFile); err != nil {
+		return false, fmt.Errorf("cannot rename %w", err)
+	}
 	return true, nil
-}
-
-func readersEqual(r1, r2 io.Reader) (bool, error) {
-	buf1 := bufio.NewReader(r1)
-	buf2 := bufio.NewReader(r2)
-	for {
-		b1, err1 := buf1.ReadByte()
-		b2, err2 := buf2.ReadByte()
-		if err1 != nil && !errors.Is(err1, io.EOF) {
-			return false, err1
-		}
-		if err2 != nil && !errors.Is(err2, io.EOF) {
-			return false, err2
-		}
-		if errors.Is(err1, io.EOF) || errors.Is(err2, io.EOF) {
-			return err1 == err2, nil
-		}
-		if b1 != b2 {
-			return false, nil
-		}
-	}
 }
 
 type prometheusReloader struct {
