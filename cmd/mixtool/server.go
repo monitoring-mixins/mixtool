@@ -16,7 +16,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -24,6 +23,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/urfave/cli"
 )
@@ -84,7 +84,6 @@ func (h *ruleProvisioningHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 
 	if reloadNecessary {
-		fmt.Println("reloading prometheus")
 		if err := h.prometheusReloader.triggerReload(ctx); err != nil {
 			http.Error(w, fmt.Sprintf("Internal Server Error: %v", err), http.StatusInternalServerError)
 			return
@@ -100,51 +99,60 @@ type ruleProvisioner struct {
 // to existing, does not provision them. It returns whether Prometheus should
 // be reloaded and if an error has occurred.
 func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
-	fmt.Println("trying to provision 1")
-	b := bytes.NewBuffer(nil)
-	tr := io.TeeReader(r, b)
-
-	f, err := os.OpenFile(p.ruleFile, os.O_RDWR, 0644)
-	if err != nil && !os.IsNotExist(err) {
-		fmt.Println(err, p.ruleFile)
-		return false, fmt.Errorf("open rule file: %w", err)
-	}
-	if os.IsNotExist(err) {
-		f, err = os.Create(p.ruleFile)
-		if err != nil {
-			return false, fmt.Errorf("create rule file: %w", err)
-		}
-	}
-
-	equal, err := readersEqual(tr, f)
+	newData, err := ioutil.ReadAll(r)
 	if err != nil {
-		return false, fmt.Errorf("compare existing rules with provisioned intention: %w", err)
+		return false, fmt.Errorf("unable to read new rules: %w", err)
 	}
+
+	tempfile, err := ioutil.TempFile(filepath.Dir(p.ruleFile), "temp-mixtool")
+	if err != nil {
+		return false, fmt.Errorf("unable to create temp file: %w", err)
+	}
+
+	n, err := tempfile.Write(newData)
+	if err != nil {
+		return false, fmt.Errorf("error when writing new rules: %w", err)
+	}
+
+	if n != len(newData) {
+		return false, fmt.Errorf("writing error, wrote %d bytes, expected %d", n, len(newData))
+	}
+
+	tempfile.Sync()
+
+	ruleFileReader, err := os.OpenFile(p.ruleFile, os.O_RDWR, 0644)
+	if err != nil {
+		return false, fmt.Errorf("unable to read existing rules: %w", err)
+	}
+
+	newFileReader, err := os.OpenFile(tempfile.Name(), os.O_RDWR, 0644)
+	if err != nil {
+		return false, fmt.Errorf("unable to open new rules file: %w", err)
+	}
+
+	equal, err := readersEqual(newFileReader, ruleFileReader)
+	if err != nil {
+		return false, fmt.Errorf("error from readersEqual: %w", err)
+	}
+
 	if equal {
+		fmt.Println("don't need to reload")
 		return false, nil
 	}
 
-	fmt.Println("trying to provision 2")
+	fmt.Printf("need to remove oldrulefile @ %s, replace with newfile name %s\n", p.ruleFile, tempfile.Name())
 
-	if err := f.Truncate(0); err != nil {
-		fmt.Println("err is", err)
-		return false, fmt.Errorf("truncate file: %w", err)
+	if err = os.Rename(tempfile.Name(), p.ruleFile); err != nil {
+		return false, fmt.Errorf("cannot rename rules file: %w", err)
 	}
-
-	_, err = f.Seek(0, 0)
-	if err != nil {
-		return false, fmt.Errorf("seek file %w", err)
-	}
-
-	if _, err := io.Copy(f, b); err != nil {
-		return false, fmt.Errorf("provision rule to file: %w", err)
-	}
-
 	return true, nil
 }
 
+type prometheusReloader struct {
+	prometheusReloadURL string
+}
+
 func readersEqual(r1, r2 io.Reader) (bool, error) {
-	fmt.Println("comparing rn")
 	buf1 := bufio.NewReader(r1)
 	buf2 := bufio.NewReader(r2)
 	for {
@@ -165,12 +173,7 @@ func readersEqual(r1, r2 io.Reader) (bool, error) {
 	}
 }
 
-type prometheusReloader struct {
-	prometheusReloadURL string
-}
-
 func (r *prometheusReloader) triggerReload(ctx context.Context) error {
-	fmt.Println("triggering reload")
 	req, err := http.NewRequest("POST", r.prometheusReloadURL, nil)
 	if err != nil {
 		return fmt.Errorf("create request: %w", err)

@@ -141,12 +141,14 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 		return err
 	}
 
-	// rules.yaml
-	rulesFilename := options.RulesFilename
-	rulesReader, err := os.Open(rulesFilename)
-	if err != nil {
-		return err
-	}
+	// // rules.yaml
+	// rulesFilename := options.RulesFilename
+	// rulesReader, err := os.Open(rulesFilename)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// merge rules and alerts together
 
 	u, err := url.Parse(bindAddress)
 	if err != nil {
@@ -154,22 +156,22 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 	}
 	u.Path = path.Join(u.Path, "/api/v1/rules")
 
-	// request for rules
-	req, err := http.NewRequest("PUT", u.String(), rulesReader)
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("response from server %v", err)
-	}
+	// // request for rules
+	// req, err := http.NewRequest("PUT", u.String(), rulesReader)
+	// resp, err := http.DefaultClient.Do(req)
+	// if err != nil {
+	// 	return fmt.Errorf("response from server %v", err)
+	// }
 
-	if resp.StatusCode == 200 {
-		fmt.Println("PUT rules OK")
-	} else {
-		fmt.Printf("resp is %v\n", resp.Body)
-	}
+	// if resp.StatusCode == 200 {
+	// 	fmt.Println("PUT rules OK")
+	// } else {
+	// 	fmt.Printf("resp is %v\n", resp.Body)
+	// }
 
 	// same request but for alerts
-	req, err = http.NewRequest("PUT", u.String(), alertsReader)
-	resp, err = http.DefaultClient.Do(req)
+	req, err := http.NewRequest("PUT", u.String(), alertsReader)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("response from server %v", err)
 	}
@@ -177,7 +179,7 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 	if resp.StatusCode == 200 {
 		fmt.Println("PUT alerts OK")
 	} else {
-		fmt.Printf("resp is %v\n", resp.Body)
+		return fmt.Errorf("response code: %d resp is %v", resp.StatusCode, resp.Body)
 	}
 
 	return nil
