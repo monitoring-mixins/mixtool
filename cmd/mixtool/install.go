@@ -29,13 +29,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-// type mixin struct {
-// 	URL         string `json:"source"`
-// 	Description string `json:"description,omitempty"`
-// 	Name        string `json:"name"`
-// 	Subdir      string `json:"subdir"`
-// }
-
 func installCommand() cli.Command {
 	return cli.Command{
 		Name:        "install",
@@ -128,18 +121,23 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 		return fmt.Errorf("generateAllMixins %v", err)
 	}
 
+	err = generateRulesAlerts(importFile, options)
+	if err != nil {
+		return fmt.Errorf("generateRulesAlerts %v", err)
+	}
+
 	return nil
 
 }
 
 func putMixin(directory string, mixinURL string, bindAddress string, options mixer.GenerateOptions) error {
 
-	// alerts.yaml
-	alertsFilename := options.AlertsFilename
-	alertsReader, err := os.Open(alertsFilename)
-	if err != nil {
-		return err
-	}
+	// // alerts.yaml
+	// alertsFilename := options.AlertsFilename
+	// alertsReader, err := os.Open(alertsFilename)
+	// if err != nil {
+	// 	return err
+	// }
 
 	// // rules.yaml
 	// rulesFilename := options.RulesFilename
@@ -170,6 +168,24 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 	// }
 
 	// same request but for alerts
+	// req, err := http.NewRequest("PUT", u.String(), alertsReader)
+	// resp, err := http.DefaultClient.Do(req)
+	// if err != nil {
+	// 	return fmt.Errorf("response from server %v", err)
+	// }
+
+	// if resp.StatusCode == 200 {
+	// 	fmt.Println("PUT alerts OK")
+	// } else {
+	// 	return fmt.Errorf("response code: %d resp is %v", resp.StatusCode, resp.Body)
+	// }
+
+	// temporary: generate rules and alerts in a single file
+	alertsReader, err := os.Open("rules-alerts.yaml")
+	if err != nil {
+		return err
+	}
+
 	req, err := http.NewRequest("PUT", u.String(), alertsReader)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -181,7 +197,6 @@ func putMixin(directory string, mixinURL string, bindAddress string, options mix
 	} else {
 		return fmt.Errorf("response code: %d resp is %v", resp.StatusCode, resp.Body)
 	}
-
 	return nil
 }
 

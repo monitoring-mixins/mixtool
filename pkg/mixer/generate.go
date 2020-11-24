@@ -82,6 +82,26 @@ func GenerateRules(filename string, opts GenerateOptions) ([]byte, error) {
 	return output, nil
 }
 
+func GenerateRulesAlerts(filename string, opts GenerateOptions) ([]byte, error) {
+	vm := NewVM(opts.JPaths)
+
+	j, err := evaluatePrometheusRulesAlerts(vm, filename)
+	if err != nil {
+		return nil, err
+	}
+
+	output := []byte(j)
+
+	if opts.YAML {
+		output, err = yaml.JSONToYAML(output)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return output, nil
+}
+
 func GenerateDashboards(filename string, opts GenerateOptions) (map[string]json.RawMessage, error) {
 	vm := NewVM(opts.JPaths)
 
