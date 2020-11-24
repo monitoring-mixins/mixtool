@@ -130,12 +130,12 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 		return false, fmt.Errorf("unable to open new rules file: %w", err)
 	}
 
-	reload, err := readersEqual(newFileReader, ruleFileReader)
+	equal, err := readersEqual(newFileReader, ruleFileReader)
 	if err != nil {
 		return false, fmt.Errorf("error from readersEqual: %w", err)
 	}
 
-	if !reload {
+	if equal {
 		return false, nil
 	}
 
