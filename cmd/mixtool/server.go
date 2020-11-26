@@ -136,11 +136,8 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 	}
 
 	if equal {
-		fmt.Println("don't need to reload")
 		return false, nil
 	}
-
-	fmt.Printf("need to remove oldrulefile @ %s, replace with newfile name %s\n", p.ruleFile, tempfile.Name())
 
 	if err = os.Rename(tempfile.Name(), p.ruleFile); err != nil {
 		return false, fmt.Errorf("cannot rename rules file: %w", err)
