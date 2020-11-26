@@ -149,5 +149,6 @@ func listAction(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
+  
 	return printMixins(mixins)
 }
