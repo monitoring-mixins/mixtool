@@ -15,15 +15,14 @@
 package main
 
 import (
-	"bufio"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
+
+	"gopkg.in/yaml.v2"
 
 	"github.com/urfave/cli"
 )
@@ -44,8 +43,8 @@ func serverCommand() cli.Command {
 				Usage: "Prometheus address to reload after provisioning the rule file(s).",
 			},
 			cli.StringFlag{
-				Name:  "rule-file",
-				Usage: "File to provision rules into.",
+				Name:  "config-file",
+				Usage: "Prometheus configuration file",
 			},
 		},
 		Action: serverAction,
@@ -56,7 +55,7 @@ func serverAction(c *cli.Context) error {
 	bindAddress := c.String("bind-address")
 	http.Handle("/api/v1/rules", &ruleProvisioningHandler{
 		ruleProvisioner: &ruleProvisioner{
-			ruleFile: c.String("rule-file"),
+			configFile: c.String("config-file"),
 		},
 		prometheusReloader: &prometheusReloader{
 			prometheusReloadURL: c.String("prometheus-reload-url"),
@@ -92,85 +91,40 @@ func (h *ruleProvisioningHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 }
 
 type ruleProvisioner struct {
-	ruleFile string
+	configFile string
 }
 
-// provision attempts to provision the rule files read from r, and if identical
-// to existing, does not provision them. It returns whether Prometheus should
-// be reloaded and if an error has occurred.
+// PUT request
+// /api/v1/rules/<name>
+// name specify
+// filename determined by server
+
+// provision attempts to provision the rule files read from r
+// expects {rule-filename: "filename", data: "groups: ...."}
+// makes new file and dumps data into rule-filename
+// edits prometheus configuration to include that entry
 func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
-	newData, err := ioutil.ReadAll(r)
+
+	configReader, err := os.OpenFile(p.configFile, os.O_RDWR, 0644)
 	if err != nil {
-		return false, fmt.Errorf("unable to read new rules: %w", err)
+		return false, fmt.Errorf("unable to open prometheus config file: %w", err)
 	}
 
-	tempfile, err := ioutil.TempFile(filepath.Dir(p.ruleFile), "temp-mixtool")
+	configBuf, err := ioutil.ReadAll(configReader)
 	if err != nil {
-		return false, fmt.Errorf("unable to create temp file: %w", err)
+		return false, fmt.Errorf("unable to read prometheus config file: %w", err)
 	}
-
-	n, err := tempfile.Write(newData)
+	m := make(map[string]interface{})
+	err = yaml.Unmarshal(configBuf, &m)
 	if err != nil {
-		return false, fmt.Errorf("error when writing new rules: %w", err)
+		return false, fmt.Errorf("unable to unmarshal prometheus config file: %w", err)
 	}
 
-	if n != len(newData) {
-		return false, fmt.Errorf("writing error, wrote %d bytes, expected %d", n, len(newData))
-	}
-
-	tempfile.Sync()
-
-	ruleFileReader, err := os.OpenFile(p.ruleFile, os.O_RDWR, 0644)
-	if err != nil {
-		return false, fmt.Errorf("unable to read existing rules: %w", err)
-	}
-
-	newFileReader, err := os.OpenFile(tempfile.Name(), os.O_RDWR, 0644)
-	if err != nil {
-		return false, fmt.Errorf("unable to open new rules file: %w", err)
-	}
-
-	equal, err := readersEqual(newFileReader, ruleFileReader)
-	if err != nil {
-		return false, fmt.Errorf("error from readersEqual: %w", err)
-	}
-
-	if equal {
-		fmt.Println("don't need to reload")
-		return false, nil
-	}
-
-	fmt.Printf("need to remove oldrulefile @ %s, replace with newfile name %s\n", p.ruleFile, tempfile.Name())
-
-	if err = os.Rename(tempfile.Name(), p.ruleFile); err != nil {
-		return false, fmt.Errorf("cannot rename rules file: %w", err)
-	}
 	return true, nil
 }
 
 type prometheusReloader struct {
 	prometheusReloadURL string
-}
-
-func readersEqual(r1, r2 io.Reader) (bool, error) {
-	buf1 := bufio.NewReader(r1)
-	buf2 := bufio.NewReader(r2)
-	for {
-		b1, err1 := buf1.ReadByte()
-		b2, err2 := buf2.ReadByte()
-		if err1 != nil && !errors.Is(err1, io.EOF) {
-			return false, err1
-		}
-		if err2 != nil && !errors.Is(err2, io.EOF) {
-			return false, err2
-		}
-		if errors.Is(err1, io.EOF) || errors.Is(err2, io.EOF) {
-			return err1 == err2, nil
-		}
-		if b1 != b2 {
-			return false, nil
-		}
-	}
 }
 
 func (r *prometheusReloader) triggerReload(ctx context.Context) error {

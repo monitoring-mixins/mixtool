@@ -28,5 +28,6 @@ require (
 	gopkg.in/ini.v1 v1.38.2 // indirect
 	gopkg.in/macaron.v1 v1.3.1 // indirect
 	gopkg.in/redis.v2 v2.3.2 // indirect
+	gopkg.in/yaml.v2 v2.3.0
 	sigs.k8s.io/yaml v1.2.0
 )
