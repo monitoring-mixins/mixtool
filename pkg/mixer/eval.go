@@ -24,7 +24,7 @@ func evaluatePrometheusAlerts(vm *jsonnet.VM, filename string) (string, error) {
 	snippet := fmt.Sprintf(`
 local mixin = (import %q);
 
-if std.objectHas(mixin, "prometheusAlerts")
+if std.objectHasAll(mixin, "prometheusAlerts")
 then mixin.prometheusAlerts
 else {}
 `, filename)
@@ -36,7 +36,7 @@ func evaluatePrometheusRules(vm *jsonnet.VM, filename string) (string, error) {
 	snippet := fmt.Sprintf(`
 local mixin = (import %q);
 
-if std.objectHas(mixin, "prometheusRules")
+if std.objectHasAll(mixin, "prometheusRules")
 then mixin.prometheusRules
 else {}
 `, filename)
@@ -48,7 +48,7 @@ func evaluateGrafanaDashboards(vm *jsonnet.VM, filename string) (string, error) 
 	snippet := fmt.Sprintf(`
 local mixin = (import %q);
 
-if std.objectHas(mixin, "grafanaDashboards")
+if std.objectHasAll(mixin, "grafanaDashboards")
 then mixin.grafanaDashboards
 else {}
 `, filename)
