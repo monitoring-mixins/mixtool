@@ -17,6 +17,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -137,7 +138,6 @@ func putMixin(content []byte, bindAddress string) error {
 	u.Path = path.Join(u.Path, "/api/v1/rules")
 
 	r := bytes.NewReader(content)
-
 	req, err := http.NewRequest("PUT", u.String(), r)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -146,7 +146,11 @@ func putMixin(content []byte, bindAddress string) error {
 	if resp.StatusCode == 200 {
 		fmt.Println("PUT alerts OK")
 	} else {
-		return fmt.Errorf("response code: %d resp is %v", resp.StatusCode, resp.Body)
+		responseData, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to response body in putMixin, %w", err)
+		}
+		return fmt.Errorf("non 200 response code: %d, info: %s", resp.StatusCode, string(responseData))
 	}
 	return nil
 }
