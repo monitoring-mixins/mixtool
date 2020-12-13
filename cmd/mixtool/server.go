@@ -15,12 +15,15 @@
 package main
 
 import (
+	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 
@@ -76,6 +79,8 @@ func (h *ruleProvisioningHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	fmt.Println("serve http")
+
 	reloadNecessary, err := h.ruleProvisioner.provision(r.Body)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Internal Server Error: %v", err), http.StatusInternalServerError)
@@ -104,27 +109,130 @@ type ruleProvisioner struct {
 // makes new file and dumps data into rule-filename
 // edits prometheus configuration to include that entry
 func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
+	fmt.Println("provision")
+	newRules, err := ioutil.ReadAll(r)
+	if err != nil {
+		return false, fmt.Errorf("unable to read new rules: %w", err)
+	}
 
-	configReader, err := os.OpenFile(p.configFile, os.O_RDWR, 0644)
+	// dir := filepath.Dir(p.configFile)
+
+	f, err := ioutil.TempFile(filepath.Dir(p.configFile), "temp-mixinname")
+	// f, err := os.OpenFile(filepath.Join(dir, "test-mixin"), os.O_RDWR|os.O_CREATE, 0644)
+	if err != nil {
+		return false, fmt.Errorf("unable to create new mixin file: %w", err)
+	}
+
+	// write all the contents into file
+	n, err := f.Write(newRules)
+	if err != nil {
+		return false, fmt.Errorf("error when writing new rules: %w", err)
+	}
+	if n != len(newRules) {
+		return false, fmt.Errorf("writing error, wrote %d bytes, expected %d", n, len(newRules))
+	}
+
+	f.Sync()
+	f.Close()
+
+	// add file's name to config file
+
+	configBuf, err := ioutil.ReadFile(p.configFile)
 	if err != nil {
 		return false, fmt.Errorf("unable to open prometheus config file: %w", err)
 	}
 
-	configBuf, err := ioutil.ReadAll(configReader)
-	if err != nil {
-		return false, fmt.Errorf("unable to read prometheus config file: %w", err)
-	}
 	m := make(map[string]interface{})
 	err = yaml.Unmarshal(configBuf, &m)
 	if err != nil {
 		return false, fmt.Errorf("unable to unmarshal prometheus config file: %w", err)
 	}
 
+	for k, v := range m {
+		fmt.Printf("k is %s\n", k)
+		// check explicitly for rule_files
+		if k == "rule_files" {
+			// add the new file's name under rule-files
+			// TODO: not entirely sure if this type assertion is safe
+			rulemap := v.([]interface{})
+			rulemap = append(rulemap, f.Name())
+			m[k] = rulemap
+			fmt.Printf("value of v %v\n", rulemap)
+			break
+		}
+	}
+
+	// create a temporary config file
+	tempfile, err := ioutil.TempFile(filepath.Dir(p.configFile), "temp-config")
+
+	// marshal back into yaml
+	newConfig, err := yaml.Marshal(m)
+	if err != nil {
+		return false, fmt.Errorf("failed to marhsal yaml: %w", err)
+	}
+
+	// write contents to temp config file
+	n, err = tempfile.Write(newConfig)
+	if err != nil {
+		return false, fmt.Errorf("error when writing new rules: %w", err)
+	}
+	if n != len(newConfig) {
+		return false, fmt.Errorf("writing error, wrote %d bytes, expected %d", n, len(newConfig))
+	}
+
+	tempfile.Sync()
+
+	// TODO: can we just use existing configreader?
+	configReader, err := os.OpenFile(p.configFile, os.O_RDONLY, 0644)
+	if err != nil {
+		return false, fmt.Errorf("unable to read existing config: %w", err)
+	}
+
+	newConfigReader, err := os.OpenFile(tempfile.Name(), os.O_RDONLY, 0644)
+	if err != nil {
+		return false, fmt.Errorf("unable to open new config file: %w", err)
+	}
+
+	// check the difference between config file and temp file
+	equal, err := readersEqual(configReader, newConfigReader)
+	if err != nil {
+		return false, fmt.Errorf("error from readersEqual: %w", err)
+	}
+
+	if equal {
+		fmt.Println("don't need to do anything!")
+		return false, nil
+	}
+
+	if err = os.Rename(tempfile.Name(), p.configFile); err != nil {
+		return false, fmt.Errorf("cannot rename config file: %w", err)
+	}
 	return true, nil
 }
 
 type prometheusReloader struct {
 	prometheusReloadURL string
+}
+
+func readersEqual(r1, r2 io.Reader) (bool, error) {
+	buf1 := bufio.NewReader(r1)
+	buf2 := bufio.NewReader(r2)
+	for {
+		b1, err1 := buf1.ReadByte()
+		b2, err2 := buf2.ReadByte()
+		if err1 != nil && !errors.Is(err1, io.EOF) {
+			return false, err1
+		}
+		if err2 != nil && !errors.Is(err2, io.EOF) {
+			return false, err2
+		}
+		if errors.Is(err1, io.EOF) || errors.Is(err2, io.EOF) {
+			return err1 == err2, nil
+		}
+		if b1 != b2 {
+			return false, nil
+		}
+	}
 }
 
 func (r *prometheusReloader) triggerReload(ctx context.Context) error {

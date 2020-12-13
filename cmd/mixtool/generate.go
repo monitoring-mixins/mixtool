@@ -190,13 +190,12 @@ func generateDashboards(filename string, opts mixer.GenerateOptions) error {
 	return nil
 }
 
-func generateRulesAlerts(filename string, options mixer.GenerateOptions) error {
+func generateRulesAlerts(filename string, options mixer.GenerateOptions) ([]byte, error) {
 	out, err := mixer.GenerateRulesAlerts(filename, options)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	fmt.Println("inside generate rules, alerts")
-	return ioutil.WriteFile("rules-alerts.yaml", out, 0644)
+	return out, nil
 }
 
 func generateAll(filename string, opts mixer.GenerateOptions) error {

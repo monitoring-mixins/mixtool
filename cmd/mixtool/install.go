@@ -15,7 +15,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -84,14 +86,13 @@ func getMixins() ([]mixin, error) {
 	return mixins, nil
 }
 
-func generateMixin(directory string, jsonnetHome string, mixinURL string, options mixer.GenerateOptions) error {
-	fmt.Println("running generate all")
+func generateMixin(directory string, jsonnetHome string, mixinURL string, options mixer.GenerateOptions) ([]byte, error) {
 
 	mixinBaseDirectory := filepath.Join(directory)
 
 	err := os.Chdir(mixinBaseDirectory)
 	if err != nil {
-		return fmt.Errorf("Cannot cd into directory %s", err)
+		return nil, fmt.Errorf("Cannot cd into directory %s", err)
 	}
 
 	files, err := filepath.Glob("*")
@@ -102,15 +103,15 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 
 	u, err := url.Parse(mixinURL)
 	if err != nil {
-		return fmt.Errorf("url parse %v", err)
+		return nil, fmt.Errorf("url parse %v", err)
 	}
 
 	// absolute directory is the same as the download url stripped of the scheme
 	absDirectory := path.Join(u.Host, u.Path)
-
-	// strip leading slashes and colons
+	// trim http or www etc, trim repositories with trailing .git
+	// TODO: what if it's under some different kind of VCS?
 	absDirectory = strings.TrimLeft(absDirectory, "/:")
-
+	absDirectory = strings.TrimSuffix(absDirectory, ".git")
 	fmt.Println("absDirectory is", absDirectory)
 
 	importFile := filepath.Join(absDirectory, "mixin.libsonnet")
@@ -118,84 +119,39 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 	// generate rules, dashboards, alerts
 	err = generateAll(importFile, options)
 	if err != nil {
-		return fmt.Errorf("generateAllMixins %v", err)
+		return nil, fmt.Errorf("generateAll: %w", err)
 	}
 
-	err = generateRulesAlerts(importFile, options)
+	out, err := generateRulesAlerts(importFile, options)
 	if err != nil {
-		return fmt.Errorf("generateRulesAlerts %v", err)
+		return nil, fmt.Errorf("generateRulesAlerts %w", err)
 	}
 
-	return nil
+	return out, nil
 
 }
 
-func putMixin(directory string, mixinURL string, bindAddress string, options mixer.GenerateOptions) error {
-
-	// // alerts.yaml
-	// alertsFilename := options.AlertsFilename
-	// alertsReader, err := os.Open(alertsFilename)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// // rules.yaml
-	// rulesFilename := options.RulesFilename
-	// rulesReader, err := os.Open(rulesFilename)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// merge rules and alerts together
-
+func putMixin(content []byte, bindAddress string) error {
 	u, err := url.Parse(bindAddress)
 	if err != nil {
 		return err
 	}
 	u.Path = path.Join(u.Path, "/api/v1/rules")
 
-	// // request for rules
-	// req, err := http.NewRequest("PUT", u.String(), rulesReader)
-	// resp, err := http.DefaultClient.Do(req)
-	// if err != nil {
-	// 	return fmt.Errorf("response from server %v", err)
-	// }
-
-	// if resp.StatusCode == 200 {
-	// 	fmt.Println("PUT rules OK")
-	// } else {
-	// 	fmt.Printf("resp is %v\n", resp.Body)
-	// }
-
-	// same request but for alerts
-	// req, err := http.NewRequest("PUT", u.String(), alertsReader)
-	// resp, err := http.DefaultClient.Do(req)
-	// if err != nil {
-	// 	return fmt.Errorf("response from server %v", err)
-	// }
-
-	// if resp.StatusCode == 200 {
-	// 	fmt.Println("PUT alerts OK")
-	// } else {
-	// 	return fmt.Errorf("response code: %d resp is %v", resp.StatusCode, resp.Body)
-	// }
-
-	// temporary: generate rules and alerts in a single file
-	alertsReader, err := os.Open("rules-alerts.yaml")
-	if err != nil {
-		return err
-	}
-
-	req, err := http.NewRequest("PUT", u.String(), alertsReader)
+	r := bytes.NewReader(content)
+	req, err := http.NewRequest("PUT", u.String(), r)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("response from server %v", err)
 	}
-
 	if resp.StatusCode == 200 {
 		fmt.Println("PUT alerts OK")
 	} else {
-		return fmt.Errorf("response code: %d resp is %v", resp.StatusCode, resp.Body)
+		responseData, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to response body in putMixin, %w", err)
+		}
+		return fmt.Errorf("non 200 response code: %d, info: %s", resp.StatusCode, string(responseData))
 	}
 	return nil
 }
@@ -268,7 +224,7 @@ func installAction(c *cli.Context) error {
 		YAML:           true,
 	}
 
-	err = generateMixin(directory, jsonnetHome, mixinURL, generateCfg)
+	rulesAlerts, err := generateMixin(directory, jsonnetHome, mixinURL, generateCfg)
 	if err != nil {
 		return err
 	}
@@ -278,7 +234,7 @@ func installAction(c *cli.Context) error {
 	if c.Bool("put") {
 		bindAddress := c.String("bind-address")
 		// run put requests onto the server
-		err = putMixin(directory, mixinURL, bindAddress, generateCfg)
+		err = putMixin(rulesAlerts, bindAddress)
 		if err != nil {
 			return err
 		}
