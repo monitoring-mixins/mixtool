@@ -131,12 +131,13 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 
 }
 
-func putMixin(content []byte, bindAddress string) error {
+func putMixin(content []byte, bindAddress string, mixinName string) error {
 	u, err := url.Parse(bindAddress)
 	if err != nil {
 		return err
 	}
-	u.Path = path.Join(u.Path, "/api/v1/rules")
+	pathName := fmt.Sprintf("/api/v1/rules/%s", mixinName)
+	u.Path = path.Join(u.Path, pathName)
 
 	r := bytes.NewReader(content)
 	req, err := http.NewRequest("PUT", u.String(), r)
@@ -234,7 +235,14 @@ func installAction(c *cli.Context) error {
 	if c.Bool("put") {
 		bindAddress := c.String("bind-address")
 		// run put requests onto the server
-		err = putMixin(rulesAlerts, bindAddress)
+
+		// TODO: deal with the case where mixinPath is not a URL
+		_, err := url.ParseRequestURI(mixinPath)
+		if err == nil {
+			fmt.Println("TODO: for reloading prometheus, not dealing with mixins by url yet, since name is unknown")
+		}
+
+		err = putMixin(rulesAlerts, bindAddress, mixinPath)
 		if err != nil {
 			return err
 		}

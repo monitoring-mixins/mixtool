@@ -30,6 +30,8 @@ import (
 	"github.com/urfave/cli"
 )
 
+const apiPath = "/api/v1/rules/"
+
 func serverCommand() cli.Command {
 	return cli.Command{
 		Name:        "server",
@@ -56,7 +58,7 @@ func serverCommand() cli.Command {
 
 func serverAction(c *cli.Context) error {
 	bindAddress := c.String("bind-address")
-	http.Handle("/api/v1/rules", &ruleProvisioningHandler{
+	http.Handle(apiPath, &ruleProvisioningHandler{
 		ruleProvisioner: &ruleProvisioner{
 			configFile: c.String("config-file"),
 		},
@@ -79,9 +81,11 @@ func (h *ruleProvisioningHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	fmt.Println("serve http")
+	// TODO: might not be the best place to put this
+	mixin := r.URL.Path[len(apiPath):]
+	fmt.Println("the mixin is ", mixin)
 
-	reloadNecessary, err := h.ruleProvisioner.provision(r.Body)
+	reloadNecessary, err := h.ruleProvisioner.provision(r.Body, mixin)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Internal Server Error: %v", err), http.StatusInternalServerError)
 		return
@@ -108,17 +112,15 @@ type ruleProvisioner struct {
 // expects {rule-filename: "filename", data: "groups: ...."}
 // makes new file and dumps data into rule-filename
 // edits prometheus configuration to include that entry
-func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
+func (p *ruleProvisioner) provision(r io.Reader, mixinName string) (bool, error) {
 	fmt.Println("provision")
 	newRules, err := ioutil.ReadAll(r)
 	if err != nil {
 		return false, fmt.Errorf("unable to read new rules: %w", err)
 	}
 
-	// dir := filepath.Dir(p.configFile)
-
-	f, err := ioutil.TempFile(filepath.Dir(p.configFile), "temp-mixinname")
-	// f, err := os.OpenFile(filepath.Join(dir, "test-mixin"), os.O_RDWR|os.O_CREATE, 0644)
+	dir := filepath.Dir(p.configFile)
+	f, err := os.OpenFile(filepath.Join(dir, mixinName), os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		return false, fmt.Errorf("unable to create new mixin file: %w", err)
 	}
