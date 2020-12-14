@@ -83,7 +83,6 @@ func (h *ruleProvisioningHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	// TODO: might not be the best place to put this
 	mixin := r.URL.Path[len(apiPath):]
-	fmt.Println("the mixin is ", mixin)
 
 	reloadNecessary, err := h.ruleProvisioner.provision(r.Body, mixin)
 	if err != nil {
@@ -105,22 +104,24 @@ type ruleProvisioner struct {
 
 // PUT request
 // /api/v1/rules/<name>
-// name specify
+// specify mixin name
 // filename determined by server
-
-// provision attempts to provision the rule files read from r
-// expects {rule-filename: "filename", data: "groups: ...."}
-// makes new file and dumps data into rule-filename
-// edits prometheus configuration to include that entry
 func (p *ruleProvisioner) provision(r io.Reader, mixinName string) (bool, error) {
-	fmt.Println("provision")
 	newRules, err := ioutil.ReadAll(r)
 	if err != nil {
 		return false, fmt.Errorf("unable to read new rules: %w", err)
 	}
 
+	mixinName = mixinName + ".yaml"
 	dir := filepath.Dir(p.configFile)
-	f, err := os.OpenFile(filepath.Join(dir, mixinName), os.O_RDWR|os.O_CREATE, 0644)
+	mixinFilename := filepath.Join(dir, mixinName)
+
+	// if the filename under filepath.Join(dir, mixinName) already exists, do nothing
+	if _, err = os.Stat(mixinFilename); err == nil {
+		return true, nil
+	}
+
+	f, err := os.OpenFile(mixinFilename, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		return false, fmt.Errorf("unable to create new mixin file: %w", err)
 	}
@@ -138,7 +139,6 @@ func (p *ruleProvisioner) provision(r io.Reader, mixinName string) (bool, error)
 	f.Close()
 
 	// add file's name to config file
-
 	configBuf, err := ioutil.ReadFile(p.configFile)
 	if err != nil {
 		return false, fmt.Errorf("unable to open prometheus config file: %w", err)
@@ -151,15 +151,11 @@ func (p *ruleProvisioner) provision(r io.Reader, mixinName string) (bool, error)
 	}
 
 	for k, v := range m {
-		fmt.Printf("k is %s\n", k)
-		// check explicitly for rule_files
 		if k == "rule_files" {
-			// add the new file's name under rule-files
 			// TODO: not entirely sure if this type assertion is safe
 			rulemap := v.([]interface{})
-			rulemap = append(rulemap, f.Name())
+			rulemap = append(rulemap, mixinName)
 			m[k] = rulemap
-			fmt.Printf("value of v %v\n", rulemap)
 			break
 		}
 	}
@@ -184,7 +180,6 @@ func (p *ruleProvisioner) provision(r io.Reader, mixinName string) (bool, error)
 
 	tempfile.Sync()
 
-	// TODO: can we just use existing configreader?
 	configReader, err := os.OpenFile(p.configFile, os.O_RDONLY, 0644)
 	if err != nil {
 		return false, fmt.Errorf("unable to read existing config: %w", err)
@@ -195,14 +190,12 @@ func (p *ruleProvisioner) provision(r io.Reader, mixinName string) (bool, error)
 		return false, fmt.Errorf("unable to open new config file: %w", err)
 	}
 
-	// check the difference between config file and temp file
 	equal, err := readersEqual(configReader, newConfigReader)
 	if err != nil {
 		return false, fmt.Errorf("error from readersEqual: %w", err)
 	}
 
 	if equal {
-		fmt.Println("don't need to do anything!")
 		return false, nil
 	}
 

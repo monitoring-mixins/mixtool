@@ -95,9 +95,6 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 		return nil, fmt.Errorf("Cannot cd into directory %s", err)
 	}
 
-	files, err := filepath.Glob("*")
-	fmt.Println("in generatemixin, directory is ", directory, files)
-
 	// generate alerts, rules, grafana dashboards
 	// empty files if not present
 
@@ -112,7 +109,6 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 	// TODO: what if it's under some different kind of VCS?
 	absDirectory = strings.TrimLeft(absDirectory, "/:")
 	absDirectory = strings.TrimSuffix(absDirectory, ".git")
-	fmt.Println("absDirectory is", absDirectory)
 
 	importFile := filepath.Join(absDirectory, "mixin.libsonnet")
 
@@ -145,9 +141,7 @@ func putMixin(content []byte, bindAddress string, mixinName string) error {
 	if err != nil {
 		return fmt.Errorf("response from server %v", err)
 	}
-	if resp.StatusCode == 200 {
-		fmt.Println("PUT alerts OK")
-	} else {
+	if resp.StatusCode != 200 {
 		responseData, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("failed to response body in putMixin, %w", err)
