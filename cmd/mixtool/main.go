@@ -40,6 +40,7 @@ func main() {
 		newCommand(),
 		serverCommand(),
 		listCommand(),
+		installCommand(),
 		// runbookCommand(),
 	}
 

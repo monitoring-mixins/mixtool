@@ -151,7 +151,6 @@ func generateRules(filename string, options mixer.GenerateOptions) error {
 	if err != nil {
 		return err
 	}
-
 	return ioutil.WriteFile(options.RulesFilename, out, 0644)
 }
 
@@ -189,6 +188,14 @@ func generateDashboards(filename string, opts mixer.GenerateOptions) error {
 	}
 
 	return nil
+}
+
+func generateRulesAlerts(filename string, options mixer.GenerateOptions) ([]byte, error) {
+	out, err := mixer.GenerateRulesAlerts(filename, options)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func generateAll(filename string, opts mixer.GenerateOptions) error {
