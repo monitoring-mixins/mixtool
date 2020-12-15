@@ -95,9 +95,6 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 		return nil, fmt.Errorf("Cannot cd into directory %s", err)
 	}
 
-	files, err := filepath.Glob("*")
-	fmt.Println("in generatemixin, directory is ", directory, files)
-
 	// generate alerts, rules, grafana dashboards
 	// empty files if not present
 
@@ -109,9 +106,7 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 	// absolute directory is the same as the download url stripped of the scheme
 	absDirectory := path.Join(u.Host, u.Path)
 	absDirectory = strings.TrimLeft(absDirectory, "/:")
-	absDirectory = strings.TrimRight(absDirectory, ".git")
-
-	fmt.Println("absDirectory is", absDirectory)
+	absDirectory = strings.TrimSuffix(absDirectory, ".git")
 
 	importFile := filepath.Join(absDirectory, "mixin.libsonnet")
 
