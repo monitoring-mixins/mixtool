@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const exampleMixins = `
@@ -31,20 +33,19 @@ const exampleMixins = `
 `
 
 func TestList(t *testing.T) {
-	err := ioutil.WriteFile("exampleMixinsTest.json", []byte(exampleMixins), 0644)
-	if err != nil {
-		t.Errorf("failed to create temp file: %v", err)
-	}
-	defer os.Remove("exampleMixinsTest.json")
+	tempFile, err := ioutil.TempFile("", "exampleMixinsTest.json")
+	assert.NoError(t, err)
+	defer os.Remove(tempFile.Name())
 
-	body, err := ioutil.ReadFile("exampleMixinsTest.json")
-	if err != nil {
-		t.Errorf("failed to read exampleMixinsTest.json %v", err)
-	}
-	mixins, err := parseMixinJSON(body)
-	if err != nil {
-		t.Errorf("failed to read exampleMixinsTest.json %v", err)
-	}
+	err = ioutil.WriteFile(tempFile.Name(), []byte(exampleMixins), 0644)
+	assert.NoError(t, err)
+
+	body, err := ioutil.ReadFile(tempFile.Name())
+	assert.NoError(t, err)
+
+	mixins, err := parseMixinJSON([]byte(body))
+	assert.NoError(t, err)
+
 	exampleMixins := map[string]bool{"ceph": true, "cool-mixin": true, "cortex": true}
 	for _, m := range mixins {
 		if _, ok := exampleMixins[m.Name]; !ok {
