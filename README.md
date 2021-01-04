@@ -7,8 +7,10 @@ The mixtool is a helper for easily working with [jsonnet](http://jsonnet.org/) m
 ## Install
 
 ```
-go get -u github.com/monitoring-mixins/mixtool/cmd/mixtool
+GO111MODULE=on go get -u github.com/monitoring-mixins/mixtool/cmd/mixtool
 ```
+
+NB, if you see an error of the form `cannot use cli.StringSliceFlag literal (type cli.StringSliceFlag) as type cli.Flag in slice literal`, you didn't set `GO111MODULE=on` before `go get` (see #27).
 
 ## Usage
 
@@ -55,7 +57,7 @@ COMMANDS:
 
 OPTIONS:
    --help, -h  show help
-   
+
 ```
 
 ### New
@@ -75,7 +77,7 @@ COMMANDS:
 
 OPTIONS:
    --help, -h  show help
-   
+
 ```
 
 #### New Examples
@@ -103,7 +105,7 @@ OPTIONS:
    --grafana                Lint Grafana dashboards against Grafana's schema
    --prometheus             Lint Prometheus alerts and rules and their given expressions
    --jpath value, -J value  Add folders to be used as vendor folders
-   
+
 ```
 
 #### Lint Examples
