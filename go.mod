@@ -24,10 +24,8 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf // indirect
 	github.com/urfave/cli v1.22.1
-	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/bufio.v1 v1.0.0-20140618132640-567b2bfa514e // indirect
 	gopkg.in/ini.v1 v1.38.2 // indirect
 	gopkg.in/macaron.v1 v1.3.1 // indirect
 	gopkg.in/redis.v2 v2.3.2 // indirect
-	sigs.k8s.io/yaml v1.2.0
 )
