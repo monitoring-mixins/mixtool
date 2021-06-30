@@ -28,6 +28,8 @@ import (
 // Try to install every mixin from the mixin repository
 // verify that each package generated has the yaml files
 func TestInstallMixin(t *testing.T) {
+	t.Skip("Test is unreliable as it depends on external mixins.")
+
 	body, err := queryWebsite(defaultWebsite)
 	if err != nil {
 		t.Errorf("failed to query website %v", err)
