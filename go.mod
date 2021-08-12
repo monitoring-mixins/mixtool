@@ -1,6 +1,6 @@
 module github.com/monitoring-mixins/mixtool
 
-go 1.14
+go 1.16
 
 require (
 	github.com/apache/arrow/go/arrow v0.0.0-20210812182928-5c5a0d63a42d // indirect
