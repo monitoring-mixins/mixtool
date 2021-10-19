@@ -16,13 +16,12 @@ package mixer
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 
 	"github.com/fatih/color"
 	"github.com/google/go-jsonnet"
-	"github.com/grafana/grafana/pkg/components/simplejson"
-	"github.com/grafana/grafana/pkg/models"
 	"github.com/prometheus/prometheus/pkg/rulefmt"
 )
 
@@ -108,12 +107,25 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 	}
 
 	for filename, dashboard := range dashboards {
-		d := models.NewDashboardFromJson(simplejson.NewFromAny(dashboard))
-		if d.Title == "" {
-			errsOut <- fmt.Errorf("dashboard has no title: %s", filename)
-		}
-		if d.Uid == "" {
-			errsOut <- fmt.Errorf("dashboard has no UID, please set one for links to work: %s", filename)
+		var title, uid string
+
+		if db, ok := (dashboard).(map[string]interface{}); ok {
+			if t, ok := db["title"]; ok {
+				title, _ = t.(string)
+			}
+
+			if u, ok := db["uid"]; ok {
+				uid, _ = u.(string)
+			}
+
+			if title == "" {
+				errsOut <- fmt.Errorf("dashboard has no title: %s", filename)
+			}
+			if uid == "" {
+				errsOut <- fmt.Errorf("dashboard has no UID, please set one for links to work: %s", filename)
+			}
+		} else {
+			errsOut <- errors.New("type assertion to map[string]interface{} failed")
 		}
 	}
 
