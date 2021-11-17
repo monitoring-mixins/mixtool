@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"path"
 
 	"github.com/fatih/color"
 	"github.com/google/go-jsonnet"
@@ -131,6 +132,12 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 		}
 
 		// Lint using the new grafana/dashboard-linter project.
+		config := lint.NewConfigurationFile()
+		if err := config.Load(path.Dir(filename)); err != nil {
+			errsOut <- err
+			continue
+		}
+
 		dash, err := lint.NewDashboard(raw)
 		if err != nil {
 			errsOut <- err
@@ -145,7 +152,10 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 
 		for rule, results := range rs.ByRule() {
 			for _, result := range results {
-				if result.Result.Severity != lint.Success {
+				result = config.Apply(result)
+				switch result.Result.Severity {
+				case lint.Exclude, lint.Success:
+				default:
 					errsOut <- fmt.Errorf("[%s] '%s': %s", rule, result.Dashboard.Title, result.Result.Message)
 				}
 			}
