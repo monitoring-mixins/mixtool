@@ -145,7 +145,9 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 
 		for rule, results := range rs.ByRule() {
 			for _, result := range results {
-				errsOut <- fmt.Errorf("[%s] '%s': %s", rule, result.Dashboard.Title, result.Result.Message)
+				if result.Result.Severity != lint.Success {
+					errsOut <- fmt.Errorf("[%s] '%s': %s", rule, result.Dashboard.Title, result.Result.Message)
+				}
 			}
 		}
 	}
