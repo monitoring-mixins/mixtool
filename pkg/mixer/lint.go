@@ -16,12 +16,13 @@ package mixer
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
+	"path"
 
 	"github.com/fatih/color"
 	"github.com/google/go-jsonnet"
+	"github.com/grafana/dashboard-linter/lint"
 	"github.com/prometheus/prometheus/pkg/rulefmt"
 )
 
@@ -100,32 +101,64 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 		return
 	}
 
-	var dashboards map[string]interface{}
+	var dashboards map[string]json.RawMessage
 	if err := json.Unmarshal([]byte(j), &dashboards); err != nil {
 		errsOut <- err
 		return
 	}
 
-	for filename, dashboard := range dashboards {
+	rules := lint.NewRuleSet()
+
+	for filename, raw := range dashboards {
+		var db map[string]interface{}
+		if err := json.Unmarshal(raw, &db); err != nil {
+			errsOut <- err
+			continue
+		}
+
 		var title, uid string
+		if t, ok := db["title"]; ok {
+			title, _ = t.(string)
+		}
+		if u, ok := db["uid"]; ok {
+			uid, _ = u.(string)
+		}
 
-		if db, ok := (dashboard).(map[string]interface{}); ok {
-			if t, ok := db["title"]; ok {
-				title, _ = t.(string)
-			}
+		if title == "" {
+			errsOut <- fmt.Errorf("dashboard has no title: %s", filename)
+		}
+		if uid == "" {
+			errsOut <- fmt.Errorf("dashboard has no UID, please set one for links to work: %s", filename)
+		}
 
-			if u, ok := db["uid"]; ok {
-				uid, _ = u.(string)
-			}
+		// Lint using the new grafana/dashboard-linter project.
+		config := lint.NewConfigurationFile()
+		if err := config.Load(path.Dir(filename)); err != nil {
+			errsOut <- err
+			continue
+		}
 
-			if title == "" {
-				errsOut <- fmt.Errorf("dashboard has no title: %s", filename)
+		dash, err := lint.NewDashboard(raw)
+		if err != nil {
+			errsOut <- err
+			continue
+		}
+
+		rs, err := rules.Lint([]lint.Dashboard{dash})
+		if err != nil {
+			errsOut <- err
+			continue
+		}
+
+		for rule, results := range rs.ByRule() {
+			for _, result := range results {
+				result = config.Apply(result)
+				switch result.Result.Severity {
+				case lint.Exclude, lint.Success:
+				default:
+					errsOut <- fmt.Errorf("[%s] '%s': %s", rule, result.Dashboard.Title, result.Result.Message)
+				}
 			}
-			if uid == "" {
-				errsOut <- fmt.Errorf("dashboard has no UID, please set one for links to work: %s", filename)
-			}
-		} else {
-			errsOut <- errors.New("type assertion to map[string]interface{} failed")
 		}
 	}
 
