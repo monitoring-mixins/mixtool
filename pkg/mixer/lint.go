@@ -88,8 +88,6 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 	for _, err := range errs {
 		errsOut <- err
 	}
-
-	return
 }
 
 func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error) {

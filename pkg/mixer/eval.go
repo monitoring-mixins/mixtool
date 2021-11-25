@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Ignore deprecated warnings until we fix https://github.com/monitoring-mixins/mixtool/issues/22
+//nolint:staticcheck
 package mixer
 
 import (

@@ -27,6 +27,9 @@ import (
 // InitCommand is basically the same as jb init
 func InitCommand(dir string) error {
 	exists, err := jsonnetfile.Exists(jsonnetfile.File)
+	if err != nil {
+		return err
+	}
 
 	if exists {
 		return fmt.Errorf("jsonnetfile.json already exists")
