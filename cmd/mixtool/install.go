@@ -134,6 +134,10 @@ func putMixin(content []byte, bindAddress string) error {
 
 	r := bytes.NewReader(content)
 	req, err := http.NewRequest("PUT", u.String(), r)
+	if err != nil {
+		return err
+	}
+
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("response from server %v", err)

@@ -110,7 +110,9 @@ func writeFileToDisk(filename string, creator func() ([]byte, error)) error {
 		return fmt.Errorf("failed to create new rules: %v", err)
 	}
 
-	f.Write(out)
+	if _, err := f.Write(out); err != nil {
+		return err
+	}
 
 	if err := f.Sync(); err != nil {
 		return fmt.Errorf("failed to sync file to disk %s: %v", filename, err)

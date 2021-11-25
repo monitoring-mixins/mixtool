@@ -176,7 +176,9 @@ func generateDashboards(filename string, opts mixer.GenerateOptions) error {
 		}
 		defer file.Close()
 
-		file.Write(dashboard)
+		if _, err := file.Write(dashboard); err != nil {
+			return err
+		}
 
 		return nil
 	}

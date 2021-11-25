@@ -88,8 +88,6 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 	for _, err := range errs {
 		errsOut <- err
 	}
-
-	return
 }
 
 func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error) {
@@ -109,7 +107,7 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 
 	rules := lint.NewRuleSet()
 
-	for filename, raw := range dashboards {
+	for dashboardFilename, raw := range dashboards {
 		var db map[string]interface{}
 		if err := json.Unmarshal(raw, &db); err != nil {
 			errsOut <- err
@@ -125,10 +123,10 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 		}
 
 		if title == "" {
-			errsOut <- fmt.Errorf("dashboard has no title: %s", filename)
+			errsOut <- fmt.Errorf("dashboard has no title: %s", dashboardFilename)
 		}
 		if uid == "" {
-			errsOut <- fmt.Errorf("dashboard has no UID, please set one for links to work: %s", filename)
+			errsOut <- fmt.Errorf("dashboard has no UID, please set one for links to work: %s", dashboardFilename)
 		}
 
 		// Lint using the new grafana/dashboard-linter project.
@@ -161,6 +159,4 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 			}
 		}
 	}
-
-	return
 }

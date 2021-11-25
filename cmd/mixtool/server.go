@@ -118,7 +118,9 @@ func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
 		return false, fmt.Errorf("writing error, wrote %d bytes, expected %d", n, len(newData))
 	}
 
-	tempfile.Sync()
+	if err := tempfile.Sync(); err != nil {
+		return false, err
+	}
 
 	ruleFileReader, err := os.OpenFile(p.ruleFile, os.O_RDWR, 0644)
 	if err != nil {
