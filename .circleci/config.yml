@@ -26,6 +26,8 @@ jobs:
     steps:
     - checkout
     - run: make check-license
+    - run: wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.43.0
+    - run: ./bin/golangci-lint run
 
 
 workflows:
