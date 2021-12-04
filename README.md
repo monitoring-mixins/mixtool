@@ -6,11 +6,11 @@ The mixtool is a helper for easily working with [jsonnet](http://jsonnet.org/) m
 
 ## Install
 
-```
-GO111MODULE=on go get -u github.com/monitoring-mixins/mixtool/cmd/mixtool
-```
+Make sure you're using golang v1.17 or higher, and run:
 
-NB, if you see an error of the form `cannot use cli.StringSliceFlag literal (type cli.StringSliceFlag) as type cli.Flag in slice literal`, you didn't set `GO111MODULE=on` before `go get` (see #27).
+```
+go install github.com/monitoring-mixins/mixtool/cmd/mixtool@master
+```
 
 ## Usage
 
