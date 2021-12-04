@@ -14,7 +14,7 @@ require (
 	github.com/gobuffalo/packr/v2 v2.8.1
 	github.com/google/go-jsonnet v0.17.0
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/grafana/dashboard-linter v0.0.0-20211119180650-86fa94beade2
+	github.com/grafana/dashboard-linter v0.0.0-20211204001339-3f1971848663
 	github.com/grafana/tanka v0.17.2
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jsonnet-bundler/jsonnet-bundler v0.4.0
