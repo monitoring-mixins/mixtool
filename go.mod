@@ -10,13 +10,9 @@ require (
 	github.com/gobuffalo/packr v1.30.1
 	github.com/gobuffalo/packr/v2 v2.8.3
 	github.com/google/go-jsonnet v0.18.0
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/grafana/dashboard-linter v0.0.0-20211209175238-5246a8a7dacf
-	github.com/grafana/tanka v0.19.0
-	github.com/huandu/xstrings v1.3.2 // indirect
-	github.com/imdario/mergo v0.3.12 // indirect
+	github.com/grafana/tanka v0.20.0
 	github.com/jsonnet-bundler/jsonnet-bundler v0.4.0
-	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/procfs v0.7.2 // indirect
 	github.com/prometheus/prometheus v1.8.2-0.20211011171444-354d8d2ecfac
