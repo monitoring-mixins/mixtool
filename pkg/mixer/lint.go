@@ -23,7 +23,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/google/go-jsonnet"
 	"github.com/grafana/dashboard-linter/lint"
-	"github.com/prometheus/prometheus/pkg/rulefmt"
+	"github.com/prometheus/prometheus/model/rulefmt"
 )
 
 type LintOptions struct {
