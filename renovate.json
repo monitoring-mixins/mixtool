@@ -5,7 +5,7 @@
 
   "packageRules": [
     {
-      "matchPackagePatterns": ["^github.com/prometheus"],
+      "matchPackageNames": ["github.com/prometheus/prometheus"],
       "enabled": false
     }
   ]
