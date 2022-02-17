@@ -1,5 +1,12 @@
 {
   "extends": [
     "config:base"
+  ],
+
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^github.com/prometheus"],
+      "enabled": false
+    }
   ]
 }
