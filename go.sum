@@ -782,6 +782,8 @@ github.com/gorilla/websocket v1.4.0/go.mod h1:E7qHFY5m1UJ88s3WnNqhKjPHQ0heANvMoA
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/grafana/dashboard-linter v0.0.0-20220211161107-0d6d213aaf54 h1:SxLIJUP2Tz6ii1ZbCzPNoVWKharryevXdsGxYFqgp9s=
 github.com/grafana/dashboard-linter v0.0.0-20220211161107-0d6d213aaf54/go.mod h1:XaFSCuP1BZaLYIVFGeqmDmUMWz+uzCmtrmbPaKMQqyc=
+github.com/grafana/dashboard-linter v0.0.0-20220216203136-de0d1c615433 h1:swIGx4yN22mbkmgJNwdI3YMpaGkFTv/7d6GQM0CJQl8=
+github.com/grafana/dashboard-linter v0.0.0-20220216203136-de0d1c615433/go.mod h1:XaFSCuP1BZaLYIVFGeqmDmUMWz+uzCmtrmbPaKMQqyc=
 github.com/grafana/tanka v0.20.0 h1:aHdusowci70IZPBYFcjrchLEuA9UaK+DMXjCoBzN80g=
 github.com/grafana/tanka v0.20.0/go.mod h1:sh5RTjVY6snYdbuI14AmCiZzZQSLNJXYDEEAlI566dc=
 github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7/go.mod h1:FecbI9+v66THATjSRHfNgh1IVFe/9kFxbXtjV0ctIMA=
