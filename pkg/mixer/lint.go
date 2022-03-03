@@ -152,7 +152,7 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 			for _, result := range results {
 				result = config.Apply(result)
 				switch result.Result.Severity {
-				case lint.Exclude, lint.Success:
+				case lint.Exclude, lint.Success, lint.Quiet:
 				default:
 					errsOut <- fmt.Errorf("[%s] '%s': %s", rule, result.Dashboard.Title, result.Result.Message)
 				}

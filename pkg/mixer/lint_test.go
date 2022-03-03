@@ -29,38 +29,43 @@ func TestLintPrometheusAlerts(t *testing.T) {
      kubeStateMetricsSelector: 'job="ksm"',
   }
 }`
+	filename, delete := writeTempFile(t, "alerts.jsonnet", testAlerts)
+	defer delete()
 
 	vm := jsonnet.MakeVM()
-
-	f, err := ioutil.TempFile("", "alerts.jsonnet")
-	if err != nil {
-		t.Errorf("failed to create temp file: %v", err)
-	}
-	defer os.Remove(f.Name())
-
-	if _, err := f.WriteString(testAlerts); err != nil {
-		t.Errorf("failed to write alerts.jsonnet to disk: %v", err)
-	}
-
-	if err := f.Close(); err != nil {
-		t.Errorf("failed to close temp file: %v", err)
-	}
-
 	errs := make(chan error)
-	go lintPrometheus(f.Name(), vm, errs)
+	go lintPrometheus(filename, vm, errs)
 	for err := range errs {
 		t.Errorf("linting wrote unexpected output: %v", err)
 	}
 }
 
 func TestLintPrometheusRules(t *testing.T) {
-	vm := jsonnet.MakeVM()
+	filename, delete := writeTempFile(t, "rules.jsonnet", rules)
+	defer delete()
 
-	f, err := ioutil.TempFile("", "rules.jsonnet")
+	vm := jsonnet.MakeVM()
+	errs := make(chan error)
+	go lintPrometheus(filename, vm, errs)
+	for err := range errs {
+		t.Errorf("linting wrote unexpected output: %v", err)
+	}
+}
+
+func TestLintGrafana(t *testing.T) {
+	vm := jsonnet.MakeVM()
+	errs := make(chan error)
+	go lintGrafanaDashboards("lint_test_dashboard.json", vm, errs)
+	for err := range errs {
+		t.Errorf("linting wrote unexpected output: %v", err)
+	}
+}
+
+func writeTempFile(t *testing.T, pattern string, contents string) (filename string, delete func()) {
+	f, err := ioutil.TempFile("", pattern)
 	if err != nil {
 		t.Errorf("failed to create temp file: %v", err)
 	}
-	defer os.Remove(f.Name())
 
 	if _, err := f.WriteString(rules); err != nil {
 		t.Errorf("failed to write rules.jsonnet to disk: %v", err)
@@ -70,9 +75,5 @@ func TestLintPrometheusRules(t *testing.T) {
 		t.Errorf("failed to close temp file: %v", err)
 	}
 
-	errs := make(chan error)
-	go lintPrometheus(f.Name(), vm, errs)
-	for err := range errs {
-		t.Errorf("linting wrote unexpected output: %v", err)
-	}
+	return f.Name(), func() { os.Remove(f.Name()) }
 }
