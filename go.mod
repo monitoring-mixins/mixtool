@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/fatih/color v1.13.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
-	github.com/grafana/dashboard-linter v0.0.0-20220401223244-01d12fa98f0e
+	github.com/grafana/dashboard-linter v0.0.0-20220408192737-03e6cf7d3d66
 	github.com/prometheus/prometheus v1.8.2-0.20220202150209-4e08110891fd
 )
 
