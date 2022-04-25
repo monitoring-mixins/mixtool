@@ -84,7 +84,7 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/stretchr/testify v1.7.1
-	github.com/urfave/cli v1.22.5
+	github.com/urfave/cli v1.22.7
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/goleak v1.1.12 // indirect
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
