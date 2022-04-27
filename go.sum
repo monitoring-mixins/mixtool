@@ -796,6 +796,8 @@ github.com/grafana/dashboard-linter v0.0.0-20220408192737-03e6cf7d3d66 h1:rxKg+z
 github.com/grafana/dashboard-linter v0.0.0-20220408192737-03e6cf7d3d66/go.mod h1:TohvCbpZCMXMqe6/yZQI9u1BXTPxPF0/tM7uveXmIBM=
 github.com/grafana/dashboard-linter v0.0.0-20220413142600-e5dbd236a8be h1:tn/LWfrremmuISmF+Xy39tHQsgEO48Pqd/1ccZ+oSOA=
 github.com/grafana/dashboard-linter v0.0.0-20220413142600-e5dbd236a8be/go.mod h1:yfzkC6NyZ2/zn/KwF3SrtZDTP+Zov2UjSCzl+itBTG4=
+github.com/grafana/dashboard-linter v0.0.0-20220426151537-a747e60132bc h1:eFQf38ctjhhQueqt3uKTD1xVXEV4uTNxkL96TWVfnSE=
+github.com/grafana/dashboard-linter v0.0.0-20220426151537-a747e60132bc/go.mod h1:yfzkC6NyZ2/zn/KwF3SrtZDTP+Zov2UjSCzl+itBTG4=
 github.com/grafana/tanka v0.20.0 h1:aHdusowci70IZPBYFcjrchLEuA9UaK+DMXjCoBzN80g=
 github.com/grafana/tanka v0.20.0/go.mod h1:sh5RTjVY6snYdbuI14AmCiZzZQSLNJXYDEEAlI566dc=
 github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7/go.mod h1:FecbI9+v66THATjSRHfNgh1IVFe/9kFxbXtjV0ctIMA=
