@@ -799,6 +799,7 @@ github.com/grafana/dashboard-linter v0.0.0-20220413142600-e5dbd236a8be h1:tn/LWf
 github.com/grafana/dashboard-linter v0.0.0-20220413142600-e5dbd236a8be/go.mod h1:yfzkC6NyZ2/zn/KwF3SrtZDTP+Zov2UjSCzl+itBTG4=
 github.com/grafana/dashboard-linter v0.0.0-20220426151537-a747e60132bc h1:eFQf38ctjhhQueqt3uKTD1xVXEV4uTNxkL96TWVfnSE=
 github.com/grafana/dashboard-linter v0.0.0-20220426151537-a747e60132bc/go.mod h1:yfzkC6NyZ2/zn/KwF3SrtZDTP+Zov2UjSCzl+itBTG4=
+github.com/grafana/dashboard-linter v0.0.0-20220525220134-c68ff79a3e99 h1:cVUnk7e7Ck+9Hm6jLxu9fH2n07fjmnokaDlE36mm3DM=
 github.com/grafana/dashboard-linter v0.0.0-20220525220134-c68ff79a3e99/go.mod h1:TGW/SaUGPxClvjML8p/p+IlDLnHdRurVAw3PJe7E9Wk=
 github.com/grafana/tanka v0.20.0 h1:aHdusowci70IZPBYFcjrchLEuA9UaK+DMXjCoBzN80g=
 github.com/grafana/tanka v0.20.0/go.mod h1:sh5RTjVY6snYdbuI14AmCiZzZQSLNJXYDEEAlI566dc=
@@ -1235,6 +1236,7 @@ github.com/prometheus/common v0.29.0/go.mod h1:vu+V0TpY+O6vW9J44gczi3Ap/oXXR10b+
 github.com/prometheus/common v0.30.0/go.mod h1:vu+V0TpY+O6vW9J44gczi3Ap/oXXR10b+M/gUGO4Hls=
 github.com/prometheus/common v0.32.1 h1:hWIdL3N2HoUx3B8j3YN9mWor0qhY/NlEKZEaXxuIRh4=
 github.com/prometheus/common v0.32.1/go.mod h1:vu+V0TpY+O6vW9J44gczi3Ap/oXXR10b+M/gUGO4Hls=
+github.com/prometheus/common v0.34.0 h1:RBmGO9d/FVjqHT0yUGQwBJhkwKV+wPCn7KGpvfab0uE=
 github.com/prometheus/common v0.34.0/go.mod h1:gB3sOl7P0TvJabZpLY5uQMpUqRCPPCyRLCZYc7JZTNE=
 github.com/prometheus/common/sigv4 v0.1.0 h1:qoVebwtwwEhS85Czm2dSROY5fTo2PAPEVdDeppTwGX4=
 github.com/prometheus/common/sigv4 v0.1.0/go.mod h1:2Jkxxk9yYvCkE5G1sQT7GuEXm57JrvHu9k5YwTjsNtI=
