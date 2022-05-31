@@ -31,10 +31,13 @@ DESCRIPTION:
    mixtool helps with generating, building and linting jsonnet mixins
 
 COMMANDS:
-     generate  Generate manifests from jsonnet input
-     lint      Lint jsonnet files
-     new       Create new jsonnet mixin files
-     help, h   Shows a list of commands or help for one command
+   generate  Generate manifests from jsonnet input
+   lint      Lint jsonnet files
+   new       Create new jsonnet mixin files
+   server    Start a server to provision Prometheus rule file(s) with.
+   list      List all available mixins
+   install   Install a mixin
+   help, h   Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
@@ -51,13 +54,14 @@ USAGE:
    mixtool generate command [command options] [arguments...]
 
 COMMANDS:
-     alerts      Generate Prometheus alerts based on the mixins
-     rules       Generate Prometheus rules based on the mixins
-     dashboards  Generate Grafana dashboards based on the mixins
+   alerts      Generate Prometheus alerts based on the mixins
+   rules       Generate Prometheus rules based on the mixins
+   dashboards  Generate Grafana dashboards based on the mixins
+   all         Generate all resources - Prometheus alerts, Prometheus rules and Grafana dashboards
 
 OPTIONS:
    --help, -h  show help
-
+   
 ```
 
 ### New
@@ -71,13 +75,13 @@ USAGE:
    mixtool new command [command options] [arguments...]
 
 COMMANDS:
-     grafana-dashboard  Create a new file with a Grafana dashboard mixin inside
-     prometheus-alerts  Create a new file with Prometheus alert mixins inside
-     prometheus-rules   Create a new file with Prometheus rule mixins inside
+   grafana-dashboard  Create a new file with a Grafana dashboard mixin inside
+   prometheus-alerts  Create a new file with Prometheus alert mixins inside
+   prometheus-rules   Create a new file with Prometheus rule mixins inside
 
 OPTIONS:
    --help, -h  show help
-
+   
 ```
 
 #### New Examples
@@ -105,7 +109,7 @@ OPTIONS:
    --grafana                Lint Grafana dashboards against Grafana's schema
    --prometheus             Lint Prometheus alerts and rules and their given expressions
    --jpath value, -J value  Add folders to be used as vendor folders
-
+   
 ```
 
 #### Lint Examples

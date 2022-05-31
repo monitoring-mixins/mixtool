@@ -16,9 +16,7 @@ check-license:
 crossbuild:
 	@GOOS=linux ARCH=amd64 $(MAKE) -s build
 
-build: packr
-	@echo ">> generating with packr"
-	@packr
+build:
 	@$(eval OUTPUT=$(OUT_DIR)/$(GOOS)/$(GOARCH)/$(BIN))
 	@echo ">> building for $(GOOS)/$(GOARCH) to $(OUTPUT)"
 	@mkdir -p $(OUT_DIR)/$(GOOS)/$(GOARCH)
@@ -36,12 +34,9 @@ test:
 generate: embedmd
 	@echo ">> generating docs"
 	@./scripts/generate-help-txt.sh
-	@$(GOPATH)/bin/embedmd -w `find ./ -path ./vendor -prune -o -name "*.md" -print`
+	@embedmd -w `find ./ -path ./vendor -prune -o -name "*.md" -print`
 
 embedmd:
-	@go get github.com/campoy/embedmd
-
-packr:
-	@go get github.com/gobuffalo/packr/...
+	@go install github.com/campoy/embedmd@v1.0.0
 
 .PHONY: all check-license crossbuild build install test generate embedmd
