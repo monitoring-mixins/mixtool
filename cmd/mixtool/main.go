@@ -41,7 +41,6 @@ func main() {
 		serverCommand(),
 		listCommand(),
 		installCommand(),
-		// runbookCommand(),
 	}
 
 	if err := app.Run(os.Args); err != nil {
