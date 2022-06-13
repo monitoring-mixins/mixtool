@@ -67,8 +67,8 @@ func writeTempFile(t *testing.T, pattern string, contents string) (filename stri
 		t.Errorf("failed to create temp file: %v", err)
 	}
 
-	if _, err := f.WriteString(rules); err != nil {
-		t.Errorf("failed to write rules.jsonnet to disk: %v", err)
+	if _, err := f.WriteString(contents); err != nil {
+		t.Errorf("failed to write temp file to disk: %v", err)
 	}
 
 	if err := f.Close(); err != nil {
