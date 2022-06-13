@@ -108,7 +108,7 @@ func lintPrometheusAlertsGuidelines(rule *rulefmt.RuleNode) (errs []error) {
 	}
 
 	if rule.Labels["severity"] != "warning" && rule.Labels["severity"] != "critical" && rule.Labels["severity"] != "info" {
-		errs = append(errs, fmt.Errorf("[alert-severity-rule] Alert '%s' severify must be 'warning', 'critical' or 'info', is currently '%s'", rule.Alert.Value, rule.Labels["severity"]))
+		errs = append(errs, fmt.Errorf("[alert-severity-rule] Alert '%s' severity must be 'warning', 'critical' or 'info', is currently '%s'", rule.Alert.Value, rule.Labels["severity"]))
 	}
 
 	if _, ok := rule.Annotations["description"]; !ok {

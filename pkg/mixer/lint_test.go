@@ -122,7 +122,7 @@ var alertTests = []struct {
 			},
 			'for': '15m',
 		}`,
-		`[alert-severity-rule] Alert 'TestAlert' severify must be 'warning', 'critical' or 'info', is currently 'disaster'`,
+		`[alert-severity-rule] Alert 'TestAlert' severity must be 'warning', 'critical' or 'info', is currently 'disaster'`,
 	},
 	{
 		`{
@@ -136,7 +136,7 @@ var alertTests = []struct {
 			},
 			'for': '15m',
 		}`,
-		`[alert-severity-rule] Alert 'TestAlert' severify must be 'warning', 'critical' or 'info', is currently ''`,
+		`[alert-severity-rule] Alert 'TestAlert' severity must be 'warning', 'critical' or 'info', is currently ''`,
 	},
 	// summary
 	{
