@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"regexp"
 
 	"github.com/fatih/color"
 	"github.com/google/go-jsonnet"
@@ -72,22 +73,65 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 		errsOut <- err
 		return
 	}
-
-	_, errs := rulefmt.Parse([]byte(j))
+	groups, errs := rulefmt.Parse([]byte(j))
 	for _, err := range errs {
 		errsOut <- err
 	}
 
-	j, err = evaluatePrometheusRules(vm, filename)
+	for _, g := range groups.Groups {
+		for _, r := range g.Rules {
+			errs = lintPrometheusAlertsGuidelines(&r)
+			for _, err := range errs {
+				errsOut <- err
+			}
+		}
+	}
+
+	_, err = evaluatePrometheusRules(vm, filename)
 	if err != nil {
 		errsOut <- err
 		return
 	}
 
-	_, errs = rulefmt.Parse([]byte(j))
-	for _, err := range errs {
-		errsOut <- err
+}
+
+var camelCaseRegexp = regexp.MustCompile(`^([A-Z][a-z0-9]+)+$`)
+var goTemplateRegexp = regexp.MustCompile(`\{\{.+}\}`)
+var sentenceRegexp = regexp.MustCompile(`^[A-Z].+\.$`)
+
+// Enforces alerting guidelines.
+// https://monitoring.mixins.dev/#guidelines-for-alert-names-labels-and-annotations
+func lintPrometheusAlertsGuidelines(rule *rulefmt.RuleNode) (errs []error) {
+
+	if !camelCaseRegexp.MatchString(rule.Alert.Value) {
+		errs = append(errs, fmt.Errorf("[alert-name-camelcase] Alert '%s' name is not in camel case", rule.Alert.Value))
 	}
+
+	if rule.Labels["severity"] != "warning" && rule.Labels["severity"] != "critical" && rule.Labels["severity"] != "info" {
+		errs = append(errs, fmt.Errorf("[alert-severity-rule] Alert '%s' severity must be 'warning', 'critical' or 'info', is currently '%s'", rule.Alert.Value, rule.Labels["severity"]))
+	}
+
+	if _, ok := rule.Annotations["description"]; !ok {
+		errs = append(errs, fmt.Errorf("[alert-description-missing-rule] Alert '%s' must have annotation 'description'", rule.Alert.Value))
+	} else {
+
+		if !goTemplateRegexp.MatchString(rule.Annotations["description"]) {
+			errs = append(errs, fmt.Errorf("[alert-description-templating] Alert %s annotation 'description' must use templates, is currently '%s'", rule.Alert.Value, rule.Annotations["description"]))
+		}
+	}
+
+	if _, ok := rule.Annotations["summary"]; !ok {
+		errs = append(errs, fmt.Errorf("[alert-summary-missing-rule] Alert '%s' must have annotation 'summary'", rule.Alert.Value))
+	} else {
+
+		if goTemplateRegexp.MatchString(rule.Annotations["summary"]) {
+			errs = append(errs, fmt.Errorf("[alert-summary-templating] Alert %s annotation 'summary' must not use templates", rule.Alert.Value))
+		}
+		if !sentenceRegexp.MatchString(rule.Annotations["summary"]) {
+			errs = append(errs, fmt.Errorf("[alert-summary-style] Alert %s annotation 'summary' must start with capital letter and end with period, is currently '%s'", rule.Alert.Value, rule.Annotations["summary"]))
+		}
+	}
+	return errs
 }
 
 func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error) {
