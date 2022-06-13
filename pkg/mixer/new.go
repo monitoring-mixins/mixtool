@@ -80,9 +80,10 @@ const alerts = `{
               severity: 'warning',
             },
             annotations: {
-              message: 'Overcommited CPU resource requests on Pods, cannot tolerate node failure.',
+              description: '{{ $labels.node }} has been unready for more than 15 minutes.',
+              summary: 'Node is not ready.',
             },
-            'for': '1h',
+            'for': '15m',
           },
         ],
       },
