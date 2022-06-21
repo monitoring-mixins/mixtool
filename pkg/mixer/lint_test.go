@@ -61,6 +61,21 @@ var alertTests = []struct {
 		}`,
 		``,
 	},
+	{
+		`{
+			alert: 'SNMPDown',
+			expr: 'up == 0',
+			labels: {
+				severity: 'warning',
+			},
+			annotations: {
+				description: '{{ $labels.instance }} has been unready for more than 15 minutes.',
+				summary: 'SNMP is down.',
+			},
+			'for': '15m',
+		}`,
+		``,
+	},
 	// alertnames
 	{
 		`{

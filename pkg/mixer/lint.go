@@ -95,7 +95,7 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 
 }
 
-var camelCaseRegexp = regexp.MustCompile(`^([A-Z][a-z0-9]+)+$`)
+var camelCaseRegexp = regexp.MustCompile(`^([A-Z]+[a-z0-9]+)+$`)
 var goTemplateRegexp = regexp.MustCompile(`\{\{.+}\}`)
 var sentenceRegexp = regexp.MustCompile(`^[A-Z].+\.$`)
 
