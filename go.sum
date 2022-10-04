@@ -871,8 +871,8 @@ github.com/gorilla/websocket v1.5.0/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/ad
 github.com/grafana/dashboard-linter v0.0.0-20220928163753-067805793faa h1:QcXevhWDkwslv/OMCDkOkhrRp7TYCJiRwagBKpoNL8o=
 github.com/grafana/dashboard-linter v0.0.0-20220928163753-067805793faa/go.mod h1:62jfydunLRuEqbKDkFHDpyPzg3oNnFLiWelTge0QELw=
 github.com/grafana/regexp v0.0.0-20220304095617-2e8d9baf4ac2/go.mod h1:M5qHK+eWfAv8VR/265dIuEpL3fNfeC21tXXp9itM24A=
-github.com/grafana/tanka v0.22.1 h1:OssU78lA1skUXac4+R1ur9wbfp8m0Shvmhn2gAyoiuk=
-github.com/grafana/tanka v0.22.1/go.mod h1:B6Tgi1YHOfym1FOM1HOXKyOnCjtG/8imTav6vwj3C38=
+github.com/grafana/tanka v0.23.1 h1:yRiToCwr5KgOz5H0U6ytsq2j0qbhg/VChXS8mbNTa7c=
+github.com/grafana/tanka v0.23.1/go.mod h1:2ihsickzs4quqt9kQ+jAQ7PPeBk4TaBFkABWxSzMEU8=
 github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7/go.mod h1:FecbI9+v66THATjSRHfNgh1IVFe/9kFxbXtjV0ctIMA=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.0/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=

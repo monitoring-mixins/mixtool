@@ -74,7 +74,7 @@ require (
 	github.com/gobuffalo/packr/v2 v2.8.3
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-jsonnet v0.18.0
-	github.com/grafana/tanka v0.22.1
+	github.com/grafana/tanka v0.23.1
 	github.com/jsonnet-bundler/jsonnet-bundler v0.5.1
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/pkg/errors v0.9.1
