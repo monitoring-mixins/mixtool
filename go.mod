@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/fatih/color v1.14.1
-	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
 	github.com/grafana/dashboard-linter v0.0.0-20230202190110-5550774542fd
 	github.com/prometheus/prometheus v0.42.0
 )
@@ -90,3 +89,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+require github.com/invopop/yaml v0.2.0
