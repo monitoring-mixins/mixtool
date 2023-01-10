@@ -224,18 +224,17 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 
 func isLintExcluded(ruleName string, alertName string, cf *lint.ConfigurationFile) bool {
 	exclusions, ok := cf.Exclusions[ruleName]
-	excluded := false
 	if exclusions != nil {
 		for _, ce := range exclusions.Entries {
 			if alertName == ce.Alert {
-				excluded = true
+				return true
 			}
 		}
 		if len(exclusions.Entries) == 0 {
-			excluded = true
+			return true
 		}
 	} else if ok {
-		excluded = true
+		return true
 	}
-	return excluded
+	return false
 }
