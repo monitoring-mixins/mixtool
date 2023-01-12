@@ -9,7 +9,7 @@ The mixtool is a helper for easily working with [jsonnet](http://jsonnet.org/) m
 Make sure you're using golang v1.17 or higher, and run:
 
 ```
-go install github.com/monitoring-mixins/mixtool/cmd/mixtool@master
+go install github.com/monitoring-mixins/mixtool/cmd/mixtool@main
 ```
 
 ## Usage
