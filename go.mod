@@ -80,7 +80,7 @@ require (
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/stretchr/testify v1.8.1
-	github.com/urfave/cli v1.22.12
+	github.com/urfave/cli/v2 v2.24.3
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/goleak v1.2.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
@@ -90,4 +90,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-require github.com/invopop/yaml v0.2.0
+require (
+	github.com/invopop/yaml v0.2.0
+	github.com/urfave/cli v1.22.12
+)
