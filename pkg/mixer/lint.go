@@ -70,7 +70,8 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 
 	// Lint using the config file from grafana/dashboard-linter
 	config := lint.NewConfigurationFile()
-	if err := config.Load(path.Dir(filename)); err != nil {
+	configFilename := path.Join(path.Dir(filename), ".lint")
+	if err := config.Load(configFilename); err != nil {
 		errsOut <- err
 	}
 
@@ -192,7 +193,8 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 
 		// Lint using the new grafana/dashboard-linter project.
 		config := lint.NewConfigurationFile()
-		if err := config.Load(path.Dir(filename)); err != nil {
+		configFilename := path.Join(path.Dir(filename), ".lint")
+		if err := config.Load(configFilename); err != nil {
 			errsOut <- err
 			continue
 		}
