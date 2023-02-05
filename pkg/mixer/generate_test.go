@@ -74,5 +74,5 @@ func TestEvalAlerts(t *testing.T) {
 		YAML: true,
 	})
 	assert.NoError(t, err)
-	assert.Equal(t, expectedYaml, string(out))
+	assert.YAMLEq(t, expectedYaml, string(out))
 }

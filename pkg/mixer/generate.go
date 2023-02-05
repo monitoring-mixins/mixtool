@@ -17,9 +17,9 @@ package mixer
 import (
 	"encoding/json"
 
-	"github.com/ghodss/yaml"
 	"github.com/google/go-jsonnet"
 	"github.com/grafana/tanka/pkg/jsonnet/native"
+	"github.com/invopop/yaml"
 	"github.com/pkg/errors"
 )
 
