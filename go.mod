@@ -3,7 +3,7 @@ module github.com/monitoring-mixins/mixtool
 go 1.18
 
 require (
-	github.com/fatih/color v1.14.1
+	github.com/fatih/color v1.15.0
 	github.com/grafana/dashboard-linter v0.0.0-20230228185903-bd2a0a0045e8
 	github.com/prometheus/prometheus v0.42.0
 )
@@ -82,7 +82,7 @@ require (
 	github.com/stretchr/testify v1.8.2
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/goleak v1.2.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
