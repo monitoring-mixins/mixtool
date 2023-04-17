@@ -66,7 +66,7 @@ require (
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/gobuffalo/packr/v2 v2.8.3
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/go-jsonnet v0.19.1
+	github.com/google/go-jsonnet v0.20.0
 	github.com/grafana/tanka v0.24.0
 	github.com/jsonnet-bundler/jsonnet-bundler v0.5.1
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
