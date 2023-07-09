@@ -98,4 +98,5 @@ require (
 require (
 	github.com/invopop/yaml v0.2.0
 	github.com/urfave/cli v1.22.14
+	github.com/urfave/cli/v2 v2.25.7
 )
