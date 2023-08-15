@@ -262,6 +262,8 @@ github.com/grafana/dashboard-linter v0.0.0-20230718173425-fca179a60f4f h1:pXC1vS
 github.com/grafana/dashboard-linter v0.0.0-20230718173425-fca179a60f4f/go.mod h1:bDrUe+8+DQO6GWMu3rSqEmf3gae31GOAq+PW4xZXRC8=
 github.com/grafana/dashboard-linter v0.0.0-20230808130552-639f2c895347 h1:Yr1DNo5j9I6IRtdxc2EmQBo/1ptb4NS+KC1euC8mJDw=
 github.com/grafana/dashboard-linter v0.0.0-20230808130552-639f2c895347/go.mod h1:4zovusCMljsbpo6ISSN/awpv+bjHhZJphYNLI1+7I74=
+github.com/grafana/dashboard-linter v0.0.0-20230815114304-3c1213ef32d9 h1:NXsChAvUCYFqCTWS3hmN543x/Rk8cDev4s18vaZq6Fc=
+github.com/grafana/dashboard-linter v0.0.0-20230815114304-3c1213ef32d9/go.mod h1:4zovusCMljsbpo6ISSN/awpv+bjHhZJphYNLI1+7I74=
 github.com/grafana/regexp v0.0.0-20221122212121-6b5c0a4cb7fd h1:PpuIBO5P3e9hpqBD0O/HjhShYuM6XE0i/lbE6J94kww=
 github.com/grafana/regexp v0.0.0-20221122212121-6b5c0a4cb7fd/go.mod h1:M5qHK+eWfAv8VR/265dIuEpL3fNfeC21tXXp9itM24A=
 github.com/grafana/tanka v0.25.0 h1:4S5ouwiXx6TDTxjLAFxhfHanJA20PfvWwMXjCOpqVQ4=
