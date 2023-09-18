@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/fatih/color v1.15.0
-	github.com/grafana/dashboard-linter v0.0.0-20230815114304-3c1213ef32d9
+	github.com/grafana/dashboard-linter v0.0.0-20230911221040-739c923c1e5d
 	github.com/prometheus/prometheus v0.46.0
 )
 
@@ -90,7 +90,7 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/goleak v1.2.1 // indirect
 	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
