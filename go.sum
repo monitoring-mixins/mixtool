@@ -268,6 +268,8 @@ github.com/grafana/dashboard-linter v0.0.0-20230911221040-739c923c1e5d h1:LGXEcP
 github.com/grafana/dashboard-linter v0.0.0-20230911221040-739c923c1e5d/go.mod h1:Sr3bzEuvq9MLtufQ/1Lhe2XcGWJ1neK/AeE2YjydJPM=
 github.com/grafana/dashboard-linter v0.0.0-20230918062540-f71297396bd2 h1:veVqb/G7OqZAY1YJVM0JwPKsYs3F25fWOfhrrp48uqI=
 github.com/grafana/dashboard-linter v0.0.0-20230918062540-f71297396bd2/go.mod h1:PKPTijWSQ+ftadEqR7WQjOxraBdlW4JrtvdkbCJ/sM8=
+github.com/grafana/dashboard-linter v0.0.0-20231004202449-1a59e34df198 h1:usamkuSmV/LfB3aKi5N4dvyW62s7GRHqmCkhVbKGIV0=
+github.com/grafana/dashboard-linter v0.0.0-20231004202449-1a59e34df198/go.mod h1:PtmdqZJtHPsQlZ5eLJGlbfrTPRQ0fPNuTGpCtn+UP4c=
 github.com/grafana/regexp v0.0.0-20221122212121-6b5c0a4cb7fd h1:PpuIBO5P3e9hpqBD0O/HjhShYuM6XE0i/lbE6J94kww=
 github.com/grafana/regexp v0.0.0-20221122212121-6b5c0a4cb7fd/go.mod h1:M5qHK+eWfAv8VR/265dIuEpL3fNfeC21tXXp9itM24A=
 github.com/grafana/tanka v0.25.0 h1:4S5ouwiXx6TDTxjLAFxhfHanJA20PfvWwMXjCOpqVQ4=
@@ -464,6 +466,8 @@ github.com/prometheus/prometheus v0.46.0 h1:9JSdXnsuT6YsbODEhSQMwxNkGwPExfmzqG73
 github.com/prometheus/prometheus v0.46.0/go.mod h1:10L5IJE5CEsjee1FnOcVswYXlPIscDWWt3IJ2UDYrz4=
 github.com/prometheus/prometheus v0.47.0 h1:tIJJKZGlmrMVsvIt6rMfB8he7CRHEc8ZxS5ubcZtbkM=
 github.com/prometheus/prometheus v0.47.0/go.mod h1:J/bmOSjgH7lFxz2gZhrWEZs2i64vMS+HIuZfmYNhJ/M=
+github.com/prometheus/prometheus v0.47.1 h1:bd2LiZyxzHn9Oo2Ei4eK2D86vz/L/OiqR1qYo0XmMBo=
+github.com/prometheus/prometheus v0.47.1/go.mod h1:J/bmOSjgH7lFxz2gZhrWEZs2i64vMS+HIuZfmYNhJ/M=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.6.1/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=
