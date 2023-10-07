@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/fatih/color v1.15.0
-	github.com/grafana/dashboard-linter v0.0.0-20230918062540-f71297396bd2
-	github.com/prometheus/prometheus v0.47.0
+	github.com/grafana/dashboard-linter v0.0.0-20231004202449-1a59e34df198
+	github.com/prometheus/prometheus v0.47.1
 )
 
 require (
