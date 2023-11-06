@@ -255,6 +255,8 @@ github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORR
 github.com/gorilla/websocket v1.5.0 h1:PPwGk2jz7EePpoHN/+ClbZu8SPxiqlu12wZP/3sWmnc=
 github.com/grafana/dashboard-linter v0.0.0-20231004202449-1a59e34df198 h1:usamkuSmV/LfB3aKi5N4dvyW62s7GRHqmCkhVbKGIV0=
 github.com/grafana/dashboard-linter v0.0.0-20231004202449-1a59e34df198/go.mod h1:PtmdqZJtHPsQlZ5eLJGlbfrTPRQ0fPNuTGpCtn+UP4c=
+github.com/grafana/dashboard-linter v0.0.0-20231014085532-6c322b3e955e h1:tj3TzclWdzJdQJ6L43Lh3ybCQ1OW6Qdn+xJIn/m02zg=
+github.com/grafana/dashboard-linter v0.0.0-20231014085532-6c322b3e955e/go.mod h1:NmKXbgKgfPmM9RQ9b4gLsdihzxJueh6yrHYNVcsjXTE=
 github.com/grafana/regexp v0.0.0-20221122212121-6b5c0a4cb7fd h1:PpuIBO5P3e9hpqBD0O/HjhShYuM6XE0i/lbE6J94kww=
 github.com/grafana/regexp v0.0.0-20221122212121-6b5c0a4cb7fd/go.mod h1:M5qHK+eWfAv8VR/265dIuEpL3fNfeC21tXXp9itM24A=
 github.com/grafana/tanka v0.26.0 h1:qyP+l1mQ9byku3L6swEEl4n3KDeHqBr33KdCGNiEG2c=
@@ -444,6 +446,8 @@ github.com/prometheus/procfs v0.11.0 h1:5EAgkfkMl659uZPbe9AS2N68a7Cc1TJbPEuGzFuR
 github.com/prometheus/procfs v0.11.0/go.mod h1:nwNm2aOCAYw8uTR/9bWRREkZFxAUcWzPHWJq+XBB/FM=
 github.com/prometheus/prometheus v0.47.1 h1:bd2LiZyxzHn9Oo2Ei4eK2D86vz/L/OiqR1qYo0XmMBo=
 github.com/prometheus/prometheus v0.47.1/go.mod h1:J/bmOSjgH7lFxz2gZhrWEZs2i64vMS+HIuZfmYNhJ/M=
+github.com/prometheus/prometheus v0.47.2 h1:jWcnuQHz1o1Wu3MZ6nMJDuTI0kU5yJp9pkxh8XEkNvI=
+github.com/prometheus/prometheus v0.47.2/go.mod h1:J/bmOSjgH7lFxz2gZhrWEZs2i64vMS+HIuZfmYNhJ/M=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.6.1/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=
