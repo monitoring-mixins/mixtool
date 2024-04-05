@@ -17,7 +17,7 @@ package jsonnetbundler
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/jsonnet-bundler/jsonnet-bundler/pkg/jsonnetfile"
@@ -47,7 +47,7 @@ func InitCommand(dir string) error {
 
 	filename := filepath.Join(dir, jsonnetfile.File)
 
-	err = ioutil.WriteFile(filename, contents, 0644)
+	err = os.WriteFile(filename, contents, 0644)
 	if err != nil {
 		return fmt.Errorf("Failed to write new jsonnetfile.json, %s", err.Error())
 	}

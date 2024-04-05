@@ -15,7 +15,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -47,14 +46,14 @@ const exampleMixins = `
 `
 
 func TestList(t *testing.T) {
-	tempFile, err := ioutil.TempFile("", "exampleMixinsTest.json")
+	tempFile, err := os.CreateTemp("", "exampleMixinsTest.json")
 	assert.NoError(t, err)
 	defer os.Remove(tempFile.Name())
 
-	err = ioutil.WriteFile(tempFile.Name(), []byte(exampleMixins), 0644)
+	err = os.WriteFile(tempFile.Name(), []byte(exampleMixins), 0644)
 	assert.NoError(t, err)
 
-	body, err := ioutil.ReadFile(tempFile.Name())
+	body, err := os.ReadFile(tempFile.Name())
 	assert.NoError(t, err)
 
 	mixins, err := parseMixinJSON([]byte(body))
