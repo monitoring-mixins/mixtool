@@ -17,7 +17,6 @@ package jsonnetbundler
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -35,7 +34,7 @@ func InstallCommand(dir, jsonnetHome string, uris []string, single bool) error {
 		dir = "."
 	}
 
-	jbfilebytes, err := ioutil.ReadFile(filepath.Join(dir, jsonnetfile.File))
+	jbfilebytes, err := os.ReadFile(filepath.Join(dir, jsonnetfile.File))
 	if err != nil {
 		return fmt.Errorf("failed to load jsonnetfile %s", err.Error())
 	}
@@ -45,7 +44,7 @@ func InstallCommand(dir, jsonnetHome string, uris []string, single bool) error {
 		return err
 	}
 
-	jblockfilebytes, err := ioutil.ReadFile(filepath.Join(dir, jsonnetfile.LockFile))
+	jblockfilebytes, err := os.ReadFile(filepath.Join(dir, jsonnetfile.LockFile))
 	if !os.IsNotExist(err) {
 		if err != nil {
 			return fmt.Errorf("failed to load lockfile %s", err.Error())
@@ -117,7 +116,7 @@ func writeJSONFile(name string, d interface{}) error {
 	}
 	b = append(b, []byte("\n")...)
 
-	return ioutil.WriteFile(name, b, 0644)
+	return os.WriteFile(name, b, 0644)
 }
 
 func writeChangedJsonnetFile(originalBytes []byte, modified *v1.JsonnetFile, path string) error {

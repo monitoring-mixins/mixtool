@@ -16,7 +16,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"testing"
@@ -48,9 +47,9 @@ func TestInstallMixin(t *testing.T) {
 }
 
 func testInstallMixin(t *testing.T, m mixin) {
-	tmpdir, err := ioutil.TempDir("", "mixtool-install")
+	tmpdir, err := os.CreateTemp("", "mixtool-install")
 	assert.NoError(t, err)
-	defer os.RemoveAll(tmpdir)
+	defer os.RemoveAll(tmpdir.Name())
 
 	generateCfg := mixer.GenerateOptions{
 		AlertsFilename: "alerts.yaml",
@@ -63,7 +62,7 @@ func testInstallMixin(t *testing.T, m mixin) {
 	mixinURL := path.Join(m.URL, m.Subdir)
 
 	fmt.Printf("installing %v\n", mixinURL)
-	dldir := path.Join(tmpdir, m.Name+"mixin-test")
+	dldir := path.Join(tmpdir.Name(), m.Name+"mixin-test")
 
 	err = os.Mkdir(dldir, 0755)
 	assert.NoError(t, err)
