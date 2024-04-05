@@ -1,6 +1,8 @@
 module github.com/monitoring-mixins/mixtool
 
-go 1.18
+go 1.21
+
+toolchain go1.21.8
 
 require (
 	github.com/fatih/color v1.16.0

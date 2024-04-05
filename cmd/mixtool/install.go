@@ -17,7 +17,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -145,7 +145,7 @@ func putMixin(content []byte, bindAddress string) error {
 	if resp.StatusCode == 200 {
 		fmt.Println("PUT alerts OK")
 	} else {
-		responseData, err := ioutil.ReadAll(resp.Body)
+		responseData, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("failed to response body in putMixin, %w", err)
 		}

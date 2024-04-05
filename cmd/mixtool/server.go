@@ -20,7 +20,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -99,12 +98,12 @@ type ruleProvisioner struct {
 // to existing, does not provision them. It returns whether Prometheus should
 // be reloaded and if an error has occurred.
 func (p *ruleProvisioner) provision(r io.Reader) (bool, error) {
-	newData, err := ioutil.ReadAll(r)
+	newData, err := io.ReadAll(r)
 	if err != nil {
 		return false, fmt.Errorf("unable to read new rules: %w", err)
 	}
 
-	tempfile, err := ioutil.TempFile(filepath.Dir(p.ruleFile), "temp-mixtool")
+	tempfile, err := os.CreateTemp(filepath.Dir(p.ruleFile), "temp-mixtool")
 	if err != nil {
 		return false, fmt.Errorf("unable to create temp file: %w", err)
 	}
@@ -184,7 +183,7 @@ func (r *prometheusReloader) triggerReload(ctx context.Context) error {
 		return fmt.Errorf("reload request: %w", err)
 	}
 
-	if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
+	if _, err := io.Copy(io.Discard, resp.Body); err != nil {
 		return fmt.Errorf("exhausting request body: %w", err)
 	}
 

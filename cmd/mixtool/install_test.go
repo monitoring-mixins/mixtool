@@ -16,7 +16,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"testing"
@@ -48,7 +47,7 @@ func TestInstallMixin(t *testing.T) {
 }
 
 func testInstallMixin(t *testing.T, m mixin) {
-	tmpdir, err := ioutil.TempDir("", "mixtool-install")
+	tmpdir, err := os.MkdirTemp("", "mixtool-install")
 	assert.NoError(t, err)
 	defer os.RemoveAll(tmpdir)
 

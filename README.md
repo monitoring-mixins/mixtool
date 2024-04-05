@@ -6,7 +6,7 @@ The mixtool is a helper for easily working with [jsonnet](http://jsonnet.org/) m
 
 ## Install
 
-Make sure you're using golang v1.17 or higher, and run:
+Make sure you're using golang v1.21 or higher, and run:
 
 ```
 go install github.com/monitoring-mixins/mixtool/cmd/mixtool@main
