@@ -17,7 +17,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -68,7 +68,7 @@ func queryWebsite(mixinsWebsite string) ([]byte, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func listAction(c *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		body, err = ioutil.ReadFile(path)
+		body, err = os.ReadFile(path)
 		if err != nil {
 			return err
 		}
@@ -149,6 +149,6 @@ func listAction(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-  
+
 	return printMixins(mixins)
 }

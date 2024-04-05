@@ -17,7 +17,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -143,7 +142,7 @@ func generateAlerts(filename string, options mixer.GenerateOptions) error {
 		return err
 	}
 
-	return ioutil.WriteFile(options.AlertsFilename, out, 0644)
+	return os.WriteFile(options.AlertsFilename, out, 0644)
 }
 
 func generateRules(filename string, options mixer.GenerateOptions) error {
@@ -151,7 +150,7 @@ func generateRules(filename string, options mixer.GenerateOptions) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(options.RulesFilename, out, 0644)
+	return os.WriteFile(options.RulesFilename, out, 0644)
 }
 
 func generateDashboards(filename string, opts mixer.GenerateOptions) error {

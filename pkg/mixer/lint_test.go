@@ -16,7 +16,6 @@ package mixer
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -288,7 +287,7 @@ func TestLintGrafana(t *testing.T) {
 }
 
 func writeTempFile(t *testing.T, pattern string, contents string) (filename string, delete func()) {
-	f, err := ioutil.TempFile("", pattern)
+	f, err := os.CreateTemp("", pattern)
 	if err != nil {
 		t.Errorf("failed to create temp file: %v", err)
 	}
