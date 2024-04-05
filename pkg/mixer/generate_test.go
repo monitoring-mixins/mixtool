@@ -15,7 +15,6 @@
 package mixer
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -63,7 +62,7 @@ const expectedYaml = `groups:
 `
 
 func TestEvalAlerts(t *testing.T) {
-	inFile, err := ioutil.TempFile(os.TempDir(), "mixtool-")
+	inFile, err := os.CreateTemp(os.TempDir(), "mixtool-")
 	assert.NoError(t, err)
 	defer os.Remove(inFile.Name())
 
