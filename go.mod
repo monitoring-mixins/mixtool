@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.3
 
 require (
-	github.com/fatih/color v1.16.0
+	github.com/fatih/color v1.17.0
 	github.com/grafana/dashboard-linter v0.0.0-20240509155641-0e96847a2e2c
 	github.com/prometheus/prometheus v0.52.0
 )
