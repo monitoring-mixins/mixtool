@@ -6,7 +6,7 @@ toolchain go1.22.4
 
 require (
 	github.com/fatih/color v1.17.0
-	github.com/grafana/dashboard-linter v0.0.0-20240605160358-bb0d80454a01
+	github.com/grafana/dashboard-linter v0.0.0-20240617163551-81c2e32d2419
 	github.com/prometheus/prometheus v0.52.1
 )
 
