@@ -284,6 +284,8 @@ github.com/gorilla/websocket v1.5.0 h1:PPwGk2jz7EePpoHN/+ClbZu8SPxiqlu12wZP/3sWm
 github.com/gorilla/websocket v1.5.0/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/grafana/dashboard-linter v0.0.0-20240605160358-bb0d80454a01 h1:bHq9v1NEqrrrfSl448klKqd2t7qz/ksa4j0xt8TZ4NI=
 github.com/grafana/dashboard-linter v0.0.0-20240605160358-bb0d80454a01/go.mod h1:h5Kxj4zO2fTDgq8eXuNXxxDptf0kkqRt/dOliWtbQJg=
+github.com/grafana/dashboard-linter v0.0.0-20240617163551-81c2e32d2419 h1:q/Eb6R6OjQsdt4fCnEOaEIk1ToldFtKs8d4w4s2Hg0o=
+github.com/grafana/dashboard-linter v0.0.0-20240617163551-81c2e32d2419/go.mod h1:QqAdpzDCPjS9twJXNvFh+5DbD5yV/YrPq0M49y/qcYA=
 github.com/grafana/regexp v0.0.0-20221122212121-6b5c0a4cb7fd h1:PpuIBO5P3e9hpqBD0O/HjhShYuM6XE0i/lbE6J94kww=
 github.com/grafana/regexp v0.0.0-20221122212121-6b5c0a4cb7fd/go.mod h1:M5qHK+eWfAv8VR/265dIuEpL3fNfeC21tXXp9itM24A=
 github.com/grafana/tanka v0.27.1 h1:vYT8oTfewV7QuSxpBoxpzyXPB+qXAri6n2It3pDTC3w=
