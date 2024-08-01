@@ -7,20 +7,14 @@ toolchain go1.22.5
 require (
 	github.com/fatih/color v1.17.0
 	github.com/grafana/dashboard-linter v0.0.0-20240619150053-99762cc1f90b
-	github.com/prometheus/prometheus v0.53.0
+	github.com/prometheus/prometheus v0.53.1
 )
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.11.1 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.6.0 // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/internal v1.8.0 // indirect
-	github.com/AzureAD/microsoft-authentication-library-for-go v1.2.2 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
-	github.com/alecthomas/units v0.0.0-20231202071711-9a357b53e9c9 // indirect
-	github.com/aws/aws-sdk-go v1.53.16 // indirect
-	github.com/bboreham/go-loser v0.0.0-20230920113527-fcc2c21820a3 // indirect
 	github.com/edsrzf/mmap-go v1.1.0 // indirect
 	github.com/facette/natsort v0.0.0-20181210072756-2cd4dd1e2dcb // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
@@ -28,18 +22,11 @@ require (
 	github.com/gobuffalo/logger v1.0.7 // indirect
 	github.com/gobuffalo/packd v1.0.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
-	github.com/golang/snappy v0.0.4 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grafana/regexp v0.0.0-20240518133315-a468a5bfb3bc // indirect
 	github.com/huandu/xstrings v1.3.3 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/karrick/godirwalk v1.17.0 // indirect
-	github.com/klauspost/compress v1.17.8 // indirect
-	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/markbates/errx v1.1.0 // indirect
 	github.com/markbates/oncer v1.0.0 // indirect
 	github.com/markbates/safe v1.0.1 // indirect
@@ -47,10 +34,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f // indirect
-	github.com/oklog/ulid v1.3.1 // indirect
-	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
-	github.com/prometheus/common/sigv4 v0.1.0 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
@@ -60,16 +43,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.27.0 // indirect
 	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/exp v0.0.0-20240404231335-c0f41cb1a7a0 // indirect
-	golang.org/x/net v0.26.0 // indirect
-	golang.org/x/oauth2 v0.21.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/term v0.22.0 // indirect
-	golang.org/x/time v0.5.0 // indirect
-	k8s.io/apimachinery v0.30.3 // indirect
-	k8s.io/client-go v0.29.3 // indirect
-	k8s.io/klog/v2 v2.120.1 // indirect
-	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
@@ -94,7 +68,6 @@ require (
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/atomic v1.11.0 // indirect
-	go.uber.org/goleak v1.3.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
