@@ -6,7 +6,7 @@ toolchain go1.22.6
 
 require (
 	github.com/fatih/color v1.17.0
-	github.com/grafana/dashboard-linter v0.0.0-20240619150053-99762cc1f90b
+	github.com/grafana/dashboard-linter v0.0.0-20240808111517-eb2bc3ba25e3
 	github.com/prometheus/prometheus v0.53.1
 )
 
@@ -69,7 +69,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
