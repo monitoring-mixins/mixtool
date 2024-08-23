@@ -71,12 +71,16 @@ func InstallCommand(dir, jsonnetHome string, uris []string, single bool) error {
 			d.Single = true
 		}
 
-		if !depEqual(jsonnetFile.Dependencies[d.Name()], *d) {
+		value, ok := jsonnetFile.Dependencies.Get(d.Name())
+		if !ok {
+			return fmt.Errorf("failed to find package %s", d.Name())
+		}
+		if !depEqual(value, *d) {
 			// the dep passed on the cli is different from the jsonnetFile
-			jsonnetFile.Dependencies[d.Name()] = *d
+			jsonnetFile.Dependencies.Set(d.Name(), *d)
 
 			// we want to install the passed version (ignore the lock)
-			delete(lockFile.Dependencies, d.Name())
+			lockFile.Dependencies.Delete(d.Name())
 		}
 	}
 
