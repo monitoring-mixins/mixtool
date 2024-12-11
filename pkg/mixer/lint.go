@@ -195,19 +195,19 @@ func lintGrafanaDashboards(filename string, vm *jsonnet.VM, errsOut chan<- error
 		config := lint.NewConfigurationFile()
 		configFilename := path.Join(path.Dir(filename), ".lint")
 		if err := config.Load(configFilename); err != nil {
-			errsOut <- err
+			errsOut <- fmt.Errorf("failed to load the dashboard-linter config file %s: %v", configFilename, err)
 			continue
 		}
 
 		dash, err := lint.NewDashboard(raw)
 		if err != nil {
-			errsOut <- err
+			errsOut <- fmt.Errorf("failed to parse the dashboard %s: %v", dashboardFilename, err)
 			continue
 		}
 
 		rs, err := rules.Lint([]lint.Dashboard{dash})
 		if err != nil {
-			errsOut <- err
+			errsOut <- fmt.Errorf("failed to lint the dashboard %s: %v", dashboardFilename, err)
 			continue
 		}
 
