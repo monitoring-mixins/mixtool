@@ -297,6 +297,8 @@ github.com/grafana/dashboard-linter v0.0.0-20241203055812-9cec106fc01c h1:7AgAbN
 github.com/grafana/dashboard-linter v0.0.0-20241203055812-9cec106fc01c/go.mod h1:QRxC8NNAbpGx2vz9/XckJcWXtHU3My57byeudPrf0WU=
 github.com/grafana/dashboard-linter v0.0.0-20241210042213-0b7c7a2cbfbf h1:qCEEk08Dk5hnLJZ0DJKDZ5PgVTA5q2ZIz0u3sCIh4lc=
 github.com/grafana/dashboard-linter v0.0.0-20241210042213-0b7c7a2cbfbf/go.mod h1:QRxC8NNAbpGx2vz9/XckJcWXtHU3My57byeudPrf0WU=
+github.com/grafana/dashboard-linter v0.0.0-20241216132922-9479ff4bfa35 h1:TrVnmusQoSLmSDj93iJyamJjOZlhipjaYwFkQZr83XM=
+github.com/grafana/dashboard-linter v0.0.0-20241216132922-9479ff4bfa35/go.mod h1:CHmLeAJSUdGwo0AM8LWs0aDqoOXxt2zBuhSMoL17oO8=
 github.com/grafana/dskit v0.0.0-20240905221822-931a021fb06b h1:x2HCzk29I0o5pRPfqWP/qwhXaPGlcz8pohq5kO1NZoE=
 github.com/grafana/dskit v0.0.0-20240905221822-931a021fb06b/go.mod h1:SPLNCARd4xdjCkue0O6hvuoveuS1dGJjDnfxYe405YQ=
 github.com/grafana/gomemcache v0.0.0-20240229205252-cd6a66d6fb56 h1:X8IKQ0wu40wpvYcKfBcc5T4QnhdQjUhtUtB/1CY89lE=
