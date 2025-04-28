@@ -186,4 +186,5 @@ require (
 require (
 	github.com/invopop/yaml v0.3.1
 	github.com/urfave/cli v1.22.16
+	github.com/urfave/cli/v3 v3.3.1
 )
