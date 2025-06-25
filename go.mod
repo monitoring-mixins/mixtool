@@ -165,7 +165,7 @@ require (
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/gobuffalo/packr/v2 v2.8.3
 	github.com/google/go-jsonnet v0.20.0
-	github.com/grafana/tanka v0.28.0
+	github.com/grafana/tanka v0.33.0
 	github.com/jsonnet-bundler/jsonnet-bundler v0.6.0
 	github.com/pkg/errors v0.9.1
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
