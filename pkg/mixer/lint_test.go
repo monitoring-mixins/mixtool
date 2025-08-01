@@ -121,6 +121,21 @@ var alertTests = []struct {
 		}`,
 		`[alert-name-camelcase] Alert 'test Alert' name is not in camel case`,
 	},
+	{
+		`{
+			alert: 'TestAlertNameIsLongerThan40CharactersLong',
+			expr: 'up == 0',
+			labels: {
+				severity: 'warning',
+			},
+			annotations: {
+				description: '{{ $labels.instance }} has been unready for more than 15 minutes.',
+				summary: 'Instance is not ready.',
+			},
+			'for': '15m',
+		}`,
+		`[alert-name-length] Alert 'TestAlertNameIsLongerThan40CharactersLong' name exceeds 40 characters`,
+	},
 
 	// severity
 	{

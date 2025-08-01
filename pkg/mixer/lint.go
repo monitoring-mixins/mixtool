@@ -115,6 +115,12 @@ func lintPrometheusAlertsGuidelines(rule *rulefmt.RuleNode, cf *lint.Configurati
 		}
 	}
 
+	if !isLintExcluded("alert-name-length", rule.Alert.Value, cf) {
+		if len(rule.Alert.Value) > 40 {
+			errs = append(errs, fmt.Errorf("[alert-name-length] Alert '%s' name exceeds 40 characters", rule.Alert.Value))
+		}
+	}
+
 	if !isLintExcluded("alert-severity-rule", rule.Alert.Value, cf) {
 		if rule.Labels["severity"] != "warning" && rule.Labels["severity"] != "critical" && rule.Labels["severity"] != "info" {
 			errs = append(errs, fmt.Errorf("[alert-severity-rule] Alert '%s' severity must be 'warning', 'critical' or 'info', is currently '%s'", rule.Alert.Value, rule.Labels["severity"]))
