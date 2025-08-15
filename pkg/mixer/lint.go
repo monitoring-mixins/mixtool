@@ -86,6 +86,10 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 	}
 
 	for _, g := range groups.Groups {
+		errs = lintPrometheusAlertGroups(&g, config)
+		for _, err := range errs {
+			errsOut <- err
+		}
 		for _, r := range g.Rules {
 			errs = lintPrometheusAlertsGuidelines(&r, config)
 			for _, err := range errs {
@@ -105,6 +109,23 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 var camelCaseRegexp = regexp.MustCompile(`^([A-Z]+[a-z0-9]+)+$`)
 var goTemplateRegexp = regexp.MustCompile(`\{\{.+}\}`)
 var sentenceRegexp = regexp.MustCompile(`^[A-Z].+\.$`)
+
+// Enforces alert group guidelines.
+func lintPrometheusAlertGroups(group *rulefmt.RuleGroup, cf *lint.ConfigurationFile) (errs []error) {
+	if !isLintExcluded("alert-group-rule-count", group.Name, cf) {
+		if len(group.Rules) > 20 {
+			errs = append(errs, fmt.Errorf("[alert-group-rule-count] Group '%s' contains more than 20 rules (%d)", group.Name, len(group.Rules)))
+		}
+	}
+
+	if !isLintExcluded("alert-group-name-length", group.Name, cf) {
+		if len(group.Name) > 40 {
+			errs = append(errs, fmt.Errorf("[alert-group-name-length] Alert Group '%s' name exceeds 40 characters", group.Name))
+		}
+	}
+	return errs
+
+}
 
 // Enforces alerting guidelines.
 // https://monitoring.mixins.dev/#guidelines-for-alert-names-labels-and-annotations

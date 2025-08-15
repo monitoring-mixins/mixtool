@@ -280,6 +280,147 @@ func TestLintPrometheusAlertsGuidelines(t *testing.T) {
 
 }
 
+func TestLintPrometheusAlertGroupsGuidelines_ValidGroup(t *testing.T) {
+	expectedLintErr := ""
+	var validAlert = `{
+			alert: 'TestAlert',
+			expr: 'up == 0',
+			labels: {
+				severity: 'warning',
+			},
+			annotations: {
+				description: '{{ $labels.instance }} has been unready for more than 15 minutes.',
+				summary: 'Instance is not ready.',
+			},
+			'for': '15m',
+		}`
+
+	alertsStr := fmt.Sprintf(`
+		{
+			_config+:: {},
+			prometheusAlerts+: {
+				groups+: [
+				  {
+					name: 'test',
+					rules: [
+					  %s,
+					],
+				  },
+				],
+			},
+		}
+		`, validAlert)
+
+	filename, delete := writeTempFile(t, "alerts.jsonnet", alertsStr)
+	defer delete()
+
+	vm := jsonnet.MakeVM()
+	errs := make(chan error)
+	go lintPrometheus(filename, vm, errs)
+	for err := range errs {
+		if err.Error() != expectedLintErr {
+			t.Errorf("linting wrote unexpected output, expected '%s', got: %v", expectedLintErr, err)
+		}
+	}
+}
+
+func TestLintPrometheusAlertGroupsGuidelines_InvalidGroupName(t *testing.T) {
+	expectedLintErr := "[alert-group-name-length] Alert Group 'InvalidAlertGroupNameHasMoreThanFourtyCharacters' name exceeds 40 characters"
+	var validAlert = `{
+			alert: 'TestAlert',
+			expr: 'up == 0',
+			labels: {
+				severity: 'warning',
+			},
+			annotations: {
+				description: '{{ $labels.instance }} has been unready for more than 15 minutes.',
+				summary: 'Instance is not ready.',
+			},
+			'for': '15m',
+		}`
+
+	alertsStr := fmt.Sprintf(`
+		{
+			_config+:: {},
+			prometheusAlerts+: {
+				groups+: [
+				  {
+					name: 'InvalidAlertGroupNameHasMoreThanFourtyCharacters',
+					rules: [
+					  %s,
+					],
+				  },
+				],
+			},
+		}
+		`, validAlert)
+
+	filename, delete := writeTempFile(t, "alerts.jsonnet", alertsStr)
+	defer delete()
+
+	vm := jsonnet.MakeVM()
+	errs := make(chan error)
+	go lintPrometheus(filename, vm, errs)
+	for err := range errs {
+		if err.Error() != expectedLintErr {
+			t.Errorf("linting wrote unexpected output, expected '%s', got: %v", expectedLintErr, err)
+		}
+	}
+}
+
+func TestLintPrometheusAlertGroupsGuidelines_TooManyAlerts(t *testing.T) {
+	invalidNumAlerts := 21
+	expectedLintErr := "[alert-group-rule-count] Group 'test' contains more than 20 rules (21)"
+	var validAlert = `{
+			alert: 'TestAlert',
+			expr: 'up == 0',
+			labels: {
+				severity: 'warning',
+			},
+			annotations: {
+				description: '{{ $labels.instance }} has been unready for more than 15 minutes.',
+				summary: 'Instance is not ready.',
+			},
+			'for': '15m',
+		}`
+
+	var joinedAlerts = ""
+	for i := 0; i < invalidNumAlerts; i++ {
+		if i > 0 {
+			joinedAlerts += ","
+		}
+		joinedAlerts += validAlert
+	}
+
+	alertsStr := fmt.Sprintf(`
+		{
+			_config+:: {},
+			prometheusAlerts+: {
+				groups+: [
+				  {
+					name: 'test',
+					rules: [
+					  %s,
+					],
+				  },
+				],
+			},
+		}
+		`, joinedAlerts)
+
+	filename, delete := writeTempFile(t, "alerts.jsonnet", alertsStr)
+	defer delete()
+
+	vm := jsonnet.MakeVM()
+	errs := make(chan error)
+	go lintPrometheus(filename, vm, errs)
+	for err := range errs {
+		if err.Error() != expectedLintErr {
+			t.Errorf("linting wrote unexpected output, expected '%s', got: %v", expectedLintErr, err)
+		}
+	}
+}
+
 func TestLintPrometheusRules(t *testing.T) {
 	filename, delete := writeTempFile(t, "rules.jsonnet", rules)
 	defer delete()
