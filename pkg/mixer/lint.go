@@ -86,6 +86,10 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 	}
 
 	for _, g := range groups.Groups {
+		errs = lintPrometheusAlertGroups(&g, config)
+		for _, err := range errs {
+			errsOut <- err
+		}
 		for _, r := range g.Rules {
 			errs = lintPrometheusAlertsGuidelines(&r, config)
 			for _, err := range errs {
@@ -106,12 +110,35 @@ var camelCaseRegexp = regexp.MustCompile(`^([A-Z]+[a-z0-9]+)+$`)
 var goTemplateRegexp = regexp.MustCompile(`\{\{.+}\}`)
 var sentenceRegexp = regexp.MustCompile(`^[A-Z].+\.$`)
 
+// Enforces alert group guidelines.
+func lintPrometheusAlertGroups(group *rulefmt.RuleGroup, cf *lint.ConfigurationFile) (errs []error) {
+	if !isLintExcluded("alert-group-rule-count", group.Name, cf) {
+		if len(group.Rules) > 20 {
+			errs = append(errs, fmt.Errorf("[alert-group-rule-count] Group '%s' contains more than 20 rules (%d)", group.Name, len(group.Rules)))
+		}
+	}
+
+	if !isLintExcluded("alert-group-name-length", group.Name, cf) {
+		if len(group.Name) > 40 {
+			errs = append(errs, fmt.Errorf("[alert-group-name-length] Alert Group '%s' name exceeds 40 characters", group.Name))
+		}
+	}
+	return errs
+
+}
+
 // Enforces alerting guidelines.
 // https://monitoring.mixins.dev/#guidelines-for-alert-names-labels-and-annotations
 func lintPrometheusAlertsGuidelines(rule *rulefmt.RuleNode, cf *lint.ConfigurationFile) (errs []error) {
 	if !isLintExcluded("alert-name-camelcase", rule.Alert.Value, cf) {
 		if !camelCaseRegexp.MatchString(rule.Alert.Value) {
 			errs = append(errs, fmt.Errorf("[alert-name-camelcase] Alert '%s' name is not in camel case", rule.Alert.Value))
+		}
+	}
+
+	if !isLintExcluded("alert-name-length", rule.Alert.Value, cf) {
+		if len(rule.Alert.Value) > 40 {
+			errs = append(errs, fmt.Errorf("[alert-name-length] Alert '%s' name exceeds 40 characters", rule.Alert.Value))
 		}
 	}
 
