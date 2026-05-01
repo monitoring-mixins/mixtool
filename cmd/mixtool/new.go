@@ -98,12 +98,16 @@ func fileExists(filename string) bool {
 	return true
 }
 
-func writeFileToDisk(filename string, creator func() ([]byte, error)) error {
+func writeFileToDisk(filename string, creator func() ([]byte, error)) (retErr error) {
 	f, err := os.Create(filename)
 	if err != nil {
 		return fmt.Errorf("failed to create file %s: %v", filename, err)
 	}
-	defer f.Close()
+	defer func() {
+		if cerr := f.Close(); cerr != nil && retErr == nil {
+			retErr = cerr
+		}
+	}()
 
 	out, err := creator()
 	if err != nil {

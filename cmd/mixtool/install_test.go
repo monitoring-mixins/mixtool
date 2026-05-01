@@ -49,7 +49,7 @@ func TestInstallMixin(t *testing.T) {
 func testInstallMixin(t *testing.T, m mixin) {
 	tmpdir, err := os.CreateTemp("", "mixtool-install")
 	assert.NoError(t, err)
-	defer os.RemoveAll(tmpdir.Name())
+	defer func() { assert.NoError(t, os.RemoveAll(tmpdir.Name())) }()
 
 	generateCfg := mixer.GenerateOptions{
 		AlertsFilename: "alerts.yaml",

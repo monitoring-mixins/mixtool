@@ -168,12 +168,16 @@ func generateDashboards(filename string, opts mixer.GenerateOptions) error {
 	}
 
 	// Creating this func so that we can make proper use of defer
-	writeDashboard := func(name string, dashboard json.RawMessage) error {
+	writeDashboard := func(name string, dashboard json.RawMessage) (retErr error) {
 		file, err := os.Create(filepath.Join(opts.Directory, name))
 		if err != nil {
 			return errors.Wrap(err, "failed to create dashboard file")
 		}
-		defer file.Close()
+		defer func() {
+			if cerr := file.Close(); cerr != nil && retErr == nil {
+				retErr = cerr
+			}
+		}()
 
 		if _, err := file.Write(dashboard); err != nil {
 			return err
