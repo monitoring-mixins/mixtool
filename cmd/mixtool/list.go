@@ -78,8 +78,8 @@ func queryWebsite(mixinsWebsite string) ([]byte, error) {
 
 func printMixins(mixinsList []mixin) error {
 	writer := tabwriter.NewWriter(os.Stdout, 4, 8, 0, '\t', tabwriter.TabIndent)
-	fmt.Fprintln(writer, "name")
-	fmt.Fprintln(writer, "----")
+	_, _ = fmt.Fprintln(writer, "name")
+	_, _ = fmt.Fprintln(writer, "----")
 	for _, m := range mixinsList {
 		// for now, do not print out any of the descriptions
 		// m.Description = strings.Replace(m.Description, "\n", "", -1)
@@ -87,7 +87,7 @@ func printMixins(mixinsList []mixin) error {
 		// if len(m.Description) <= 0 {
 		// 	m.Description = "N/A"
 		// }
-		fmt.Fprintf(writer, "%s\n", color.GreenString(m.Name))
+		_, _ = fmt.Fprintf(writer, "%s\n", color.GreenString(m.Name))
 	}
 
 	return writer.Flush()
