@@ -92,7 +92,7 @@ func generateMixin(directory string, jsonnetHome string, mixinURL string, option
 
 	err := os.Chdir(mixinBaseDirectory)
 	if err != nil {
-		return nil, fmt.Errorf("Cannot cd into directory %s", err)
+		return nil, fmt.Errorf("cannot cd into directory %s", err)
 	}
 
 	// generate alerts, rules, grafana dashboards
@@ -157,7 +157,7 @@ func putMixin(content []byte, bindAddress string) error {
 func installAction(c *cli.Context) error {
 	directory := c.String("directory")
 	if directory == "" {
-		return fmt.Errorf("Must specify a directory to download mixin")
+		return fmt.Errorf("must specify a directory to download mixin")
 	}
 
 	_, err := os.Stat(directory)
@@ -170,7 +170,7 @@ func installAction(c *cli.Context) error {
 
 	mixinPath := c.Args().First()
 	if mixinPath == "" {
-		return fmt.Errorf("Expected the url of mixin repository or name of the mixin. Show available mixins using mixtool list")
+		return fmt.Errorf("expected the url of mixin repository or name of the mixin. Show available mixins using mixtool list")
 	}
 
 	mixinsList, err := getMixins()
@@ -196,14 +196,14 @@ func installAction(c *cli.Context) error {
 			}
 		}
 		if !found {
-			return fmt.Errorf("Could not find mixin with name %s", mixinPath)
+			return fmt.Errorf("could not find mixin with name %s", mixinPath)
 		}
 	} else {
 		mixinURL = mixinPath
 	}
 
 	if mixinURL == "" {
-		return fmt.Errorf("Empty mixinURL")
+		return fmt.Errorf("empty mixinURL")
 	}
 
 	// by default jsonnet packages are downloaded under vendor

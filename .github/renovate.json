@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Europe/Amsterdam",
+  "schedule": ["before 3am on Monday"],
+  "prConcurrentLimit": 10,
+  "minimumReleaseAge": "3 days",
+  "prCreation": "not-pending",
+  "updateNotScheduled": false,
+  "packageRules": [
+    {
+      "description": "Group all Golang module updates together",
+      "matchManagers": ["gomod"],
+      "groupName": "Gomod updates",
+      "groupSlug": "gomod-updates"
+    },
+    {
+      "matchPackageNames": ["github.com/prometheus/prometheus"],
+      "enabled": false
+    }
+  ]
+}

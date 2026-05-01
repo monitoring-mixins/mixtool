@@ -1,3 +1,8 @@
 /_output/
 /mixtool
+
+# Editor/IDE
 .idea/
+.vscode/
+.DS_Store
+.cursorrules

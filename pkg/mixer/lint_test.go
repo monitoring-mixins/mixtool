@@ -456,5 +456,9 @@ func writeTempFile(t *testing.T, pattern string, contents string) (filename stri
 		t.Errorf("failed to close temp file: %v", err)
 	}
 
-	return f.Name(), func() { os.Remove(f.Name()) }
+	return f.Name(), func() {
+		if err := os.Remove(f.Name()); err != nil {
+			t.Errorf("failed to remove temp file: %v", err)
+		}
+	}
 }
