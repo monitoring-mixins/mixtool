@@ -64,7 +64,7 @@ func InstallCommand(dir, jsonnetHome string, uris []string, single bool) error {
 	for _, u := range uris {
 		d := deps.Parse(dir, u)
 		if d == nil {
-			return fmt.Errorf("Unable to parse package URI %s", u)
+			return fmt.Errorf("unable to parse package URI %s", u)
 		}
 
 		if single {

@@ -64,7 +64,7 @@ const expectedYaml = `groups:
 func TestEvalAlerts(t *testing.T) {
 	inFile, err := os.CreateTemp(os.TempDir(), "mixtool-")
 	assert.NoError(t, err)
-	defer os.Remove(inFile.Name())
+	defer func() { assert.NoError(t, os.Remove(inFile.Name())) }()
 
 	_, err = inFile.Write([]byte(testAlertJsonnet))
 	assert.NoError(t, err)

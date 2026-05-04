@@ -48,7 +48,7 @@ const exampleMixins = `
 func TestList(t *testing.T) {
 	tempFile, err := os.CreateTemp("", "exampleMixinsTest.json")
 	assert.NoError(t, err)
-	defer os.Remove(tempFile.Name())
+	defer func() { assert.NoError(t, os.Remove(tempFile.Name())) }()
 
 	err = os.WriteFile(tempFile.Name(), []byte(exampleMixins), 0644)
 	assert.NoError(t, err)

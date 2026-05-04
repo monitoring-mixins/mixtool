@@ -59,7 +59,7 @@ func Lint(w io.Writer, filename string, options LintOptions) error {
 func printErrs(w io.Writer, errs <-chan error) int {
 	errCount := 0
 	for err := range errs {
-		fmt.Fprintln(w, color.RedString(err.Error()))
+		_, _ = fmt.Fprintln(w, color.RedString(err.Error()))
 		errCount++
 	}
 	return errCount

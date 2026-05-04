@@ -49,7 +49,7 @@ func InitCommand(dir string) error {
 
 	err = os.WriteFile(filename, contents, 0644)
 	if err != nil {
-		return fmt.Errorf("Failed to write new jsonnetfile.json, %s", err.Error())
+		return fmt.Errorf("failed to write new jsonnetfile.json: %s", err.Error())
 	}
 
 	return nil
