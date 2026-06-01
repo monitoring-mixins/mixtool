@@ -24,7 +24,9 @@ import (
 	"github.com/fatih/color"
 	"github.com/google/go-jsonnet"
 	"github.com/grafana/dashboard-linter/lint"
+	"github.com/prometheus/common/model"
 	"github.com/prometheus/prometheus/model/rulefmt"
+	"github.com/prometheus/prometheus/promql/parser"
 )
 
 type LintOptions struct {
@@ -80,7 +82,14 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 		errsOut <- err
 		return
 	}
-	groups, errs := rulefmt.Parse([]byte(j))
+	groups, errs := rulefmt.Parse(
+		[]byte(j),
+		false,
+		model.UTF8Validation,
+		parser.NewParser(parser.Options{
+			EnableExperimentalFunctions: true,
+		}),
+	)
 	for _, err := range errs {
 		errsOut <- err
 	}
@@ -129,50 +138,50 @@ func lintPrometheusAlertGroups(group *rulefmt.RuleGroup, cf *lint.ConfigurationF
 
 // Enforces alerting guidelines.
 // https://monitoring.mixins.dev/#guidelines-for-alert-names-labels-and-annotations
-func lintPrometheusAlertsGuidelines(rule *rulefmt.RuleNode, cf *lint.ConfigurationFile) (errs []error) {
-	if !isLintExcluded("alert-name-camelcase", rule.Alert.Value, cf) {
-		if !camelCaseRegexp.MatchString(rule.Alert.Value) {
-			errs = append(errs, fmt.Errorf("[alert-name-camelcase] Alert '%s' name is not in camel case", rule.Alert.Value))
+func lintPrometheusAlertsGuidelines(rule *rulefmt.Rule, cf *lint.ConfigurationFile) (errs []error) {
+	if !isLintExcluded("alert-name-camelcase", rule.Alert, cf) {
+		if !camelCaseRegexp.MatchString(rule.Alert) {
+			errs = append(errs, fmt.Errorf("[alert-name-camelcase] Alert '%s' name is not in camel case", rule.Alert))
 		}
 	}
 
-	if !isLintExcluded("alert-name-length", rule.Alert.Value, cf) {
-		if len(rule.Alert.Value) > 40 {
-			errs = append(errs, fmt.Errorf("[alert-name-length] Alert '%s' name exceeds 40 characters", rule.Alert.Value))
+	if !isLintExcluded("alert-name-length", rule.Alert, cf) {
+		if len(rule.Alert) > 40 {
+			errs = append(errs, fmt.Errorf("[alert-name-length] Alert '%s' name exceeds 40 characters", rule.Alert))
 		}
 	}
 
-	if !isLintExcluded("alert-severity-rule", rule.Alert.Value, cf) {
+	if !isLintExcluded("alert-severity-rule", rule.Alert, cf) {
 		if rule.Labels["severity"] != "warning" && rule.Labels["severity"] != "critical" && rule.Labels["severity"] != "info" {
-			errs = append(errs, fmt.Errorf("[alert-severity-rule] Alert '%s' severity must be 'warning', 'critical' or 'info', is currently '%s'", rule.Alert.Value, rule.Labels["severity"]))
+			errs = append(errs, fmt.Errorf("[alert-severity-rule] Alert '%s' severity must be 'warning', 'critical' or 'info', is currently '%s'", rule.Alert, rule.Labels["severity"]))
 		}
 	}
 
 	if _, ok := rule.Annotations["description"]; !ok {
-		if !isLintExcluded("alert-description-missing-rule", rule.Alert.Value, cf) {
-			errs = append(errs, fmt.Errorf("[alert-description-missing-rule] Alert '%s' must have annotation 'description'", rule.Alert.Value))
+		if !isLintExcluded("alert-description-missing-rule", rule.Alert, cf) {
+			errs = append(errs, fmt.Errorf("[alert-description-missing-rule] Alert '%s' must have annotation 'description'", rule.Alert))
 		}
 	} else {
-		if !isLintExcluded("alert-description-templating", rule.Alert.Value, cf) {
+		if !isLintExcluded("alert-description-templating", rule.Alert, cf) {
 			if !goTemplateRegexp.MatchString(rule.Annotations["description"]) {
-				errs = append(errs, fmt.Errorf("[alert-description-templating] Alert %s annotation 'description' must use templates, is currently '%s'", rule.Alert.Value, rule.Annotations["description"]))
+				errs = append(errs, fmt.Errorf("[alert-description-templating] Alert %s annotation 'description' must use templates, is currently '%s'", rule.Alert, rule.Annotations["description"]))
 			}
 		}
 	}
 
 	if _, ok := rule.Annotations["summary"]; !ok {
-		if !isLintExcluded("alert-summary-missing-rule", rule.Alert.Value, cf) {
-			errs = append(errs, fmt.Errorf("[alert-summary-missing-rule] Alert '%s' must have annotation 'summary'", rule.Alert.Value))
+		if !isLintExcluded("alert-summary-missing-rule", rule.Alert, cf) {
+			errs = append(errs, fmt.Errorf("[alert-summary-missing-rule] Alert '%s' must have annotation 'summary'", rule.Alert))
 		}
 	} else {
 		if goTemplateRegexp.MatchString(rule.Annotations["summary"]) {
-			if !isLintExcluded("alert-summary-templating", rule.Alert.Value, cf) {
-				errs = append(errs, fmt.Errorf("[alert-summary-templating] Alert %s annotation 'summary' must not use templates", rule.Alert.Value))
+			if !isLintExcluded("alert-summary-templating", rule.Alert, cf) {
+				errs = append(errs, fmt.Errorf("[alert-summary-templating] Alert %s annotation 'summary' must not use templates", rule.Alert))
 			}
 		}
 		if !sentenceRegexp.MatchString(rule.Annotations["summary"]) {
-			if !isLintExcluded("alert-summary-style", rule.Alert.Value, cf) {
-				errs = append(errs, fmt.Errorf("[alert-summary-style] Alert %s annotation 'summary' must start with capital letter and end with period, is currently '%s'", rule.Alert.Value, rule.Annotations["summary"]))
+			if !isLintExcluded("alert-summary-style", rule.Alert, cf) {
+				errs = append(errs, fmt.Errorf("[alert-summary-style] Alert %s annotation 'summary' must start with capital letter and end with period, is currently '%s'", rule.Alert, rule.Annotations["summary"]))
 			}
 		}
 	}
