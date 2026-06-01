@@ -196,3 +196,9 @@ require (
 	github.com/invopop/yaml v0.3.1
 	github.com/urfave/cli v1.22.17
 )
+
+// dashboard-linter transitively pulls in github.com/grafana/dskit (via
+// loki/v3/pkg/util), whose kv/memberlist subpackage relies on the Grafana
+// fork's extended Config (NodeSelection, PushPullNodes) and NodeState API.
+// Match loki/dskit/mimir and replace memberlist with the fork.
+replace github.com/hashicorp/memberlist => github.com/grafana/memberlist v0.3.1-0.20251126142931-6f9f62ab6f86
