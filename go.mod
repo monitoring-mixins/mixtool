@@ -138,7 +138,7 @@ require (
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
@@ -150,4 +150,5 @@ require (
 require (
 	github.com/invopop/yaml v0.3.1
 	github.com/urfave/cli v1.22.17
+	github.com/urfave/cli/v3 v3.10.0
 )
