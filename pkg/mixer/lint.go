@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"path"
 	"regexp"
 
@@ -89,6 +90,9 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 		parser.NewParser(parser.Options{
 			EnableExperimentalFunctions: true,
 		}),
+		// Jsonnet evaluation produces one JSON document, so rulefmt's
+		// multiple-document warning cannot occur here.
+		slog.New(slog.DiscardHandler),
 	)
 	for _, err := range errs {
 		errsOut <- err
