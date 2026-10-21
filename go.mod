@@ -1,8 +1,6 @@
 module github.com/monitoring-mixins/mixtool
 
-go 1.22.4
-
-toolchain go1.22.6
+go 1.24
 
 require (
 	github.com/fatih/color v1.18.0
@@ -64,7 +62,7 @@ require (
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/karrick/godirwalk v1.17.0 // indirect
-	github.com/klauspost/compress v1.17.9 // indirect
+	github.com/klauspost/compress v1.18.7 // indirect
 	github.com/markbates/errx v1.1.0 // indirect
 	github.com/markbates/oncer v1.0.0 // indirect
 	github.com/markbates/safe v1.0.1 // indirect
