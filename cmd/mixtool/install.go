@@ -16,6 +16,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -28,28 +29,30 @@ import (
 	"github.com/monitoring-mixins/mixtool/pkg/jsonnetbundler"
 	"github.com/monitoring-mixins/mixtool/pkg/mixer"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 )
 
-func installCommand() cli.Command {
-	return cli.Command{
+func installCommand() *cli.Command {
+	return &cli.Command{
 		Name:        "install",
 		Usage:       "Install a mixin",
 		Description: "Install a mixin from a repository",
 		Action:      installAction,
 		Flags: []cli.Flag{
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:  "bind-address",
 				Usage: "Address to bind HTTP server to.",
 				Value: "http://127.0.0.1:8080",
 			},
-			cli.StringFlag{
-				Name:  "directory, d",
-				Usage: "Path where the downloaded mixin is saved. If it doesn't exist already it will be created",
+			&cli.StringFlag{
+				Name:    "directory",
+				Aliases: []string{"d"},
+				Usage:   "Path where the downloaded mixin is saved. If it doesn't exist already it will be created",
 			},
-			cli.BoolFlag{
-				Name:  "put, p",
-				Usage: "Specify this flag when you want to send PUT request to mixtool server once the mixins are generated",
+			&cli.BoolFlag{
+				Name:    "put",
+				Aliases: []string{"p"},
+				Usage:   "Specify this flag when you want to send PUT request to mixtool server once the mixins are generated",
 			},
 		},
 	}
@@ -154,7 +157,7 @@ func putMixin(content []byte, bindAddress string) error {
 	return nil
 }
 
-func installAction(c *cli.Context) error {
+func installAction(_ context.Context, c *cli.Command) error {
 	directory := c.String("directory")
 	if directory == "" {
 		return fmt.Errorf("must specify a directory to download mixin")

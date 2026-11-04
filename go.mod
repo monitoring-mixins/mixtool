@@ -17,7 +17,6 @@ require (
 	github.com/cockroachdb/apd/v3 v3.2.3 // indirect
 	github.com/coreos/go-semver v0.3.1 // indirect
 	github.com/coreos/go-systemd/v22 v22.7.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dennwc/varint v1.0.0 // indirect
 	github.com/dustin/go-humanize v1.1.0 // indirect
@@ -112,7 +111,6 @@ require (
 	github.com/protocolbuffers/txtpbfmt v0.0.0-20260916144827-6e6d8ebdba95 // indirect
 	github.com/redis/go-redis/v9 v9.23.0 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/sercand/kuberesolver/v6 v6.0.1 // indirect
 	github.com/shopspring/decimal v1.5.0 // indirect
@@ -200,7 +198,6 @@ require (
 	github.com/prometheus/common v0.72.1
 	github.com/prometheus/prometheus v0.315.0
 	github.com/stretchr/testify v1.12.1
-	github.com/urfave/cli v1.22.17
 	github.com/urfave/cli/v3 v3.14.0
 )
 

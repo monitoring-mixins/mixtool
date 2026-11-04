@@ -15,12 +15,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/grafana/tanka/pkg/jsonnet/jpath"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 )
 
 // Version of the mixtool.
@@ -28,22 +29,22 @@ import (
 var version = "0.0.0"
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "mixtool"
-	app.Usage = "Improves your jsonnet mixins workflow"
-	app.Description = "mixtool helps with generating, building and linting jsonnet mixins"
-	app.Version = version
-
-	app.Commands = cli.Commands{
-		generateCommand(),
-		lintCommand(),
-		newCommand(),
-		serverCommand(),
-		listCommand(),
-		installCommand(),
+	cmd := &cli.Command{
+		Name:        "mixtool",
+		Usage:       "Improves your jsonnet mixins workflow",
+		Description: "mixtool helps with generating, building and linting jsonnet mixins",
+		Version:     version,
+		Commands: []*cli.Command{
+			generateCommand(),
+			lintCommand(),
+			newCommand(),
+			serverCommand(),
+			listCommand(),
+			installCommand(),
+		},
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	if err := cmd.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
 }

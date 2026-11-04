@@ -15,6 +15,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,7 +26,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 )
 
 type mixin struct {
@@ -37,16 +38,17 @@ type mixin struct {
 
 const defaultWebsite = "https://monitoring.mixins.dev/mixins.json"
 
-func listCommand() cli.Command {
-	return cli.Command{
+func listCommand() *cli.Command {
+	return &cli.Command{
 		Name:        "list",
 		Usage:       "List all available mixins",
 		Description: "List all available mixins as presented on monitoring.mixins.dev",
 		Action:      listAction,
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "path, p",
-				Usage: "provide the path of a url with a json endpoint or a local json file",
+			&cli.StringFlag{
+				Name:    "path",
+				Aliases: []string{"p"},
+				Usage:   "provide the path of a url with a json endpoint or a local json file",
 			},
 		},
 	}
@@ -106,7 +108,7 @@ func parseMixinJSON(body []byte) ([]mixin, error) {
 // if path is not specified, default to the mixins website
 // otherwise, try parse as url
 // otherwise, try look for a local json file
-func listAction(c *cli.Context) error {
+func listAction(_ context.Context, c *cli.Command) error {
 	path := c.String("path")
 	var body []byte
 	var err error

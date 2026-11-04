@@ -24,25 +24,25 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 )
 
-func serverCommand() cli.Command {
-	return cli.Command{
+func serverCommand() *cli.Command {
+	return &cli.Command{
 		Name:        "server",
 		Usage:       "Start a server to provision Prometheus rule file(s) with.",
 		Description: "Start a server to provision Prometheus rule file(s) with.",
 		Flags: []cli.Flag{
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:  "bind-address",
 				Usage: "Address to bind HTTP server to.",
 			},
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:  "prometheus-reload-url",
 				Value: "http://127.0.0.1:9090/-/reload",
 				Usage: "Prometheus address to reload after provisioning the rule file(s).",
 			},
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:  "rule-file",
 				Usage: "File to provision rules into.",
 			},
@@ -51,7 +51,7 @@ func serverCommand() cli.Command {
 	}
 }
 
-func serverAction(c *cli.Context) error {
+func serverAction(_ context.Context, c *cli.Command) error {
 	bindAddress := c.String("bind-address")
 	http.Handle("/api/v1/rules", &ruleProvisioningHandler{
 		ruleProvisioner: &ruleProvisioner{

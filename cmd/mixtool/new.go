@@ -15,30 +15,31 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
 	"github.com/monitoring-mixins/mixtool/pkg/mixer"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 )
 
-func newCommand() cli.Command {
-	return cli.Command{
+func newCommand() *cli.Command {
+	return &cli.Command{
 		Name:        "new",
 		Usage:       "Create new jsonnet mixin files",
 		Description: "Create new files for Prometheus alerts & rules and Grafana dashboards as jsonnet mixin",
-		Subcommands: cli.Commands{
-			cli.Command{
+		Commands: []*cli.Command{
+			{
 				Name:   "grafana-dashboard",
 				Usage:  "Create a new file with a Grafana dashboard mixin inside",
 				Action: newGrafanaDashboard,
 			},
-			cli.Command{
+			{
 				Name:   "prometheus-alerts",
 				Usage:  "Create a new file with Prometheus alert mixins inside",
 				Action: newPrometheusAlerts,
 			},
-			cli.Command{
+			{
 				Name:   "prometheus-rules",
 				Usage:  "Create a new file with Prometheus rule mixins inside",
 				Action: newPrometheusRules,
@@ -47,8 +48,8 @@ func newCommand() cli.Command {
 	}
 }
 
-func newGrafanaDashboard(c *cli.Context) error {
-	if len(c.Args()) != 1 {
+func newGrafanaDashboard(_ context.Context, c *cli.Command) error {
+	if c.Args().Len() != 1 {
 		return fmt.Errorf("expected filename as only argument")
 	}
 
@@ -60,8 +61,8 @@ func newGrafanaDashboard(c *cli.Context) error {
 	return writeFileToDisk(filename, mixer.NewGrafanaDashboard)
 }
 
-func newPrometheusAlerts(c *cli.Context) error {
-	if len(c.Args()) != 1 {
+func newPrometheusAlerts(_ context.Context, c *cli.Command) error {
+	if c.Args().Len() != 1 {
 		return fmt.Errorf("expected filename as only argument")
 	}
 
@@ -73,8 +74,8 @@ func newPrometheusAlerts(c *cli.Context) error {
 	return writeFileToDisk(filename, mixer.NewPrometheusAlerts)
 }
 
-func newPrometheusRules(c *cli.Context) error {
-	if len(c.Args()) != 1 {
+func newPrometheusRules(_ context.Context, c *cli.Command) error {
+	if c.Args().Len() != 1 {
 		return fmt.Errorf("expected filename as only argument")
 	}
 
