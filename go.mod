@@ -201,6 +201,7 @@ require (
 	github.com/prometheus/prometheus v0.315.0
 	github.com/stretchr/testify v1.12.1
 	github.com/urfave/cli v1.22.17
+	github.com/urfave/cli/v3 v3.14.0
 )
 
 replace github.com/hashicorp/memberlist => github.com/grafana/memberlist v0.3.1-0.20260410131411-8c2f3bdae9db
