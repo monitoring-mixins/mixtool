@@ -101,6 +101,7 @@ require (
 	github.com/opentracing-contrib/go-grpc v0.1.4 // indirect
 	github.com/opentracing-contrib/go-stdlib v1.1.1 // indirect
 	github.com/opentracing/opentracing-go v1.2.1-0.20220228012449-10b1cf09e00b // indirect
+	github.com/pandatix/go-abnf v0.5.3 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/pires/go-proxyproto v0.15.0 // indirect
 	github.com/prometheus/client_golang v1.25.0 // indirect
@@ -110,10 +111,10 @@ require (
 	github.com/prometheus/procfs v0.22.0 // indirect
 	github.com/protocolbuffers/txtpbfmt v0.0.0-20260916144827-6e6d8ebdba95 // indirect
 	github.com/redis/go-redis/v9 v9.23.0 // indirect
-	github.com/rs/zerolog v1.33.0 // indirect
+	github.com/rs/zerolog v1.35.1 // indirect
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/sercand/kuberesolver/v6 v6.0.1 // indirect
-	github.com/shopspring/decimal v1.5.0 // indirect
+	github.com/shopspring/decimal v1.6.0 // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
 	github.com/sony/gobreaker/v2 v2.4.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
@@ -161,15 +162,15 @@ require (
 	go4.org/netipx v0.0.0-20260823151212-3075585bcbeb // indirect
 	golang.org/x/crypto v0.58.0 // indirect
 	golang.org/x/exp v0.0.0-20261014143641-f0251eb4aa3e // indirect
-	golang.org/x/net v0.61.0 // indirect
+	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/oauth2 v0.37.0 // indirect
 	golang.org/x/sync v0.24.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/term v0.47.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20261012220534-4341edf3f941 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20261005182115-fad411399dd8 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20261019180522-ce908d29299b // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20261012220534-4341edf3f941 // indirect
 	google.golang.org/grpc v1.84.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
@@ -189,13 +190,13 @@ require (
 require (
 	github.com/fatih/color v1.19.0
 	github.com/gobuffalo/packr/v2 v2.8.3
-	github.com/google/go-jsonnet v0.20.0
+	github.com/google/go-jsonnet v0.22.0
 	github.com/grafana/dashboard-linter v0.4.0
-	github.com/grafana/tanka v0.28.0
+	github.com/grafana/tanka v0.40.1
 	github.com/invopop/yaml v0.3.1
 	github.com/jsonnet-bundler/jsonnet-bundler v0.6.0
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/common v0.72.1
+	github.com/prometheus/common v0.73.1
 	github.com/prometheus/prometheus v0.315.0
 	github.com/stretchr/testify v1.12.1
 	github.com/urfave/cli/v3 v3.14.0
