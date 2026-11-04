@@ -15,11 +15,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
 	"github.com/monitoring-mixins/mixtool/pkg/mixer"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 )
 
 type lintConfig struct {
@@ -28,37 +29,40 @@ type lintConfig struct {
 	Vendor     []string
 }
 
-func lintCommand() cli.Command {
+func lintCommand() *cli.Command {
 	config := lintConfig{
 		Prometheus: true,
 		Grafana:    true,
 	}
 
-	return cli.Command{
+	return &cli.Command{
 		Name:        "lint",
 		Usage:       "Lint jsonnet files",
 		Description: "Lint jsonnet files for correct structure of JSON objects",
 		Flags: []cli.Flag{
-			cli.BoolTFlag{
+			&cli.BoolFlag{
+				Value:       true,
 				Name:        "grafana",
 				Usage:       "Lint Grafana dashboards against Grafana's schema",
 				Destination: &config.Grafana,
 			},
-			cli.BoolTFlag{
+			&cli.BoolFlag{
+				Value:       true,
 				Name:        "prometheus",
 				Usage:       "Lint Prometheus alerts and rules and their given expressions",
 				Destination: &config.Prometheus,
 			},
-			cli.StringSliceFlag{
-				Name:  "jpath, J",
-				Usage: "Add folders to be used as vendor folders",
+			&cli.StringSliceFlag{
+				Name:    "jpath",
+				Aliases: []string{"J"},
+				Usage:   "Add folders to be used as vendor folders",
 			},
 		},
 		Action: lintAction,
 	}
 }
 
-func lintAction(c *cli.Context) error {
+func lintAction(_ context.Context, c *cli.Command) error {
 	filename := c.Args().First()
 	if filename == "" {
 		return fmt.Errorf("expected one argument, the mixin filename")
@@ -72,8 +76,8 @@ func lintAction(c *cli.Context) error {
 
 	options := mixer.LintOptions{
 		JPaths:     jPath,
-		Grafana:    c.BoolT("grafana"),
-		Prometheus: c.BoolT("prometheus"),
+		Grafana:    c.Bool("grafana"),
+		Prometheus: c.Bool("prometheus"),
 	}
 
 	if err := mixer.Lint(os.Stdout, filename, options); err != nil {

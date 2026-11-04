@@ -15,6 +15,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -23,74 +24,86 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/monitoring-mixins/mixtool/pkg/mixer"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 )
 
-func generateCommand() cli.Command {
-	flags := []cli.Flag{
-		cli.StringSliceFlag{
-			Name: "jpath, J",
-		},
-		cli.BoolTFlag{
-			Name: "yaml, y",
-		},
+func generateCommand() *cli.Command {
+	// Each subcommand needs its own flag instances, as v3 flags hold their parsed values.
+	flags := func() []cli.Flag {
+		return []cli.Flag{
+			&cli.StringSliceFlag{
+				Name:    "jpath",
+				Aliases: []string{"J"},
+			},
+			&cli.BoolFlag{
+				Name:    "yaml",
+				Aliases: []string{"y"},
+				Value:   true,
+			},
+		}
 	}
 
-	return cli.Command{
+	return &cli.Command{
 		Name:  "generate",
 		Usage: "Generate manifests from jsonnet input",
-		Subcommands: cli.Commands{
-			cli.Command{
+		Commands: []*cli.Command{
+			{
 				Name:  "alerts",
 				Usage: "Generate Prometheus alerts based on the mixins",
-				Flags: append(flags,
-					cli.StringFlag{
-						Name:  "output-alerts, a",
-						Usage: "The file where Prometheus alerts are written",
+				Flags: append(flags(),
+					&cli.StringFlag{
+						Name:    "output-alerts",
+						Aliases: []string{"a"},
+						Usage:   "The file where Prometheus alerts are written",
 					},
 				),
 				Action: generateAction(generateAlerts),
 			},
-			cli.Command{
+			{
 				Name:  "rules",
 				Usage: "Generate Prometheus rules based on the mixins",
-				Flags: append(flags,
-					cli.StringFlag{
-						Name:  "output-rules, r",
-						Usage: "The file where Prometheus rules are written",
+				Flags: append(flags(),
+					&cli.StringFlag{
+						Name:    "output-rules",
+						Aliases: []string{"r"},
+						Usage:   "The file where Prometheus rules are written",
 					},
 				),
 				Action: generateAction(generateRules),
 			},
-			cli.Command{
+			{
 				Name:  "dashboards",
 				Usage: "Generate Grafana dashboards based on the mixins",
-				Flags: append(flags,
-					cli.StringFlag{
-						Name:  "directory, d",
-						Usage: "The directory where Grafana dashboards are written to",
+				Flags: append(flags(),
+					&cli.StringFlag{
+						Name:    "directory",
+						Aliases: []string{"d"},
+						Usage:   "The directory where Grafana dashboards are written to",
 					},
 				),
 				Action: generateAction(generateDashboards),
 			},
-			cli.Command{
+			{
 				Name:  "all",
 				Usage: "Generate all resources - Prometheus alerts, Prometheus rules and Grafana dashboards",
-				Flags: append(flags,
-					cli.StringFlag{
-						Name:  "output-alerts, a",
-						Usage: "The file where Prometheus alerts are written",
-						Value: "alerts.yaml",
+				Flags: append(flags(),
+					&cli.StringFlag{
+						Name:    "output-alerts",
+						Aliases: []string{"a"},
+						Usage:   "The file where Prometheus alerts are written",
+						Value:   "alerts.yaml",
 					},
-					cli.StringFlag{
-						Name:  "output-rules, r",
-						Usage: "The file where Prometheus rules are written",
-						Value: "rules.yaml",
+					&cli.StringFlag{
+						Name:    "output-rules",
+						Aliases: []string{"r"},
+						Usage:   "The file where Prometheus rules are written",
+						Value:   "rules.yaml",
 					},
-					cli.StringFlag{
-						Name:  "directory, d",
-						Usage: "The directory where Grafana dashboards are written to",
-						Value: "dashboards_out",
+					&cli.StringFlag{
+						Name:    "directory",
+						Aliases: []string{"d"},
+						Usage:   "The directory where Grafana dashboards are written to",
+						Value:   "dashboards_out",
 					},
 				),
 				Action: generateAction(generateAll),
@@ -102,7 +115,7 @@ func generateCommand() cli.Command {
 type generatorFunc func(string, mixer.GenerateOptions) error
 
 func generateAction(generator generatorFunc) cli.ActionFunc {
-	return func(c *cli.Context) error {
+	return func(_ context.Context, c *cli.Command) error {
 		jPathFlag := c.StringSlice("jpath")
 		filename := c.Args().First()
 		if filename == "" {
@@ -129,7 +142,7 @@ func generateAction(generator generatorFunc) cli.ActionFunc {
 			RulesFilename:  rulesFilename,
 			Directory:      c.String("directory"),
 			JPaths:         jPathFlag,
-			YAML:           c.BoolT("yaml"),
+			YAML:           c.Bool("yaml"),
 		}
 
 		return generator(filename, generateCfg)
