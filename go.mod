@@ -1,8 +1,6 @@
 module github.com/monitoring-mixins/mixtool
 
-go 1.22.4
-
-toolchain go1.22.6
+go 1.23.0
 
 require (
 	github.com/fatih/color v1.18.0
@@ -108,7 +106,7 @@ require (
 	golang.org/x/exp v0.0.0-20240404231335-c0f41cb1a7a0 // indirect
 	golang.org/x/mod v0.19.0 // indirect
 	golang.org/x/net v0.28.0 // indirect
-	golang.org/x/oauth2 v0.22.0 // indirect
+	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/term v0.23.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
