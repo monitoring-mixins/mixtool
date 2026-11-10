@@ -83,7 +83,17 @@ func lintPrometheus(filename string, vm *jsonnet.VM, errsOut chan<- error) {
 		errsOut <- err
 		return
 	}
-	groups, errs := rulefmt.Parse([]byte(j), false, model.UTF8Validation, parser.NewParser(parser.Options{}), slog.Default())
+	groups, errs := rulefmt.Parse(
+		[]byte(j),
+		false,
+		model.UTF8Validation,
+		parser.NewParser(parser.Options{
+			EnableExperimentalFunctions: true,
+		}),
+		// Jsonnet evaluation produces one JSON document, so rulefmt's
+		// multiple-document warning cannot occur here.
+		slog.New(slog.DiscardHandler),
+	)
 	for _, err := range errs {
 		errsOut <- err
 	}

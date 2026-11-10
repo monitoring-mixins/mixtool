@@ -462,3 +462,49 @@ func writeTempFile(t *testing.T, pattern string, contents string) (filename stri
 		}
 	}
 }
+
+// TestLintPrometheus_AcceptsExperimentalAndUTF8 verifies that lintPrometheus enables
+// experimental functions and UTF-8 name validation scheme.
+func TestLintPrometheus_AcceptsExperimentalAndUTF8(t *testing.T) {
+	// Drive lintPrometheus with a Jsonnet alert fixture that
+	// exercises both experimental functions and UTF-8 scheme names.
+	// mad_over_time must stay gated behind EnableExperimentalFunctions;
+	// if Prometheus promotes it to stable, this case stops covering the
+	// parser option and needs another experimental function.
+	const alertJsonnet = `
+{
+  _config+:: {},
+  prometheusAlerts+: {
+    groups+: [
+      {
+        name: 'experimental-and-utf8',
+        rules: [
+          {
+            alert: 'ExperimentalFunctionAccepted',
+            expr: 'mad_over_time(up[5m]) > 0',
+            labels: {
+              severity: 'warning',
+              'café': 'value',
+            },
+            annotations: {
+              description: '{{ $labels.instance }} median absolute deviation is high.',
+              summary: 'Instance median absolute deviation is high.',
+            },
+            'for': '15m',
+          },
+        ],
+      },
+    ],
+  },
+}`
+
+	filename, delete := writeTempFile(t, "alerts.jsonnet", alertJsonnet)
+	defer delete()
+
+	vm := jsonnet.MakeVM()
+	errs := make(chan error)
+	go lintPrometheus(filename, vm, errs)
+	for err := range errs {
+		t.Errorf("lintPrometheus rejected experimental function / UTF-8 label: %v", err)
+	}
+}
